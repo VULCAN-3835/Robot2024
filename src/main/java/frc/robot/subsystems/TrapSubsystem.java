@@ -4,10 +4,16 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.trapConstants;
 
 public class TrapSubsystem extends SubsystemBase {
   /** Creates a new TrapSubsystem. */
+  Spark shooterMotor = new Spark(trapConstants.kTrapMotorPort);
+  DigitalInput LimitSwitch = new DigitalInput(trapConstants.kLimitSwitchPort);
+  DigitalInput pieceSwitch = new DigitalInput(trapConstants.kPieceLimitSwitch);
   public TrapSubsystem() {}
 
   @Override
