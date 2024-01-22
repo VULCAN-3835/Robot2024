@@ -132,10 +132,18 @@ public class SwerveModule {
             BaseStatusSignal.getLatencyCompensatedValue(m_steerPosition, m_steerVelocity);
 
         SwerveModuleState optimized = SwerveModuleState.optimize(this.state, Rotation2d.fromRotations(angle_rot));
-
+        if (Math.abs(optimized.speedMetersPerSecond) < 0.001) {
+            stopModules();
+            return;
+        }
         double angleToSetDeg = optimized.angle.getRotations();
         steerMotor.setControl(angleSetter.withPosition(angleToSetDeg));
         
         driveMotor.set(optimized.speedMetersPerSecond);
+    }
+
+    public void stopModules() {
+        this.driveMotor.set(0);
+        this.steerMotor.set(0);
     }
 }
