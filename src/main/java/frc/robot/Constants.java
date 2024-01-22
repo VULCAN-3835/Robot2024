@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
+
+import edu.wpi.first.math.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -14,6 +18,18 @@ package frc.robot;
  */
 public final class Constants {
   public static class ModuleConstants {
+    public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
+    public static final double kDriveMotorGearRatio = 6.75;
+    public static final double kSteerMotorGearRatio = 12.8;
+
+    public static Slot0Configs getSteerMotorGains() {
+      Slot0Configs kSteerMotorGains = new Slot0Configs();
+      kSteerMotorGains.withKP(0); // TODO: Find kP
+      kSteerMotorGains.withKS(0); // TODO: Find power needed to overcome static friction
+      return kSteerMotorGains;
+    }
+  }
+  public static class ChassisConstants { 
     
   }
 }
