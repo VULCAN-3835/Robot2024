@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.security.PublicKey;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -16,4 +18,18 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public static class ShooterConstants {
+      public static final int KDoubleSelenoidForward=1;
+      public static final int KDoubleSelenoidReverse=1;
+      public static final int KMotorShooterPort=0;
+      public static final int KticksPerRotation =2048 ;
+      public static final double kkPshooter=0.5;
+      public static final double kSDspeedRPM=100;//Desired speed for the movement of the wheel in firing
+      public static final double kCDspeedRPM=-100;//Desired speed for the movement of the wheel in collection
+      public static double kDspeed=0.0;//The speed the shooting is currently aiming to be
+  /** Creates a new ShooterSubsystem. */
+  }
+
+  
 }
