@@ -25,5 +25,7 @@ public final class Constants {
     public static final double pieceDetector_DetectionThreshold = 2.5; //TODO: Find actual value
     public static final double kAngleEncoderOffset = 0.2; //TODO: Find actual value
     public static final double kKp = 0.5; //TODO: Find actual value
+    public static final double kIntakeMotorOutputSpeed = 0.75; //TODO: Find Actual Speed needed, and find out which way the intake motor is facing
+    public static final double kIntakeMotorIntakeSpeed = 0.75;
   }
 }

@@ -4,29 +4,31 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  private Spark intakeMotor;
-  private Spark angleMotor;
+  private CANSparkMax intakeMotor;
+  private CANSparkMax angleMotor;
   private DutyCycleEncoder angleEncoder;
   private UsbCamera usbCamera;
   private AnalogInput pieceDetector;
   private PIDController angleController;
-  public enum state {
+  public enum STATE {
     STATE1,
     STATE2
   }
   public IntakeSubsystem() {
-    intakeMotor = new Spark(Constants.IntakeSubsystemConstants.kIntakeMotorPort);
-    angleMotor = new Spark(Constants.IntakeSubsystemConstants.kAngleMotorPort);
+    intakeMotor = new CANSparkMax(Constants.IntakeSubsystemConstants.kAngleMotorPort, MotorType.kBrushless);
+    angleMotor = new CANSparkMax(Constants.IntakeSubsystemConstants.kIntakeMotorPort, MotorType.kBrushless);
     angleEncoder = new DutyCycleEncoder(Constants.IntakeSubsystemConstants.kAngleEncoderChannel);
     angleEncoder.setPositionOffset(Constants.IntakeSubsystemConstants.kAngleEncoderOffset);
     // usbCamera = new UsbCamera(); //TODO: Research
@@ -36,7 +38,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void setAnglePosition(double position){
     angleController.setSetpoint(position);
   }
-  public void setMotorMode(state state) { 
+  public void setMotorMode(STATE state) {
     switch (state) {
       case STATE1:
         intakeMotor.set(Constants.IntakeSubsystemConstants.kIntakeMotorIntakeSpeed); //Intake
@@ -55,13 +57,13 @@ public class IntakeSubsystem extends SubsystemBase {
   public boolean hasPiece(){
     return pieceDetector.getVoltage() > Constants.IntakeSubsystemConstants.pieceDetector_DetectionThreshold;
   }
-  public double getPieceX(){
+  public double getPieceX(){ //Get X value of gamepiece on camera
     return 0;
   }
-  public double getPieceY(){
+  public double getPieceY(){ //Get Y value of gamepiece on camera
     return 0;
   }
-  public double getPieceA(){
+  public double getPieceA(){ //Get distance of gamepiece from camera
     return 0;
   }
 
@@ -70,16 +72,3 @@ public class IntakeSubsystem extends SubsystemBase {
     angleMotor.set(angleController.calculate(angleEncoder.getAbsolutePosition()));
   }
 }
-
-// public static class IntakeSubsystemConstants{
-//     public static final int kIntakeMotorPort = 10;
-//     public static final int kAngleMotorPort = 11;
-//     public static final int kAngleEncoderChannel = 0;
-//     public static final int kPieceDetectorAnalogInputPort = 0;
-//     public static final int kLimitSwitchPort = 1;
-//     public static final double pieceDetector_DetectionThreshold = 2.5; //TODO: Find actual value
-//     public static final double kAngleEncoderOffset = 0.2; //TODO: Find actual value
-//     public static final double kKp = 0.5; //TODO: Find actual value
-//     public static final double kIntakeMotorOutputSpeed = 0.75; //TODO: Find Actual Speed needed, and find out which way the intake motor is facing
-//     public static final double kIntakeMotorIntakeSpeed = 0.75;
-//   }
