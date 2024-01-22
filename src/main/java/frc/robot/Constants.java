@@ -16,4 +16,14 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+  public static class IntakeSubsystemConstants{
+    public static final int kIntakeMotorPort = 10;
+    public static final int kAngleMotorPort = 11;
+    public static final int kAngleEncoderChannel = 0;
+    public static final int kPieceDetectorAnalogInputPort = 0;
+    public static final int kLimitSwitchPort = 1;
+    public static final double pieceDetector_DetectionThreshold = 2.5; //TODO: Find actual value
+    public static final double kAngleEncoderOffset = 0.2; //TODO: Find actual value
+    public static final double kKp = 0.5; //TODO: Find actual value
+  }
 }
