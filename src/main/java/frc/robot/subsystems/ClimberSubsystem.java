@@ -49,7 +49,7 @@ public class ClimberSubsystem extends SubsystemBase {
    public boolean getLeftLimitSwitch(){
     return this.limitSwitchLeft.get();
   }
-  public boolean prepForClimb(){
+  private boolean prepForClimb(){
     while(!getLeftLimitSwitch()&&!getRightLimitSwitch()){
         if(!getLeftLimitSwitch()){
           this.climberMotorLeft.set(Constants.ClimberSubsystemConstants.motorPowerPrep);
@@ -63,26 +63,41 @@ public class ClimberSubsystem extends SubsystemBase {
     //TODO send message to dash board saying climb ready
     return true;
   }
-  // public boolean setClimberPosition(double postion){
-  //   double leftErorr;
-  //   double rightError;
-  //   double neededTics;
-  //   if(prepForClimb()){
-  //       neededTics=(postion/Constants.ClimberSubsystemConstants.lengthForRotation)
-  //       *Constants.ClimberSubsystemConstants.ticsForRotation;
-  //       while(this.climberMotorLeft.getPosition()!=neededTics&&this.climberMotorRight.getPosition()!=neededTics){
-  //         leftErorr=neededTics-this.climberMotorLeft.getPosition();
-  //         rightError=neededTics-this.climberMotorRight.getPosition();
-  //         this.climberMotorRight.set(leftErorr*Constants.ClimberSubsystem.kpForLift+Constants.ClimberSubsystem.ksForLift);
-  //         this.climberMotorLeft.set(leftErorr*Constants.ClimberSubsystem.kpForLift+Constants.ClimberSubsystem.ksForLift);
-  //       }
-  //   }
+  private boolean setRightMotor(double speed){
+    if(speed>0.7){
+      this.climberMotorRight.set(0.7);
+    }
+    this.climberMotorRight.set(speed);
+  }
+  private boolean setLeftMotor(double speed){
+    if(speed>0.7){
+      this.climberMotorLeft.set(0.7);
+    }
+    this.climberMotorLeft.set(speed);
+  }
+ public boolean setClimberPosition(double postion){
+     double leftErorr;
+     double rightError;
+     double neededTics;
+     if(prepForClimb()){
+        neededTics=(postion/Constants.ClimberSubsystemConstants.lengthForRotation)
+        *Constants.ClimberSubsystemConstants.ticsForRotation;
+        leftErorr=neededTics-this.climberMotorLeft.getPosition();
+        rightError=neededTics-this.climberMotorRight.getPosition();
+        while(leftErorr!=0&&rightError!=0){
+          setLeftMotor(this.positionController.calculate(leftErorr,Constants.ClimberSubsystemConstants.kpForLift));
+          setRightMotor(this.positionController.calculate(rightError,Constants.ClimberSubsystemConstants.kpForLift));
+          leftErorr=neededTics-this.climberMotorLeft.getPosition();
+          rightError=neededTics-this.climberMotorRight.getPosition();
+         }
+     }
     
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    setClimberPosition(0);
+
     
   }
 }
