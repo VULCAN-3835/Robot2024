@@ -27,7 +27,6 @@ public class SwerveModule {
     private CANcoder absEncoder; // Absolute encoder responsible for keeping track of module position
 
     private final double absoluteEncoderOffset;
-    private final boolean absoluteEncoderReversed;
 
     private SwerveModuleState state;
 
@@ -42,17 +41,15 @@ public class SwerveModule {
 
     private PositionVoltage angleSetter = new PositionVoltage(0);
 
-    public SwerveModule(int driveMotorID, int steerMotorID, int absEncoderID, boolean absoluteEncoderReversed,
-     boolean steerMotorReversed, boolean driveMotorReversed,double absoluteEncoderOffset) {
+    public SwerveModule(int driveMotorID, int steerMotorID, int absEncoderID, 
+    boolean driveMotorReversed,double absoluteEncoderOffset) {
         this.driveMotor = new TalonFX(driveMotorID);
         this.steerMotor = new TalonFX(steerMotorID);
         this.absEncoder = new CANcoder(absEncoderID);
 
         this.absoluteEncoderOffset = absoluteEncoderOffset;
-        this.absoluteEncoderReversed = absoluteEncoderReversed;
 
         this.driveMotor.setInverted(driveMotorReversed);
-        this.steerMotor.setInverted(steerMotorReversed);
 
         this.driveMotor.setNeutralMode(NeutralModeValue.Brake);
         this.steerMotor.setNeutralMode(NeutralModeValue.Brake);
@@ -78,9 +75,6 @@ public class SwerveModule {
         CANcoderConfiguration canConfigs = new CANcoderConfiguration();
 
         canConfigs.MagnetSensor.MagnetOffset = this.absoluteEncoderOffset;
-        canConfigs.MagnetSensor.SensorDirection = this.absoluteEncoderReversed?
-        SensorDirectionValue.CounterClockwise_Positive:
-        SensorDirectionValue.Clockwise_Positive;
 
         this.absEncoder.getConfigurator().apply(canConfigs);
     }
@@ -102,7 +96,9 @@ public class SwerveModule {
     private void configDriveMotor() { // TODO: Do drive motor configs
         
     }
-
+    public double getModuleAngle() {
+        return m_steerPosition.getValueAsDouble()*360;
+    }
     public SwerveModulePosition getPosition(boolean refresh) {
         if (refresh) {
             m_drivePosition.refresh();
