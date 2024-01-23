@@ -17,33 +17,34 @@ public class TrapSubsystem extends SubsystemBase {
   /** Creates a new TrapSubsystem. */
   private final CANSparkMax shooterMotor; //announce on a new SparkMax motor
   private final DigitalInput LimitSwitchTrap; // announce on a new limit switch
-  private final DigitalInput pieceSwitch; // announce on a new limit switch
   private final DoubleSolenoid elevatorPiston; // announce on a new double solenoid
+
   public TrapSubsystem() {
       this.shooterMotor = new CANSparkMax(TrapConstants.kTrapShooterMotorPort,MotorType.kBrushless);// sets the motor to its port and sets it to bruchless
       this.LimitSwitchTrap = new DigitalInput(TrapConstants.kLimitSwitchPort);// sets this limit switch to its port
-      this.pieceSwitch  = new DigitalInput(TrapConstants.kPieceLimitSwitch);// sets this limit switch to its port
       this.elevatorPiston = 
           new DoubleSolenoid(PneumaticsModuleType.CTREPCM, TrapConstants.kDoubleSelenoidForward, TrapConstants.kDoubleSelenoidReverse); // sets it to our module type and its ports
+  }
 
-  }
-  private boolean hasPiece(){// method that returns if piece is in the trap
-    return pieceSwitch.get();
-  }
   private void releaseElevator(){ // method that releases the piston of the elevator
     elevatorPiston.set(DoubleSolenoid.Value.kForward);
   }
+
   private void shootPiece(){ // method that shoots the game piece with the speed that it has to be
     shooterMotor.set(TrapConstants.kMotorSpeed);
   }
+
   private void collectPiece(){ // method that collect the piece with the opposite speed of the shooting
     shooterMotor.set(TrapConstants.kMotorSpeedCollector);
   }
+
   private void stopMotor(){ // method that stop the motors
     shooterMotor.set(0);
   }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
 }
+
