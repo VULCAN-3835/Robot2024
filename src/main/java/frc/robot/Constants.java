@@ -24,10 +24,9 @@ public final class Constants {
       public static final int KDoubleSelenoidReverse=1;
       public static final int KMotorShooterPort=0;
       public static final int KticksPerRotation =2048 ;
-      public static final double kkPshooter=0.5;
-      public static final double kSDspeedRPM=100;//Desired speed for the movement of the wheel in firing
-      public static final double kCDspeedRPM=-100;//Desired speed for the movement of the wheel in collection
-      public static double kDspeed=0.0;//The speed the shooting is currently aiming to be
+      public static final double kPshooter=0.5;
+      public static final double kShootSpdRPM=100;//Desired speed for the movement of the wheel in firing
+      public static final double kCollectSpdRPM=-100;//Desired speed for the movement of the wheel in collection
   /** Creates a new ShooterSubsystem. */
   }
 

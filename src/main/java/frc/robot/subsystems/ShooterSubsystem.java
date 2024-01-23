@@ -15,30 +15,30 @@ import frc.robot.Constants.ShooterConstants;
 public class ShooterSubsystem extends SubsystemBase {
   //The calculation is without a conversion ratio because Model told me it's 1:1
   //The radius of the shooting wheels is 2 inches x 5.08 cm The circumference of the wheels of the shooting is 31.918581324 cm
-  ShooterConstants Conn = new ShooterConstants();
-  PIDController pid = new PIDController(Conn.kkPshooter,0 , 0);
-  TalonFX shootermotor = new TalonFX(Conn.KMotorShooterPort);
-  public double speedRPM;//A snitch who will always get the speed of the wheel
-  /** Creates a new ShooterSubsystem. */
-  public double error;
-
-  public ShooterSubsystem() {}
+  private PIDController pid;
+  private TalonFX shootermotor; 
+  private double speedRPM;//A snitch who will always get the speed of the wheel
+  public ShooterSubsystem() {
+    this.pid = new PIDController(ShooterConstants.kPshooter,0 , 0);
+    this.shootermotor = new TalonFX(ShooterConstants.KMotorShooterPort);
+    pid.setSetpoint(0.0);
+  }
   public void collect()
   {
-    Conn.kDspeed=Conn.kCDspeedRPM;
+    pid.setSetpoint(ShooterConstants.kCollectSpdRPM);
+
   }
   public void stopMotor()
   {
-    Conn.kDspeed =0.0;
+    pid.setSetpoint(0.0);
   }
   public void setShooterSpeed(double speed){
-    Conn.kDspeed =speed;
+    pid.setSetpoint(speed);
   }
   @Override
   public void periodic() {
-    this.speedRPM = shootermotor.getVelocity().getValue()*600/Conn.KticksPerRotation;
-    error = Conn.kDspeed -this.speedRPM;
-    shootermotor.set(error*Conn.kkPshooter);
+    this.speedRPM = shootermotor.getVelocity().getValue()*600/ShooterConstants.KticksPerRotation;
+    shootermotor.set(pid.calculate(this.speedRPM));
     // This method will be called once per scheduler run
   }
 }
