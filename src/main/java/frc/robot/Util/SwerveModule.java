@@ -8,6 +8,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -69,6 +70,7 @@ public class SwerveModule {
         m_signals[2] = m_steerPosition;
         m_signals[3] = m_steerVelocity;
 
+        angleSetter.FeedForward = Constants.ModuleConstants.kFeedforwardGainSteer;
     }
 
     private void configEnc() { // TODO: Check all constants
@@ -97,8 +99,22 @@ public class SwerveModule {
         
     }
     public double getModuleAngle() {
-        return m_steerPosition.getValueAsDouble()*360;
+        m_steerPosition.refresh();
+        return m_steerPosition.getValue();
     }
+    public double getModuleAngleError() {
+        var error = this.steerMotor.getClosedLoopError();
+        error.refresh();
+        return error.getValue();
+    }
+    public double getModuleClosedLoopOutput() {
+        var output = this.steerMotor.getClosedLoopOutput();
+        output.refresh();
+        return output.getValue();
+    }
+    
+
+
     public SwerveModulePosition getPosition(boolean refresh) {
         if (refresh) {
             m_drivePosition.refresh();
@@ -132,9 +148,10 @@ public class SwerveModule {
             stopModules();
             return;
         }
+
+        this.angleSetter.FeedForward = getModuleAngleError()>=0?Constants.ModuleConstants.kFeedforwardGainSteer:-Constants.ModuleConstants.kFeedforwardGainSteer;
         double angleToSetDeg = optimized.angle.getRotations();
-        steerMotor.setControl(angleSetter.withPosition(angleToSetDeg));
-        
+        this.steerMotor.setControl(this.angleSetter.withPosition(angleToSetDeg));
         driveMotor.set(optimized.speedMetersPerSecond);
     }
 

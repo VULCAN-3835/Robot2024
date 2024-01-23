@@ -31,27 +31,33 @@ public class ChassisSubsystem extends SubsystemBase {
           new SwerveModuleState(0,Rotation2d.fromDegrees(0))
   };
   public ChassisSubsystem() {
-    this.swerve_modules[wheels.left_front.ordinal()] = new SwerveModule(Constants.ChassisConstants.kLeftFrontDriveID,
-    Constants.ChassisConstants.kLeftFrontSteerID, Constants.ChassisConstants.kLeftFrontEncID,
-    Constants.ChassisConstants.kLeftFrontInverted, Constants.ChassisConstants.kLeftFrontOffset);
+    this.swerve_modules[wheels.left_front.ordinal()] = new SwerveModule(
+      Constants.ChassisConstants.kLeftFrontDriveID,
+      Constants.ChassisConstants.kLeftFrontSteerID, 
+      Constants.ChassisConstants.kLeftFrontEncID,
+      Constants.ChassisConstants.kLeftFrontInverted, 
+      Constants.ChassisConstants.kLeftFrontOffset);
 
-    this.swerve_modules[wheels.right_front.ordinal()] = new SwerveModule(Constants.ChassisConstants.kRightFrontDriveID,
+    this.swerve_modules[wheels.right_front.ordinal()] = new SwerveModule(
+      Constants.ChassisConstants.kRightFrontDriveID,
       Constants.ChassisConstants.kRightFrontSteerID, 
       Constants.ChassisConstants.kRightFrontEncID,
       Constants.ChassisConstants.kRightFrontInverted, 
       Constants.ChassisConstants.kRightFrontOffset);
 
-    this.swerve_modules[wheels.left_back.ordinal()] = new SwerveModule(Constants.ChassisConstants.kLeftBackDriveID, // Instancing Left Back Wheel
-            Constants.ChassisConstants.kLeftBackSteerID,
-            Constants.ChassisConstants.kLeftBackEncID,
-            Constants.ChassisConstants.kLeftBackInverted,
-            Constants.ChassisConstants.kLeftBackOffset);
+    this.swerve_modules[wheels.left_back.ordinal()] = new SwerveModule(
+      Constants.ChassisConstants.kLeftBackDriveID, 
+      Constants.ChassisConstants.kLeftBackSteerID,
+      Constants.ChassisConstants.kLeftBackEncID,
+      Constants.ChassisConstants.kLeftBackInverted,
+      Constants.ChassisConstants.kLeftBackOffset);
 
-    this.swerve_modules[wheels.right_back.ordinal()] = new SwerveModule(Constants.ChassisConstants.kRightBackDriveID, // Instancing Right Back Wheel
-            Constants.ChassisConstants.kRightBackSteerID,
-            Constants.ChassisConstants.kRightBackEncID,
-            Constants.ChassisConstants.kRightBackInverted,
-            Constants.ChassisConstants.kRightBackOffset);
+    this.swerve_modules[wheels.right_back.ordinal()] = new SwerveModule(
+      Constants.ChassisConstants.kRightBackDriveID,
+      Constants.ChassisConstants.kRightBackSteerID,
+      Constants.ChassisConstants.kRightBackEncID,
+      Constants.ChassisConstants.kRightBackInverted,
+      Constants.ChassisConstants.kRightBackOffset);
   }
 
   public void zeroHeading() {
@@ -80,6 +86,7 @@ public class ChassisSubsystem extends SubsystemBase {
     Constants.ChassisConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative? ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, rot, getRotation2d())
                 : new ChassisSpeeds(xVelocity, yVelocity, rot));
+
   }
 
   /**
@@ -115,9 +122,22 @@ public class ChassisSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Left Front",this.swerve_modules[wheels.left_front.ordinal()].getModuleAngle());
-      SmartDashboard.putNumber("Left Back",this.swerve_modules[wheels.left_back.ordinal()].getModuleAngle());
-      SmartDashboard.putNumber("Right Front",this.swerve_modules[wheels.right_front.ordinal()].getModuleAngle());
-      SmartDashboard.putNumber("Right Back",this.swerve_modules[wheels.right_back.ordinal()].getModuleAngle());
+    setModuleStates(this.swerveModuleStates);
+
+
+    SmartDashboard.putNumber("Left Front Rotation",this.swerve_modules[wheels.left_front.ordinal()].getModuleAngle());
+    SmartDashboard.putNumber("Left Back Rotation",this.swerve_modules[wheels.left_back.ordinal()].getModuleAngle());
+    SmartDashboard.putNumber("Right Front Rotation",this.swerve_modules[wheels.right_front.ordinal()].getModuleAngle());
+    SmartDashboard.putNumber("Right Back Rotation",this.swerve_modules[wheels.right_back.ordinal()].getModuleAngle());
+
+    SmartDashboard.putNumber("Left Front Error",this.swerve_modules[wheels.left_front.ordinal()].getModuleAngleError());
+    SmartDashboard.putNumber("Left Back Error",this.swerve_modules[wheels.left_back.ordinal()].getModuleAngleError());
+    SmartDashboard.putNumber("Right Front Error",this.swerve_modules[wheels.right_front.ordinal()].getModuleAngleError());
+    SmartDashboard.putNumber("Right Back Error",this.swerve_modules[wheels.right_back.ordinal()].getModuleAngleError());
+
+    SmartDashboard.putNumber("Left Front Output",this.swerve_modules[wheels.left_front.ordinal()].getModuleClosedLoopOutput());
+    SmartDashboard.putNumber("Left Back Output",this.swerve_modules[wheels.left_back.ordinal()].getModuleClosedLoopOutput());
+    SmartDashboard.putNumber("Right Front Output",this.swerve_modules[wheels.right_front.ordinal()].getModuleClosedLoopOutput());
+    SmartDashboard.putNumber("Right Back Output",this.swerve_modules[wheels.right_back.ordinal()].getModuleClosedLoopOutput());
   }
 }

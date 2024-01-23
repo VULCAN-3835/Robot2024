@@ -19,15 +19,19 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static class OperatorConstants {
+    public static final double kDeadband = 0.08;
+    public static final int kXboxPort = 0;
+  }
   public static class ModuleConstants {
     public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
     public static final double kDriveMotorGearRatio = 6.75;
     public static final double kSteerMotorGearRatio = 12.8;
 
+    public static double kFeedforwardGainSteer = 0.11;
     public static Slot0Configs getSteerMotorGains() {
       Slot0Configs kSteerMotorGains = new Slot0Configs();
-      kSteerMotorGains.withKP(0); // TODO: Find kP
-      kSteerMotorGains.withKS(0); // TODO: Find power needed to overcome static friction
+      kSteerMotorGains.withKP(19); // TODO: Find kP
       return kSteerMotorGains;
     }
   }
@@ -48,22 +52,26 @@ public final class Constants {
     public static final int kLeftBackEncID = 32; // CAN ID
     public static final int kRightBackEncID = 30; // CAN ID
     // Offsets for absolute encoders: TODO: Find
-    public static final int kLeftFrontOffset = 0; 
-    public static final int kRightFrontOffset = 0;
-    public static final int kLeftBackOffset = 0;
-    public static final int kRightBackOffset = 0;
+    public static final double kLeftFrontOffset = -0.283447265625; 
+    public static final double kRightFrontOffset = -0.59765625;
+    public static final double kLeftBackOffset = -0.482666015625;
+    public static final double kRightBackOffset = -0.185546875;
     // Which motors are inverted TODO: Find                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     public static final boolean frontLeftDriveInverted = true;
     public static final boolean kLeftFrontInverted = false; 
     public static final boolean kRightFrontInverted = false;
     public static final boolean kLeftBackInverted = false;
     public static final boolean kRightBackInverted = false;
 
-    public static final double kMaxDrivingVelocity = 1;
+    // TODO: Fit from power control to velocity control
+    public static final double kMaxDrivingVelocity = 0.55;
+    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 3;
+    public static final double kTeleDriveMaxSpeedMetersPerSec = 0.55;
+    public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = 0.4;
 
     // Distance between centers of right and left wheels on robot cm
-    public static final double kTrackWidth = 54.03;
+    public static final double kTrackWidth = 0.5403;
     // Distance between front and back wheels on robot cm
-    public static final double kWheelBase = 54.03;
+    public static final double kWheelBase = 0.5403;
 
     // Swerve Kinematics TODO: Choose positions with + -
     public static final SwerveDriveKinematics kDriveKinematics =
