@@ -9,6 +9,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 //constants
 //public static class ClimberSubsystemConstants{
@@ -39,7 +40,7 @@ public class ClimberSubsystem extends SubsystemBase {
       this.climberMotorLeft=new TalonFX(Constants.ClimberSubsystemConstants.motor2Port);
       this.limitSwitchRight=new DigitalInput(Constants.ClimberSubsystemConstants.limSwitchRightPort);
       this.limitSwitchRight=new DigitalInput(Constants.ClimberSubsystemConstants.limSwitchLeftPort);
-      this.positionController=new PIDController(0.5, 0, 0);
+      this.positionController=new PIDController(Constants.ClimberSubsystemConstants.kpForLift, 0, 0);
 
   }
 
@@ -49,54 +50,62 @@ public class ClimberSubsystem extends SubsystemBase {
    public boolean getLeftLimitSwitch(){
     return this.limitSwitchLeft.get();
   }
-  private boolean prepForClimb(){
-    while(!getLeftLimitSwitch()&&!getRightLimitSwitch()){
-        if(!getLeftLimitSwitch()){
-          this.climberMotorLeft.set(Constants.ClimberSubsystemConstants.motorPowerPrep);
-        }
-        if(!getRightLimitSwitch()){
-          this.climberMotorRight.set(Constants.ClimberSubsystemConstants.motorPowerPrep);
-        }
-    }
-    this.climberMotorLeft.setPosition(0);
-    this.climberMotorRight.setPosition(0);
-    //TODO send message to dash board saying climb ready
-    return true;
+// private boolean prepForClimb(){
+//   if(!getLeftLimitSwitch()){
+//       this.climberMotorLeft.set(Constants.ClimberSubsystemConstants.motorPowerPrep);
+//   }
+//   if(!getRightLimitSwitch()){
+//       this.climberMotorRight.set(Constants.ClimberSubsystemConstants.motorPowerPrep);
+//   }
+//   if(getLeftLimitSwitch()&&getRightLimitSwitch()){
+//     this.climberMotorLeft.setPosition(0);
+//     this.climberMotorRight.setPosition(0);
+//     return true;
+//   }
+//   return false;
+//   
+//   this.climberMotorLeft.setPosition(0);
+//   this.climberMotorRight.setPosition(0);
+//   //TODO send message to dash board saying climb ready
+//   return true;
+// }
+  private double getRightRotation(){
+    double rotations=this.climberMotorRight.getPosition().getValue()/Constants.ClimberSubsystemConstants.ticsForRotation;
+    return rotations;
   }
-  private boolean setRightMotor(double speed){
+  private double getLeftRotation(){
+    double rotations=this.climberMotorLeft.getPosition().getValue()/Constants.ClimberSubsystemConstants.ticsForRotation;
+    return rotations;
+  }
+  private double getRightPosition(){
+    double length=getRightRotation()*Constants.ClimberSubsystemConstants.lengthForRotation;
+    return length;
+  }
+  private double getLeftPosition(){
+    double length=getLeftRotation()*Constants.ClimberSubsystemConstants.lengthForRotation;
+    return length;
+  }
+  private void setRightMotor(double speed){
     if(speed>0.7){
       this.climberMotorRight.set(0.7);
     }
     this.climberMotorRight.set(speed);
+
   }
-  private boolean setLeftMotor(double speed){
+  private void setLeftMotor(double speed){
     if(speed>0.7){
       this.climberMotorLeft.set(0.7);
     }
     this.climberMotorLeft.set(speed);
   }
  public boolean setClimberPosition(double postion){
-     double leftErorr;
-     double rightError;
-     double neededTics;
-     if(prepForClimb()){
-        neededTics=(postion/Constants.ClimberSubsystemConstants.lengthForRotation)
-        *Constants.ClimberSubsystemConstants.ticsForRotation;
-        leftErorr=neededTics-this.climberMotorLeft.getPosition();
-        rightError=neededTics-this.climberMotorRight.getPosition();
-        while(leftErorr!=0&&rightError!=0){
-          setLeftMotor(this.positionController.calculate(leftErorr,Constants.ClimberSubsystemConstants.kpForLift));
-          setRightMotor(this.positionController.calculate(rightError,Constants.ClimberSubsystemConstants.kpForLift));
-          leftErorr=neededTics-this.climberMotorLeft.getPosition();
-          rightError=neededTics-this.climberMotorRight.getPosition();
-         }
-     }
+     setRightMotor(this.positionController.calculate(postion,))
     
   }
 
   @Override
   public void periodic() {
-    setClimberPosition(0);
+    
 
     
   }
