@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DefaultTeleopCommand;
@@ -27,7 +28,7 @@ public class RobotContainer {
     this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
     ()-> -xboxController.getLeftY(),
     ()-> -xboxController.getLeftX(),
-    ()-> xboxController.getRightX()));
+    ()-> -xboxController.getRightX()));
     configureBindings();
   }
 
@@ -44,7 +45,9 @@ public class RobotContainer {
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    
+    Trigger backTrigger = new Trigger(() -> this.xboxController.getBackButtonPressed());
+
+    backTrigger.onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
   }
 
   /**

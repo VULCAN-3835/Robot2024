@@ -58,6 +58,8 @@ public class ChassisSubsystem extends SubsystemBase {
       Constants.ChassisConstants.kRightBackEncID,
       Constants.ChassisConstants.kRightBackInverted,
       Constants.ChassisConstants.kRightBackOffset);
+
+      this.imu = new AHRS();
   }
 
   public void zeroHeading() {

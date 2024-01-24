@@ -31,7 +31,7 @@ public final class Constants {
     public static double kFeedforwardGainSteer = 0.11;
     public static Slot0Configs getSteerMotorGains() {
       Slot0Configs kSteerMotorGains = new Slot0Configs();
-      kSteerMotorGains.withKP(19); // TODO: Find kP
+      kSteerMotorGains.withKP(30); // TODO: Find kP
       return kSteerMotorGains;
     }
   }
@@ -63,9 +63,9 @@ public final class Constants {
     public static final boolean kRightBackInverted = false;
 
     // TODO: Fit from power control to velocity control
-    public static final double kMaxDrivingVelocity = 0.55;
+    public static final double kMaxDrivingVelocity = 0.4;
     public static final double kTeleDriveMaxAccelerationUnitsPerSec = 3;
-    public static final double kTeleDriveMaxSpeedMetersPerSec = 0.55;
+    public static final double kTeleDriveMaxSpeedMetersPerSec = 0.4;
     public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = 0.4;
 
     // Distance between centers of right and left wheels on robot cm

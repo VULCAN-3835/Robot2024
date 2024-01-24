@@ -30,7 +30,7 @@ public class DefaultTeleopCommand extends Command {
     this.yLimiter = new SlewRateLimiter(Constants.ChassisConstants.kTeleDriveMaxAccelerationUnitsPerSec);
     this.turningLimiter = new SlewRateLimiter(Constants.ChassisConstants.kTeleDriveMaxAccelerationUnitsPerSec);
 
-    fieldOriented = false;
+    fieldOriented = true;
     
     addRequirements(this.chassisSubsystem);
   }
