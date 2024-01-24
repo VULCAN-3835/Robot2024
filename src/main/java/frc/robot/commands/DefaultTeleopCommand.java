@@ -18,8 +18,7 @@ public class DefaultTeleopCommand extends Command {
   private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
   private boolean fieldOriented;
   public DefaultTeleopCommand(ChassisSubsystem chassisSubsystem, Supplier<Double> xSpdFunction,
-    Supplier<Double> ySpdFunction,
-    Supplier<Double> turningSpdFunction) {
+    Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction) {
 
     this.chassisSubsystem = chassisSubsystem;
     this.xSpdFunction = xSpdFunction;

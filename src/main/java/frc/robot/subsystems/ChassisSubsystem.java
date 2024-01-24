@@ -24,6 +24,8 @@ public class ChassisSubsystem extends SubsystemBase {
   private SwerveModule[] swerve_modules = new SwerveModule[4];
   // IMU
   private AHRS imu;
+
+  // The states of the modules
   private SwerveModuleState[] swerveModuleStates = new SwerveModuleState[] {
           new SwerveModuleState(0,Rotation2d.fromDegrees(0)),
           new SwerveModuleState(0,Rotation2d.fromDegrees(0)),
@@ -31,6 +33,7 @@ public class ChassisSubsystem extends SubsystemBase {
           new SwerveModuleState(0,Rotation2d.fromDegrees(0))
   };
   public ChassisSubsystem() {
+    // Modules Initilization:
     this.swerve_modules[wheels.left_front.ordinal()] = new SwerveModule(
       Constants.ChassisConstants.kLeftFrontDriveID,
       Constants.ChassisConstants.kLeftFrontSteerID, 
@@ -59,17 +62,29 @@ public class ChassisSubsystem extends SubsystemBase {
       Constants.ChassisConstants.kRightBackInverted,
       Constants.ChassisConstants.kRightBackOffset);
 
+      // Imu initlization
       this.imu = new AHRS();
   }
 
+  /**
+     * Resets the heading of the robot
+  */
   public void zeroHeading() {
     this.imu.reset();
   }
 
+  /**
+     * Returns the heading of the robot
+     * @return The heading of the robot in degrees
+  */
   public double getHeading() {
     return this.imu.getAngle();
   }
 
+  /**
+     * Returns the heading of the robot
+     * @return The heading of the robot in Rotation2d
+  */
   public Rotation2d getRotation2d() {
     return Rotation2d.fromDegrees(this.imu.getAngle());
   }
@@ -81,7 +96,7 @@ public class ChassisSubsystem extends SubsystemBase {
      * @param yVelocity  The velocity on the y axis
      * @param rot  The rotational velocity
      * @param fieldRelative  Is field relative or not
-     */
+  */
   public void drive(double xVelocity, double yVelocity, double rot, boolean fieldRelative) {
     // Kinematics turns the Chassis speeds to desired swerveModule states depending on if field relative or not
     this.swerveModuleStates =
@@ -96,7 +111,7 @@ public class ChassisSubsystem extends SubsystemBase {
      *
      * @param chassisSpeeds The desired chassisSpeeds object for module velocities
      * @param fieldRelative  Is field relative or not
-     */
+  */
     public void drive(ChassisSpeeds chassisSpeeds, boolean fieldRelative) {
       // Makes a swerve module-state array from chassisSpeeds
         this.swerveModuleStates = 
@@ -125,7 +140,6 @@ public class ChassisSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     setModuleStates(this.swerveModuleStates);
-
 
     SmartDashboard.putNumber("Left Front Rotation",this.swerve_modules[wheels.left_front.ordinal()].getModuleAngle());
     SmartDashboard.putNumber("Left Back Rotation",this.swerve_modules[wheels.left_back.ordinal()].getModuleAngle());

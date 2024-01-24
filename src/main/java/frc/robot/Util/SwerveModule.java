@@ -27,53 +27,54 @@ public class SwerveModule {
     private TalonFX steerMotor; // Falcon 500 motor responsible for steering the module
     private CANcoder absEncoder; // Absolute encoder responsible for keeping track of module position
 
-    private final double absoluteEncoderOffset;
+    private final double absoluteEncoderOffset; // The offset of the absolute encoder from it's true zero
 
-    private SwerveModuleState state;
+    private SwerveModuleState state; // The state the module aims to be
 
+    // Phoenix6 suppliers for the different feedback values
     private StatusSignal<Double> m_drivePosition; // Drive position supplier
     private StatusSignal<Double> m_driveVelocity; // Drive velocity supplier
     private StatusSignal<Double> m_steerPosition; // Steer position supplier
     private StatusSignal<Double> m_steerVelocity; // Steer velocity supplier
 
-    private BaseStatusSignal[] m_signals; // Array of the suppliers
+    private SwerveModulePosition swervePosition = new SwerveModulePosition(); // The position of the module (Releveant for poseEstimator)
 
-    private SwerveModulePosition swervePosition = new SwerveModulePosition();
-
-    private PositionVoltage angleSetter = new PositionVoltage(0);
+    private PositionVoltage angleSetter = new PositionVoltage(0); // The closed loop controller for module angle
 
     public SwerveModule(int driveMotorID, int steerMotorID, int absEncoderID, 
     boolean driveMotorReversed,double absoluteEncoderOffset) {
+        // Motor controllers + Sensors initialization:
         this.driveMotor = new TalonFX(driveMotorID);
         this.steerMotor = new TalonFX(steerMotorID);
         this.absEncoder = new CANcoder(absEncoderID);
 
+        // Offset storing:
         this.absoluteEncoderOffset = absoluteEncoderOffset;
 
+        // General configs:
         this.driveMotor.setInverted(driveMotorReversed);
-
         this.driveMotor.setNeutralMode(NeutralModeValue.Brake);
         this.steerMotor.setNeutralMode(NeutralModeValue.Brake);
 
+        // Advannced configs:
         configEnc();
         configDriveMotor();
         configSteerMotor(absEncoderID);
 
+        // Storing the signals (suppliers) of the different feedback sensors
         m_drivePosition = driveMotor.getPosition();
         m_driveVelocity = driveMotor.getVelocity();
         m_steerPosition = absEncoder.getPosition();
         m_steerVelocity = absEncoder.getVelocity();
 
-        m_signals = new BaseStatusSignal[4];
-        m_signals[0] = m_drivePosition;
-        m_signals[1] = m_driveVelocity;
-        m_signals[2] = m_steerPosition;
-        m_signals[3] = m_steerVelocity;
-
+        // Config for the angle closed loop control feedforward value to overcome friction
         angleSetter.FeedForward = Constants.ModuleConstants.kFeedforwardGainSteer;
     }
 
-    private void configEnc() { // TODO: Check all constants
+    /**
+     * Configures encoder offset
+    */
+    private void configEnc() { 
         CANcoderConfiguration canConfigs = new CANcoderConfiguration();
 
         canConfigs.MagnetSensor.MagnetOffset = this.absoluteEncoderOffset;
@@ -81,7 +82,12 @@ public class SwerveModule {
         this.absEncoder.getConfigurator().apply(canConfigs);
     }
 
-    private void configSteerMotor(int absEncoderID) { // TODO: Check all constants
+    /**
+     * Configures the steer motor's feedback sennsor, source, rotor to sensor ratio and countinous readings
+     *
+     * @param absEncoderID The id of the absolut encoder to set as the new feedback sensor
+    */
+    private void configSteerMotor(int absEncoderID) { 
         TalonFXConfiguration steerConfigs = new TalonFXConfiguration();
 
         steerConfigs.Slot0 = Constants.ModuleConstants.getSteerMotorGains();
@@ -95,33 +101,50 @@ public class SwerveModule {
         this.steerMotor.getConfigurator().apply(steerConfigs);
     }
 
-    private void configDriveMotor() { // TODO: Do drive motor configs
+    private void configDriveMotor() { // TODO: Add velocity control configs
         
     }
+
+    /**
+     * returns the angle of the module in coutinous rotations (i.e 1 is a full rotation or 360 degrees to the positive side of the sensor,
+     * -1 is a full rotation or -360 degrees to the negative side of the sensor)
+     * @return The angle rotation of the module
+    */
     public double getModuleAngle() {
         m_steerPosition.refresh();
         return m_steerPosition.getValue();
     }
+
+    /**
+     * Returns the module's angle closed loop controller error in rotations (i.e 1 is a full rotation, 0.25 a qurter of a rotation or 90 degrees)
+     * @return The module's angle closed loop controller error in rotations
+    */
     public double getModuleAngleError() {
         var error = this.steerMotor.getClosedLoopError();
         error.refresh();
         return error.getValue();
     }
+    
+    /**
+     * Returns the module's angle closed loop controller output to the motor in power precentage (i.e between -1 to 1 where 1 is full 
+     * power to the positive side of the motor and -1 is full power to the negative side of the motor)
+     * @return the module's angle closed loop controller output to the motor
+    */
     public double getModuleClosedLoopOutput() {
         var output = this.steerMotor.getClosedLoopOutput();
         output.refresh();
         return output.getValue();
     }
-    
 
-
-    public SwerveModulePosition getPosition(boolean refresh) {
-        if (refresh) {
-            m_drivePosition.refresh();
-            m_driveVelocity.refresh();
-            m_steerPosition.refresh();
-            m_steerVelocity.refresh();
-        }
+    /**
+     * Returns the module's position using the feedback sensors with latency compensation
+     * @return the module's current position
+    */
+    public SwerveModulePosition getPosition() {
+        m_drivePosition.refresh();
+        m_driveVelocity.refresh();
+        m_steerPosition.refresh();
+        m_steerVelocity.refresh();
 
         double drive_rot =
             BaseStatusSignal.getLatencyCompensatedValue(m_drivePosition, m_driveVelocity);
@@ -134,6 +157,10 @@ public class SwerveModule {
         return swervePosition;
     }
 
+    /**
+     * Sets the motor's closed loop controllers setpoints to a certain module state
+     * @param state The target state for the module
+    */
     public void set(SwerveModuleState state) {
         this.state = state;
 
@@ -145,17 +172,19 @@ public class SwerveModule {
 
         SwerveModuleState optimized = SwerveModuleState.optimize(this.state, Rotation2d.fromRotations(angle_rot));
         if (Math.abs(optimized.speedMetersPerSecond) < 0.001) {
-            stopModules();
+            stopModule();
             return;
         }
-
         this.angleSetter.FeedForward = getModuleAngleError()>=0?Constants.ModuleConstants.kFeedforwardGainSteer:-Constants.ModuleConstants.kFeedforwardGainSteer;
         double angleToSetDeg = optimized.angle.getRotations();
         this.steerMotor.setControl(this.angleSetter.withPosition(angleToSetDeg));
         driveMotor.set(optimized.speedMetersPerSecond);
     }
 
-    public void stopModules() {
+    /**
+     * Stops the module's motors
+    */
+    public void stopModule() {
         this.driveMotor.set(0);
         this.steerMotor.set(0);
     }

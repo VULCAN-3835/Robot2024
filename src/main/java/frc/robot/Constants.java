@@ -20,18 +20,20 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static class OperatorConstants {
-    public static final double kDeadband = 0.08;
-    public static final int kXboxPort = 0;
+    public static final double kDeadband = 0.08; // Operator deadband
+    public static final int kXboxPort = 0; // Xbox port
   }
   public static class ModuleConstants {
-    public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
-    public static final double kDriveMotorGearRatio = 6.75;
-    public static final double kSteerMotorGearRatio = 12.8;
+    public static final double kWheelDiameterMeters = Units.inchesToMeters(4); // Module wheel diameter in meters
+    public static final double kDriveMotorGearRatio = 6.75; // Module drive motor gear ratio
+    public static final double kSteerMotorGearRatio = 12.8; // Module steer motor gear ratio
 
-    public static double kFeedforwardGainSteer = 0.11;
-    public static Slot0Configs getSteerMotorGains() {
+    
+    public static double kFeedforwardGainSteer = 0.11; // The feed forward gain for the module steer control
+
+    public static Slot0Configs getSteerMotorGains() { 
       Slot0Configs kSteerMotorGains = new Slot0Configs();
-      kSteerMotorGains.withKP(30); // TODO: Find kP
+      kSteerMotorGains.withKP(30); // The proportional gain for the module steer control
       return kSteerMotorGains;
     }
   }
@@ -51,12 +53,12 @@ public final class Constants {
     public static final int kRightFrontEncID = 33; // CAN ID
     public static final int kLeftBackEncID = 32; // CAN ID
     public static final int kRightBackEncID = 30; // CAN ID
-    // Offsets for absolute encoders: TODO: Find
+    // Offsets for absolute encoders:
     public static final double kLeftFrontOffset = -0.283447265625; 
     public static final double kRightFrontOffset = -0.59765625;
     public static final double kLeftBackOffset = -0.482666015625;
     public static final double kRightBackOffset = -0.185546875;
-    // Which motors are inverted TODO: Find                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     public static final boolean frontLeftDriveInverted = true;
+    // Which motors are inverted:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   public static final boolean frontLeftDriveInverted = true;
     public static final boolean kLeftFrontInverted = false; 
     public static final boolean kRightFrontInverted = false;
     public static final boolean kLeftBackInverted = false;
@@ -73,7 +75,7 @@ public final class Constants {
     // Distance between front and back wheels on robot cm
     public static final double kWheelBase = 0.5403;
 
-    // Swerve Kinematics TODO: Choose positions with + -
+    // Swerve Kinematics:
     public static final SwerveDriveKinematics kDriveKinematics =
             new SwerveDriveKinematics(
                     new Translation2d(kWheelBase / 2, kTrackWidth / 2), //Left front
