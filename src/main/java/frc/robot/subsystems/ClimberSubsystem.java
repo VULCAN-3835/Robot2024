@@ -4,28 +4,14 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-
-//constants
-//public static class ClimberSubsystemConstants{
-//  public static final int motor1Port=10;
-//  public static final int motor2Port=11;
-//  public static final int limSwitchRightPort=0;
-//  public static final int limSwitchLeftPort=1;
-//  public static final double maxMotorPower=0.7;
-//  public static final double kpForLift TODO
-//  public static final double ksForLift TODO
-//  public static final double motorPowerPrep TODO
-//  public static final int ticsForRotation TODO
-//  public static final double lengthForRotation =125.6637061435917;
-//}
-
-
+import frc.robot.Constants;;
 
 
 public class ClimberSubsystem extends SubsystemBase {
@@ -33,80 +19,79 @@ public class ClimberSubsystem extends SubsystemBase {
   private TalonFX climberMotorLeft;
   private DigitalInput limitSwitchRight;
   private DigitalInput limitSwitchLeft;
-  private PIDController positionController;
+
+  private StatusSignal<Double> m_leftPosition;
+  private StatusSignal<Double> m_leftVelocity;
+  private StatusSignal<Double> m_rightPosition;
+  private StatusSignal<Double> m_rightVelocity;
+
+  MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
+  
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
-      this.climberMotorRight=new TalonFX(Constants.ClimberSubsystemConstants.motor1Port);
-      this.climberMotorLeft=new TalonFX(Constants.ClimberSubsystemConstants.motor2Port);
-      this.limitSwitchRight=new DigitalInput(Constants.ClimberSubsystemConstants.limSwitchRightPort);
-      this.limitSwitchRight=new DigitalInput(Constants.ClimberSubsystemConstants.limSwitchLeftPort);
-      this.positionController=new PIDController(Constants.ClimberSubsystemConstants.kpForLift, 0, 0);
+    this.climberMotorRight=new TalonFX(Constants.ClimberConstants.kRightMotorPort);
+    this.climberMotorLeft=new TalonFX(Constants.ClimberConstants.kLeftMotorPort);
 
+    this.limitSwitchRight=new DigitalInput(Constants.ClimberConstants.kRightSwitchPort);
+    this.limitSwitchRight=new DigitalInput(Constants.ClimberConstants.kLeftSwitchPort);
+
+    this.climberMotorLeft.setInverted(Constants.ClimberConstants.kLeftInverted);
+    this.climberMotorRight.setInverted(Constants.ClimberConstants.kRightInverted);
+      
+    TalonFXConfiguration configuration = new TalonFXConfiguration();
+
+    // Feedback sensor returns rotations of axis
+    configuration.Feedback.SensorToMechanismRatio = Constants.ClimberConstants.kMotorRatio*
+      Constants.ClimberConstants.kTicksPerRotation;
+
+    configuration.Slot0 = Constants.ClimberConstants.getElevatorSlot();
+    configuration.MotionMagic.MotionMagicAcceleration = Constants.ClimberConstants.kElevatorAcceleration;
+    configuration.MotionMagic.MotionMagicCruiseVelocity = Constants.ClimberConstants.kElevatorMaxCruiseVelocity;
+    
+    this.climberMotorLeft.getConfigurator().apply(configuration);
+    this.climberMotorRight.getConfigurator().apply(configuration);
+
+    this.m_leftPosition = this.climberMotorLeft.getPosition();
+    this.m_leftVelocity = this.climberMotorLeft.getVelocity();
+    this.m_rightPosition = this.climberMotorRight.getPosition();
+    this.m_rightVelocity = this.climberMotorRight.getVelocity();
   }
 
   public boolean getRightLimitSwitch(){
     return this.limitSwitchRight.get();
   }
+
    public boolean getLeftLimitSwitch(){
     return this.limitSwitchLeft.get();
   }
-// private boolean prepForClimb(){
-//   if(!getLeftLimitSwitch()){
-//       this.climberMotorLeft.set(Constants.ClimberSubsystemConstants.motorPowerPrep);
-//   }
-//   if(!getRightLimitSwitch()){
-//       this.climberMotorRight.set(Constants.ClimberSubsystemConstants.motorPowerPrep);
-//   }
-//   if(getLeftLimitSwitch()&&getRightLimitSwitch()){
-//     this.climberMotorLeft.setPosition(0);
-//     this.climberMotorRight.setPosition(0);
-//     return true;
-//   }
-//   return false;
-//   
-//   this.climberMotorLeft.setPosition(0);
-//   this.climberMotorRight.setPosition(0);
-//   //TODO send message to dash board saying climb ready
-//   return true;
-// }
-  private double getRightRotation(){
-    double rotations=this.climberMotorRight.getPosition().getValue()/Constants.ClimberSubsystemConstants.ticsForRotation;
-    return rotations;
-  }
-  private double getLeftRotation(){
-    double rotations=this.climberMotorLeft.getPosition().getValue()/Constants.ClimberSubsystemConstants.ticsForRotation;
-    return rotations;
-  }
-  private double getRightPosition(){
-    double length=getRightRotation()*Constants.ClimberSubsystemConstants.lengthForRotation;
-    return length;
-  }
-  private double getLeftPosition(){
-    double length=getLeftRotation()*Constants.ClimberSubsystemConstants.lengthForRotation;
-    return length;
-  }
-  private void setRightMotor(double speed){
-    if(speed>0.7){
-      this.climberMotorRight.set(0.7);
-    }
-    this.climberMotorRight.set(speed);
 
+  public double getLeftRotations() {
+    this.m_leftPosition.refresh();
+    this.m_leftVelocity.refresh();
+
+    double pos = StatusSignal.getLatencyCompensatedValue(m_leftPosition, m_leftVelocity);
+
+    return pos;
   }
-  private void setLeftMotor(double speed){
-    if(speed>0.7){
-      this.climberMotorLeft.set(0.7);
-    }
-    this.climberMotorLeft.set(speed);
+
+  public double getRightRotations() {
+    this.m_rightPosition.refresh();
+    this.m_rightVelocity.refresh();
+
+    double pos = StatusSignal.getLatencyCompensatedValue(m_rightPosition, m_rightVelocity);
+
+    return pos;
   }
- public boolean setClimberPosition(double postion){
-     setRightMotor(this.positionController.calculate(postion,))
-    
+
+  public void setClimberPosition(double pos){
+    pos = pos/Constants.ClimberConstants.kLengthForRotation;
+
+    this.climberMotorLeft.setControl(this.motionMagicVoltage.withPosition(pos));
+    this.climberMotorRight.setControl(this.motionMagicVoltage.withPosition(pos));
   }
 
   @Override
   public void periodic() {
-    
-
-    
+  
   }
 }
