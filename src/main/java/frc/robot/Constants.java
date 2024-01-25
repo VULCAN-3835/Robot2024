@@ -36,6 +36,8 @@ public final class Constants {
       kSteerMotorGains.withKP(30); // The proportional gain for the module steer control
       return kSteerMotorGains;
     }
+
+    public static double kModuleAngleDeadband = 0.001;
   }
   public static class ChassisConstants { 
     // Ports for driving motors TODO: Find
@@ -53,7 +55,7 @@ public final class Constants {
     public static final int kRightFrontEncID = 33; // CAN ID
     public static final int kLeftBackEncID = 32; // CAN ID
     public static final int kRightBackEncID = 30; // CAN ID
-    // Offsets for absolute encoders:
+    // Offsets for absolute encoders in rotations (i.e: 360 degrees = 1 rotation):
     public static final double kLeftFrontOffset = -0.283447265625; 
     public static final double kRightFrontOffset = -0.59765625;
     public static final double kLeftBackOffset = -0.482666015625;
@@ -70,9 +72,9 @@ public final class Constants {
     public static final double kTeleDriveMaxSpeedMetersPerSec = 0.4;
     public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = 0.4;
 
-    // Distance between centers of right and left wheels on robot cm
+    // Distance between centers of right and left wheels on robot meters
     public static final double kTrackWidth = 0.5403;
-    // Distance between front and back wheels on robot cm
+    // Distance between front and back wheels on robot meters
     public static final double kWheelBase = 0.5403;
 
     // Swerve Kinematics:
