@@ -101,7 +101,7 @@ public class ChassisSubsystem extends SubsystemBase {
     // Kinematics turns the Chassis speeds to desired swerveModule states depending on if field relative or not
     this.swerveModuleStates =
     Constants.ChassisConstants.kDriveKinematics.toSwerveModuleStates(
-            fieldRelative? ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, rot, getRotation2d())
+            fieldRelative? ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, rot, this.imu.getRotation2d())
                 : new ChassisSpeeds(xVelocity, yVelocity, rot));
 
   }
@@ -116,7 +116,7 @@ public class ChassisSubsystem extends SubsystemBase {
       // Makes a swerve module-state array from chassisSpeeds
         this.swerveModuleStates = 
         Constants.ChassisConstants.kDriveKinematics.toSwerveModuleStates(
-          fieldRelative?ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getRotation2d())
+          fieldRelative?ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, this.imu.getRotation2d())
           :chassisSpeeds
       );
     }
