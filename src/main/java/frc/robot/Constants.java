@@ -67,10 +67,10 @@ public final class Constants {
     public static final boolean kRightBackInverted = false;
 
     // TODO: Fit from power control to velocity control
-    public static final double kMaxDrivingVelocity = 0.4;
+    public static final double kMaxDrivingVelocity = 0.5;
     public static final double kTeleDriveMaxAccelerationUnitsPerSec = 3;
-    public static final double kTeleDriveMaxSpeedMetersPerSec = 0.4;
-    public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = 0.4;
+    public static final double kTeleDriveMaxSpeedMetersPerSec = 0.5;
+    public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = 0.5;
 
     // Distance between centers of right and left wheels on robot meters
     public static final double kTrackWidth = 0.5403;
