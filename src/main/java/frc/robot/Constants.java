@@ -17,17 +17,14 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+  public static class ShooterSubsystemConstants {
+      public static final int kShooterMotorPort = 10;
+      public static final int kPistonForwardChannelNumber = 1;
+      public static final int kPistonReverseChannelNumber = 2;
+      public static final double kVelocityPIDKp = 0.5;
+      public static final double kTicksPerRotation = 2048;
 
-  public static class ShooterConstants {
-      public static final int KDoubleSelenoidForward=1;
-      public static final int KDoubleSelenoidReverse=1;
-      public static final int KMotorShooterPort=0;
-      public static final int KticksPerRotation =2048 ;
-      public static final double kPshooter=0.5;
-      public static final double kShootSpdRPM=100;//Desired speed for the movement of the wheel in firing
-      public static final double kCollectSpdRPM=-100;//Desired speed for the movement of the wheel in collection
-  /** Creates a new ShooterSubsystem. */
+      public static final double kShootSpdRPM = 1;//Desired speed for the movement of the wheel in firing
+      public static final double kCollectSpdRPM = -1;//Desired speed for the movement of the wheel in collection
   }
-
-  
 }
