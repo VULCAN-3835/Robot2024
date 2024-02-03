@@ -16,18 +16,23 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
-  public static class IntakeSubsystemConstants{
-    public static final int kIntakeMotorPort = 10;
-    public static final int kAngleMotorPort = 11;
-    public static final int kAngleEncoderChannel = 0;
-    public static final int kPieceDetectorAnalogInputPort = 0;
-    public static final int kLimitSwitchPort = 1;
-    public static final double pieceDetector_DetectionThreshold = 2.5; //TODO: Find actual value
-    public static final double kAngleEncoderOffset = 0.2; //TODO: Find actual value
-    public static final double kKp = 0.5; //TODO: Find actual value
-    public static final double kIntakeMotorOutputSpeed = 0.75; //TODO: Find Actual Speed needed, and find out which way the intake motor is facing
-    public static final double kIntakeMotorIntakeSpeed = 0.75;
-    public static final double kMaxVelocityTrapezoidProfileConstraint = 0;
-    public static final double kMaxAccelerationTrapezoidProfileConstraint = 0;
+  public static class IntakeConstants{
+    public static final int kIntakeMotorPort = 40;
+    public static final int kAngleMotorPort = 41;
+    public static final int kAngleEncoderPort = 0;
+    public static final int kPieceDetectorPort = 0;
+
+    public static final int kOpenLimitSwitchPort = 1;
+    public static final int kClosedLimitSwitchPort = 2;
+
+    public static final double kPieceDetectorDetectionThreshold = 2.5; //TODO: Find actual value
+    public static final double kAngleEncoderOffset = 0; //TODO: Find actual value
+    
+    public static final double kIntakeMotorOutputSpeed = -0.65; //TODO: Find Actual Speed needed, and find out which way the intake motor is facing
+    public static final double kIntakeMotorIntakeSpeed = 0.65;
+
+    public static final double kP = 0.01; //TODO: Find actual value
+    public static final double kMaxVelocityRadPerSec = 0;
+    public static final double kMaxAccelerationRadPerSecSquared = 0;
   }
 }

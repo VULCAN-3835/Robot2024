@@ -12,116 +12,131 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
-
+  
   private CANSparkMax intakeMotor;
   private CANSparkMax angleMotor;
+
   private DutyCycleEncoder angleEncoder;
   private AnalogInput pieceDetector;
+  private DigitalInput closedLimitSwitch;
+  private DigitalInput openLimitSwitch;
+  
   private ArmFeedforward armFeedForward;
+
+  private double goalSetpoint;
+  private double currentPosition;
+  private final TrapezoidProfile.Constraints constraints;
+
+  private ProfiledPIDController angleController;
+  private XboxController xboxController; // Temp for testing
+
   public enum STATE {
-    collectingState,
-    outputtingState,
+    collectState,
+    outputState,
     restState
   }
-  private TrapezoidProfile.State goalState;
-  private final TrapezoidProfile.Constraints constraints;
-  private TrapezoidProfile angleController;
-  private double lastTime = 0;
 
   private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   private NetworkTableEntry tx = table.getEntry("tx");
   private NetworkTableEntry ty = table.getEntry("ty");
   private NetworkTableEntry ta = table.getEntry("ta");
 
-  public IntakeSubsystem() {
-    intakeMotor = new CANSparkMax(Constants.IntakeSubsystemConstants.kAngleMotorPort, MotorType.kBrushless);
-    angleMotor = new CANSparkMax(Constants.IntakeSubsystemConstants.kIntakeMotorPort, MotorType.kBrushless);
-    angleEncoder = new DutyCycleEncoder(Constants.IntakeSubsystemConstants.kAngleEncoderChannel);
-    angleEncoder.setPositionOffset(Constants.IntakeSubsystemConstants.kAngleEncoderOffset);
+  public IntakeSubsystem(XboxController xboxController) {
+    this.intakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotorPort, MotorType.kBrushless);
+
+    this.angleMotor = new CANSparkMax(IntakeConstants.kAngleMotorPort, MotorType.kBrushless);
+
+    this.angleEncoder = new DutyCycleEncoder(IntakeConstants.kAngleEncoderPort);
+    this.angleEncoder.setPositionOffset(IntakeConstants.kAngleEncoderOffset);
+
+    this.openLimitSwitch = new DigitalInput(IntakeConstants.kOpenLimitSwitchPort);
+    this.closedLimitSwitch = new DigitalInput(IntakeConstants.kClosedLimitSwitchPort);
     
-    pieceDetector = new AnalogInput(Constants.IntakeSubsystemConstants.kPieceDetectorAnalogInputPort);
-    constraints = new TrapezoidProfile.Constraints(Constants.IntakeSubsystemConstants.kMaxVelocityTrapezoidProfileConstraint, Constants.IntakeSubsystemConstants.kMaxAccelerationTrapezoidProfileConstraint);
+    this.pieceDetector = new AnalogInput(IntakeConstants.kPieceDetectorPort);
+
+    this.constraints = new TrapezoidProfile.Constraints(IntakeConstants.kMaxVelocityRadPerSec,
+     IntakeConstants.kMaxAccelerationRadPerSecSquared);
+    
+    this.angleController = new ProfiledPIDController(IntakeConstants.kP, 0, 0, constraints);
+
+    this.xboxController = xboxController;
   }
+
   public void setAnglePosition(double position){
-    this.goalState = new TrapezoidProfile.State(position, 0);
-        angleController = new TrapezoidProfile(constraints);
-        lastTime = Timer.getFPGATimestamp();
+    position = position / 360; // Into rotations
+    this.goalSetpoint = position;
+    this.angleController.setGoal(this.goalSetpoint);
   }
-  public TrapezoidProfile.State getGoalState() {
-    return this.goalState;
-}
-private double calculateAcceleration() {
-  return 0.0;//Temporary
-}
-  private TrapezoidProfile.State getCurrentState() {
-    return new TrapezoidProfile.State(0, 0);
+
+  public double getGoalPosition() {
+    return this.goalSetpoint;
   }
-  private double calculateFeedforward(TrapezoidProfile.State setpoint) {
-    return 0; //Temporary Return, Input Calculation here
+
+  public double getCurrentPosition() {
+    this.currentPosition = getAbsoluteAngle();
+    return this.currentPosition;
   }
+
   public void setMotorMode(STATE state) {
     switch (state) {
-      case collectingState:
-        intakeMotor.set(Constants.IntakeSubsystemConstants.kIntakeMotorIntakeSpeed); //Intake
+      case collectState:
+        this.intakeMotor.set(Constants.IntakeConstants.kIntakeMotorIntakeSpeed); //Intake
         break;
-      case outputtingState:
-        intakeMotor.set(Constants.IntakeSubsystemConstants.kIntakeMotorOutputSpeed); //Output
+      case outputState:
+        this.intakeMotor.set(Constants.IntakeConstants.kIntakeMotorOutputSpeed); //Output
         break;
       case restState:
-         intakeMotor.set(0);
+        this.intakeMotor.set(0);
         break;
     }
   }
+
   public double getAbsoluteAngle(){
     return angleEncoder.getAbsolutePosition();
   } 
+
   public boolean hasPiece(){
-    return pieceDetector.getVoltage() > Constants.IntakeSubsystemConstants.pieceDetector_DetectionThreshold;
+    return pieceDetector.getVoltage() > Constants.IntakeConstants.kPieceDetectorDetectionThreshold;
   }
-  public double getPieceX(){ //Get X value of gamepiece on camera
+
+  public double getPieceX(){ 
     return tx.getDouble(0.0);
   }
-  public double getPieceY(){ //Get Y value of gamepiece on camera
+
+  public double getPieceY(){ 
     return ty.getDouble(0.0);
   }
-  public double getPieceA(){ //Get distance of gamepiece from camera
+
+  public double getPieceA(){ 
     return ta.getDouble(0.0);
   }
 
-
   @Override
-  public void periodic() {
-    double currentTime = Timer.getFPGATimestamp();
-    double timeSinceStart = currentTime - lastTime;
-    TrapezoidProfile.State currentState = getCurrentState();
-    TrapezoidProfile.State goalState = getGoalState();
-
-    TrapezoidProfile.State setpoint = angleController.calculate(timeSinceStart, currentState, goalState);
-
-    double feedforward = armFeedForward.calculate(setpoint.position, setpoint.velocity, calculateAcceleration());
-    angleMotor.set(feedforward);
-
-    double dt = currentTime - lastTime; // Calculate the time since the last periodic call
-    lastTime = currentTime;
-
+  public void periodic() {    
+    this.angleMotor.set((this.xboxController.getLeftTriggerAxis() - this.xboxController.getRightTriggerAxis())*0.3);
     
-    double currentAcceleration = calculateAcceleration();
+    if (this.xboxController.getLeftBumper())
+      this.intakeMotor.set(0.6);
+    else if (this.xboxController.getRightBumper())
+      this.intakeMotor.set(-0.8);
+    else
+      this.intakeMotor.set(0);
 
-    double feedforwardVoltage = armFeedForward.calculate(
-        setpoint.position,
-        setpoint.velocity,
-        currentAcceleration
-    );
 
+    double output = this.angleController.calculate(getCurrentPosition());
 
     double x = tx.getDouble(0.0);
     double y = ty.getDouble(0.0);
@@ -130,8 +145,5 @@ private double calculateAcceleration() {
     SmartDashboard.putNumber("LimelightX", x);
     SmartDashboard.putNumber("LimelightY", y);
     SmartDashboard.putNumber("LimelightArea", area);
-
-    if (angleController != null) {
-        feedforward = calculateFeedforward(setpoint);
-    }
-} }
+  } 
+}
