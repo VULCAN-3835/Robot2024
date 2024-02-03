@@ -19,6 +19,7 @@ public final class Constants {
   }
   public static class ShooterSubsystemConstants {
       public static final int kShooterMotorPortLeft = 10;
+      public static final int kShooterMotorPortright = 11;//TODO: change port to actual port
       public static final int kPistonForwardChannelNumber = 1;
       public static final int kPistonReverseChannelNumber = 2;
       public static final double kVelocityPIDKp = 0.5;
