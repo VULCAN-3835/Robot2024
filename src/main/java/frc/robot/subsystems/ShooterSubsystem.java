@@ -15,20 +15,22 @@ import frc.robot.Constants;
 public class ShooterSubsystem extends SubsystemBase {
   //The calculation is without a conversion ratio because Model told me it's 1:1
   //The radius of the shooting wheels is 2 inches x 5.08 cm The circumference of the wheels of the shooting is 31.918581324 cm
-  private TalonFX shooterMotor;
+  private TalonFX shooterMotorLeft;
+  private TalonFX shooterMotorRight;
   private DoubleSolenoid piston;
   private PIDController velocityController;
 
   public ShooterSubsystem() {
-    this.shooterMotor = new TalonFX(Constants.ShooterSubsystemConstants.kShooterMotorPort);
-    this.shooterMotor.setInverted(false); //Depending on where the motor is placed Invert or delete this line
+    this.shooterMotorLeft = new TalonFX(Constants.ShooterSubsystemConstants.kShooterMotorPortLeft);
+    this.shooterMotorLeft.setInverted(false); //Depending on where the motor is placed Invert or delete this line
+    this.shooterMotorRight = new TalonFX(0);
 
     this.piston = new DoubleSolenoid(PneumaticsModuleType.REVPH,Constants.ShooterSubsystemConstants.kPistonForwardChannelNumber,Constants.ShooterSubsystemConstants.kPistonReverseChannelNumber);
     this.velocityController = new PIDController(Constants.ShooterSubsystemConstants.kVelocityPIDKp, 0, 0);
   }
   public void collect()//Set the motor speed to set constant
   {
-    velocityController.setSetpoint(Constants.ShooterSubsystemConstants.kCollectSpdRPM);
+    shooterMotorLeft.set(Constants.ShooterSubsystemConstants.kCollectSpdRPM);
   }
   public void stopMotor()//Stop the motor
   {
@@ -48,7 +50,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
   @Override
   public void periodic() {
-    shooterMotor.set(velocityController.calculate(shooterMotor.getVelocity().getValue() * 600 / Constants.ShooterSubsystemConstants.kTicksPerRotation));
+    shooterMotorLeft.set(velocityController.calculate(shooterMotorLeft.getVelocity().getValue() * 600 / Constants.ShooterSubsystemConstants.kTicksPerRotation));
     //The value inside of velocityController.calculate is the motor speed
   }
 }

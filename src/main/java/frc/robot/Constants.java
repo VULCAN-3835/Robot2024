@@ -18,7 +18,7 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
   public static class ShooterSubsystemConstants {
-      public static final int kShooterMotorPort = 10;
+      public static final int kShooterMotorPortLeft = 10;
       public static final int kPistonForwardChannelNumber = 1;
       public static final int kPistonReverseChannelNumber = 2;
       public static final double kVelocityPIDKp = 0.5;
