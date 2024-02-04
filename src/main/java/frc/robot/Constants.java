@@ -26,13 +26,16 @@ public final class Constants {
     public static final int kClosedLimitSwitchPort = 2;
 
     public static final double kPieceDetectorDetectionThreshold = 2.5; //TODO: Find actual value
-    public static final double kAngleEncoderOffset = 0; //TODO: Find actual value
+    public static final double kAngleEncoderOffset = 0.062440651561016; //TODO: Find actual value
     
     public static final double kIntakeMotorOutputSpeed = -0.65; //TODO: Find Actual Speed needed, and find out which way the intake motor is facing
     public static final double kIntakeMotorIntakeSpeed = 0.65;
 
-    public static final double kP = 0.01; //TODO: Find actual value
-    public static final double kMaxVelocityRadPerSec = 0;
-    public static final double kMaxAccelerationRadPerSecSquared = 0;
+    public static final double kOpenAngle = 0;
+    public static final double kClosedAngle = 0.501634362540859;
+
+    public static final double kP = 1.55; //TODO: Find actual value
+    public static final double kMaxVelocityRotPerSec = 0.65;
+    public static final double kMaxAccelerationRotPerSecSquared = 1;
   }
 }

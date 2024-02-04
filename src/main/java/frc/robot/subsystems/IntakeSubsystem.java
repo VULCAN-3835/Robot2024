@@ -41,7 +41,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private final TrapezoidProfile.Constraints constraints;
 
   private ProfiledPIDController angleController;
-  private XboxController xboxController; // Temp for testing
 
   public enum STATE {
     collectState,
@@ -54,7 +53,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private NetworkTableEntry ty = table.getEntry("ty");
   private NetworkTableEntry ta = table.getEntry("ta");
 
-  public IntakeSubsystem(XboxController xboxController) {
+  public IntakeSubsystem() {
     this.intakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotorPort, MotorType.kBrushless);
 
     this.angleMotor = new CANSparkMax(IntakeConstants.kAngleMotorPort, MotorType.kBrushless);
@@ -67,16 +66,14 @@ public class IntakeSubsystem extends SubsystemBase {
     
     this.pieceDetector = new AnalogInput(IntakeConstants.kPieceDetectorPort);
 
-    this.constraints = new TrapezoidProfile.Constraints(IntakeConstants.kMaxVelocityRadPerSec,
-     IntakeConstants.kMaxAccelerationRadPerSecSquared);
+    this.constraints = new TrapezoidProfile.Constraints(IntakeConstants.kMaxVelocityRotPerSec,
+     IntakeConstants.kMaxAccelerationRotPerSecSquared);
     
     this.angleController = new ProfiledPIDController(IntakeConstants.kP, 0, 0, constraints);
-
-    this.xboxController = xboxController;
+    this.goalSetpoint = IntakeConstants.kClosedAngle;
   }
 
-  public void setAnglePosition(double position){
-    position = position / 360; // Into rotations
+  public void setRotationPosition(double position){
     this.goalSetpoint = position;
     this.angleController.setGoal(this.goalSetpoint);
   }
@@ -86,7 +83,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public double getCurrentPosition() {
-    this.currentPosition = getAbsoluteAngle();
+    this.currentPosition = this.angleEncoder.getAbsolutePosition()-this.angleEncoder.getPositionOffset();
     return this.currentPosition;
   }
 
@@ -104,10 +101,6 @@ public class IntakeSubsystem extends SubsystemBase {
     }
   }
 
-  public double getAbsoluteAngle(){
-    return angleEncoder.getAbsolutePosition();
-  } 
-
   public boolean hasPiece(){
     return pieceDetector.getVoltage() > Constants.IntakeConstants.kPieceDetectorDetectionThreshold;
   }
@@ -124,19 +117,34 @@ public class IntakeSubsystem extends SubsystemBase {
     return ta.getDouble(0.0);
   }
 
+  public boolean isClosed() {
+    return this.closedLimitSwitch.get();
+  }
+
+  public boolean isOpen() {
+    return this.openLimitSwitch.get();
+  }
+
   @Override
   public void periodic() {    
-    this.angleMotor.set((this.xboxController.getLeftTriggerAxis() - this.xboxController.getRightTriggerAxis())*0.3);
-    
-    if (this.xboxController.getLeftBumper())
-      this.intakeMotor.set(0.6);
-    else if (this.xboxController.getRightBumper())
-      this.intakeMotor.set(-0.8);
-    else
-      this.intakeMotor.set(0);
-
-
     double output = this.angleController.calculate(getCurrentPosition());
+
+    if (isOpen() && output < 0)
+      output = 0;
+    if (isClosed() && output > 0)
+      output = 0;
+      
+    if (this.goalSetpoint<IntakeConstants.kOpenAngle)
+      this.goalSetpoint = IntakeConstants.kOpenAngle;
+    if (this.goalSetpoint>IntakeConstants.kClosedAngle)
+      this.goalSetpoint = IntakeConstants.kClosedAngle;
+
+    SmartDashboard.putNumber("Output", output);
+    SmartDashboard.putNumber("setpoint", this.goalSetpoint);
+    SmartDashboard.putNumber("Current", getCurrentPosition());
+    SmartDashboard.putNumber("Error", this.goalSetpoint-getCurrentPosition());
+
+    this.angleMotor.set(output);
 
     double x = tx.getDouble(0.0);
     double y = ty.getDouble(0.0);
@@ -145,5 +153,8 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("LimelightX", x);
     SmartDashboard.putNumber("LimelightY", y);
     SmartDashboard.putNumber("LimelightArea", area);
+
+    SmartDashboard.putBoolean("Open", isOpen());
+    SmartDashboard.putBoolean("Closed", isClosed());
   } 
 }
