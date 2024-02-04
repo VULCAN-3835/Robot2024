@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.DefaultTeleopCommand;
 import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -19,12 +20,12 @@ import frc.robot.subsystems.IntakeSubsystem.STATE;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
-
   private final ChassisSubsystem chassisSubsystem = new ChassisSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 
   private final XboxController xboxController = new XboxController(Constants.OperatorConstants.kXboxPort);
+  CommandXboxController cmdXboxController = new CommandXboxController(Constants.OperatorConstants.kXboxPort);
 
   public RobotContainer() {
     this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
@@ -36,27 +37,38 @@ public class RobotContainer {
 
   private void configureBindings() {
     // Initilizing a start button trigger
-    Trigger startTrigger = new Trigger(() -> this.xboxController.getStartButtonPressed());
-    Trigger rightBumperTrigger = new Trigger(() -> this.xboxController.getRightBumper());
-    Trigger leftBumperTrigger = new Trigger(() -> this.xboxController.getLeftBumper());
-    Trigger yTrigger = new Trigger(() -> this.xboxController.getYButtonPressed());
-    Trigger aTrigger = new Trigger(() -> this.xboxController.getAButtonPressed());
+    Trigger startTrigger = new Trigger(cmdXboxController.start());
 
+    Trigger rightBumperTrigger = new Trigger(cmdXboxController.rightBumper());
+    Trigger leftBumperTrigger = new Trigger(cmdXboxController.leftBumper());
+
+    Trigger yTrigger = new Trigger(cmdXboxController.y());
+    Trigger aTrigger = new Trigger(cmdXboxController.a());
+
+    Trigger rightTrigTrigger = new Trigger(cmdXboxController.rightTrigger());
+    Trigger leftTrigTrigger = new Trigger(cmdXboxController.leftTrigger());
+
+    
     // Applying zero heading method instant command to start button trigger
     startTrigger.onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
 
-    // Applying intake to intake motor on right bumper
-    rightBumperTrigger.whileTrue(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.collectState)));
+    // Applying output to intake motor on right bumper
+    rightBumperTrigger.whileTrue(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.outputState)));
     rightBumperTrigger.onFalse(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.restState)));
 
-    // Applying output to intake motor on left bumper
-    leftBumperTrigger.whileTrue(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.outputState)));
+    // Applying collection to intake motor on left bumper
+    leftBumperTrigger.whileTrue(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.collectState)));
     leftBumperTrigger.onFalse(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.restState)));
 
     // Applies positions open and closed buttons on y and a buttons.
     yTrigger.onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kOpenAngle)));
     aTrigger.onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedAngle)));
 
+    rightTrigTrigger.whileTrue(new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(0.7)));
+    rightTrigTrigger.onFalse(new InstantCommand(() -> this.shooterSubsystem.stopMotor()));
+
+    leftTrigTrigger.whileTrue(new InstantCommand(() -> this.shooterSubsystem.collect()));
+    leftTrigTrigger.onFalse(new InstantCommand(() -> this.shooterSubsystem.stopMotor()));
   }
 
   /**

@@ -121,9 +121,10 @@ public final class Constants {
   public static class ShooterConstants {
       public static final int kShooterMotorPortLeft = 43;
       public static final int kShooterMotorPortRight = 42;
+      
       public static final int kPistonForwardChannelNumber = 1;
       public static final int kPistonReverseChannelNumber = 2;
-      public static final double kVelocityPIDKp = 0.5;
+
       public static final double kTicksPerRotation = 2048;
 
       public static final double kShootSpdRPM = 0.75;//Desired speed for the movement of the wheel in firing
