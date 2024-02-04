@@ -1,15 +1,13 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.DefaultTeleopCommand;
+import frc.robot.subsystems.ChassisSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -20,9 +18,16 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 
+  // The robot's subsystems and commands are defined here...
+  private final ChassisSubsystem chassisSubsystem = new ChassisSubsystem();
+
+  private final XboxController xboxController = new XboxController(Constants.OperatorConstants.kXboxPort);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Configure the trigger bindings
+    this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
+    ()-> -xboxController.getLeftY(),
+    ()-> -xboxController.getLeftX(),
+    ()-> -xboxController.getRightX()));
     configureBindings();
   }
 
@@ -36,10 +41,11 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    // Initilizing a start button trigger
+    Trigger startTrigger = new Trigger(() -> this.xboxController.getStartButtonPressed());
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    
+    // Applying zero heading method instant command to start button trigger
+    startTrigger.onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
   }
 
   /**
@@ -48,7 +54,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
     return null;
   }
 }
