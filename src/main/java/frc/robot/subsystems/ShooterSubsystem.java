@@ -37,8 +37,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void collect() //Set the motor speed to set constant
   {
-    shooterMotorLeft.set(ShooterConstants.kCollectSpdRPM);
-    shooterMotorRight.set(ShooterConstants.kCollectSpdRPM);
+    shooterMotorLeft.set(ShooterConstants.kCollectSpd);
+    shooterMotorRight.set(ShooterConstants.kCollectSpd);
   }
 
   public void stopMotor(){ //Stop the motor
@@ -62,6 +62,6 @@ public class ShooterSubsystem extends SubsystemBase {
   }
   @Override
   public void periodic() {
-    
+
   }
 }

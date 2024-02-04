@@ -70,7 +70,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     this.goalSetpoint = IntakeConstants.kClosedAngle;
     this.armPositionController.setGoal(this.goalSetpoint);
-
   }
 
   /**

@@ -48,7 +48,7 @@ public class RobotContainer {
     Trigger rightTrigTrigger = new Trigger(cmdXboxController.rightTrigger());
     Trigger leftTrigTrigger = new Trigger(cmdXboxController.leftTrigger());
 
-    
+
     // Applying zero heading method instant command to start button trigger
     startTrigger.onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
 
@@ -64,7 +64,7 @@ public class RobotContainer {
     yTrigger.onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kOpenAngle)));
     aTrigger.onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedAngle)));
 
-    rightTrigTrigger.whileTrue(new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(0.7)));
+    rightTrigTrigger.whileTrue(new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootSpd)));
     rightTrigTrigger.onFalse(new InstantCommand(() -> this.shooterSubsystem.stopMotor()));
 
     leftTrigTrigger.whileTrue(new InstantCommand(() -> this.shooterSubsystem.collect()));
