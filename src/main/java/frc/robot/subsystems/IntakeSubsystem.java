@@ -26,28 +26,28 @@ import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
   
-  private CANSparkMax intakeMotor;
-  private CANSparkMax angleMotor;
+  private CANSparkMax intakeMotor; // Motor responsible for intake and output of game pieces
+  private CANSparkMax angleMotor; // Motor responsible for the angle of the arm
+  private DutyCycleEncoder angleEncoder; // Encoder responsible for keeping the absolute position of the arm
 
-  private DutyCycleEncoder angleEncoder;
-  private AnalogInput pieceDetector;
-  private DigitalInput closedLimitSwitch;
-  private DigitalInput openLimitSwitch;
+  private AnalogInput pieceDetector; // Distance sensor responsible for detecting game piece in the system
+  private DigitalInput closedLimitSwitch; // Saftey limit switch for closed arm
+  private DigitalInput openLimitSwitch; // Saftey limit switch for open arm
   
-  private ArmFeedforward armFeedForward;
+  private ArmFeedforward armFeedForward; // Feed forward values for the arm
 
-  private double goalSetpoint;
-  private double currentPosition;
-  private final TrapezoidProfile.Constraints constraints;
+  private double goalSetpoint; // Setpoint for the arm position
+  private double currentPosition; // The current position of the arm
 
-  private ProfiledPIDController angleController;
+  private ProfiledPIDController armPositionController; // Closed Loop controller for arm position
 
-  public enum STATE {
+  public enum STATE { // Enum representing the 3 states of the intake motor
     collectState,
     outputState,
     restState
   }
 
+  // Limelight values:
   private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   private NetworkTableEntry tx = table.getEntry("tx");
   private NetworkTableEntry ty = table.getEntry("ty");
@@ -55,7 +55,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public IntakeSubsystem() {
     this.intakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotorPort, MotorType.kBrushless);
-
     this.angleMotor = new CANSparkMax(IntakeConstants.kAngleMotorPort, MotorType.kBrushless);
 
     this.angleEncoder = new DutyCycleEncoder(IntakeConstants.kAngleEncoderPort);
@@ -65,28 +64,37 @@ public class IntakeSubsystem extends SubsystemBase {
     this.closedLimitSwitch = new DigitalInput(IntakeConstants.kClosedLimitSwitchPort);
     
     this.pieceDetector = new AnalogInput(IntakeConstants.kPieceDetectorPort);
-
-    this.constraints = new TrapezoidProfile.Constraints(IntakeConstants.kMaxVelocityRotPerSec,
-     IntakeConstants.kMaxAccelerationRotPerSecSquared);
     
-    this.angleController = new ProfiledPIDController(IntakeConstants.kP, 0, 0, constraints);
+    this.armPositionController = new ProfiledPIDController(IntakeConstants.kP, 0, 0,
+     IntakeConstants.kConstraints);
+
     this.goalSetpoint = IntakeConstants.kClosedAngle;
+    this.armPositionController.setGoal(this.goalSetpoint);
+
   }
 
+  /**
+   * Sets the arm angle controller's goal to given position
+   * @param position The new position for the arm
+  */
   public void setRotationPosition(double position){
     this.goalSetpoint = position;
-    this.angleController.setGoal(this.goalSetpoint);
+    this.armPositionController.setGoal(this.goalSetpoint);
   }
 
-  public double getGoalPosition() {
-    return this.goalSetpoint;
-  }
-
+  /**
+   * Return's the current position of the arm 
+   * @return The current position of the arm
+  */
   public double getCurrentPosition() {
     this.currentPosition = this.angleEncoder.getAbsolutePosition()-this.angleEncoder.getPositionOffset();
     return this.currentPosition;
   }
 
+  /**
+   * Sets the intake motor's intake to given state
+   * @param state The new state of the intake motor
+  */
   public void setMotorMode(STATE state) {
     switch (state) {
       case collectState:
@@ -101,50 +109,78 @@ public class IntakeSubsystem extends SubsystemBase {
     }
   }
 
+  /**
+   * Checks if there is a game piece in the intake system
+   * @return True if piece is inside the intake system
+  */
   public boolean hasPiece(){
     return pieceDetector.getVoltage() > Constants.IntakeConstants.kPieceDetectorDetectionThreshold;
   }
 
+  /**
+   * Finds the X value of the limelight from detected game piece
+   * @return X axis value from the game piece
+  */
   public double getPieceX(){ 
     return tx.getDouble(0.0);
   }
 
+  /**
+   * Finds the Y value of the limelight from detected game piece
+   * @return Y axis value from the game piece
+  */
   public double getPieceY(){ 
     return ty.getDouble(0.0);
   }
 
+  /**
+   * Finds the A value of the limelight from detected game piece
+   * @return The area the game piece takes in the limelight's frame
+  */
   public double getPieceA(){ 
     return ta.getDouble(0.0);
   }
 
+  /**
+   * Checks if arm is closed
+   * @return True if arm is at closed limit switch
+  */
   public boolean isClosed() {
     return this.closedLimitSwitch.get();
   }
 
+  /**
+   * Checks if arm is open
+   * @return True if arm is at open limit switch
+  */
   public boolean isOpen() {
     return this.openLimitSwitch.get();
   }
 
   @Override
-  public void periodic() {    
-    double output = this.angleController.calculate(getCurrentPosition());
+  public void periodic() {   
+    // Calculates the output for moving the arm 
+    double output = this.armPositionController.calculate(getCurrentPosition());
 
+    // Creates limit for the output using limit switches
     if (isOpen() && output < 0)
       output = 0;
     if (isClosed() && output > 0)
       output = 0;
       
+    // Doesn't let setpoints pass sensor limits
     if (this.goalSetpoint<IntakeConstants.kOpenAngle)
       this.goalSetpoint = IntakeConstants.kOpenAngle;
     if (this.goalSetpoint>IntakeConstants.kClosedAngle)
       this.goalSetpoint = IntakeConstants.kClosedAngle;
 
+    // Applies output to motor
+    this.angleMotor.set(output);
+
     SmartDashboard.putNumber("Output", output);
     SmartDashboard.putNumber("setpoint", this.goalSetpoint);
     SmartDashboard.putNumber("Current", getCurrentPosition());
     SmartDashboard.putNumber("Error", this.goalSetpoint-getCurrentPosition());
-
-    this.angleMotor.set(output);
 
     double x = tx.getDouble(0.0);
     double y = ty.getDouble(0.0);

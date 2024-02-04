@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -86,25 +87,36 @@ public final class Constants {
                     new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)); //Right back
   }
   public static class IntakeConstants{
+    // Intake motor ports:
     public static final int kIntakeMotorPort = 40;
     public static final int kAngleMotorPort = 41;
-    public static final int kAngleEncoderPort = 0;
+
+    // Intake analog ports:
     public static final int kPieceDetectorPort = 0;
 
+    // Intake digital ports:
+    public static final int kAngleEncoderPort = 0;
     public static final int kOpenLimitSwitchPort = 1;
     public static final int kClosedLimitSwitchPort = 2;
 
-    public static final double kPieceDetectorDetectionThreshold = 2.5; //TODO: Find actual value
-    public static final double kAngleEncoderOffset = 0.062440651561016; //TODO: Find actual value
+    // Limit constants:
+    public static final double kPieceDetectorDetectionThreshold = 2.5;
+    public static final double kAngleEncoderOffset = 0.062440651561016;
     
-    public static final double kIntakeMotorOutputSpeed = -0.65; //TODO: Find Actual Speed needed, and find out which way the intake motor is facing
+    // Intake motor speeds:
+    public static final double kIntakeMotorOutputSpeed = -0.65;
     public static final double kIntakeMotorIntakeSpeed = 0.65;
 
+    // Angle motor positions:
     public static final double kOpenAngle = 0;
     public static final double kClosedAngle = 0.501634362540859;
 
-    public static final double kP = 1.55; //TODO: Find actual value
+    // Angle controller constants:
+    public static final double kP = 1.4; 
     public static final double kMaxVelocityRotPerSec = 0.65;
     public static final double kMaxAccelerationRotPerSecSquared = 1;
+    public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(
+      IntakeConstants.kMaxVelocityRotPerSec,
+      IntakeConstants.kMaxAccelerationRotPerSecSquared);
   }
 }
