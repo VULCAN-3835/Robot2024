@@ -27,7 +27,6 @@ public final class Constants {
     public static final double kWheelDiameterMeters = Units.inchesToMeters(4); // Module wheel diameter in meters
     public static final double kDriveMotorGearRatio = 6.75; // Module drive motor gear ratio
     public static final double kSteerMotorGearRatio = 12.8; // Module steer motor gear ratio
-
     
     public static double kFeedforwardGainSteer = 0.11; // The feed forward gain for the module steer control
 
@@ -40,17 +39,17 @@ public final class Constants {
     public static double kModuleAngleDeadband = 0.001;
   }
   public static class ChassisConstants { 
-    // Ports for driving motors TODO: Find
+    // Ports for driving motors
     public static final int kLeftFrontDriveID = 11; // CAN ID
     public static final int kRightFrontDriveID = 13; // CAN ID
     public static final int kLeftBackDriveID = 12; // CAN ID
     public static final int kRightBackDriveID = 10; // CAN ID
-    // Ports for angle motors TODO: Find
+    // Ports for angle motors
     public static final int kLeftFrontSteerID = 21; // CAN ID
     public static final int kRightFrontSteerID = 23; // CAN ID
     public static final int kLeftBackSteerID = 22; // CAN ID
     public static final int kRightBackSteerID = 20; // CAN ID
-    // Ports for encoders TODO: Find
+    // Ports for encoders 
     public static final int kLeftFrontEncID = 31; // CAN ID
     public static final int kRightFrontEncID = 33; // CAN ID
     public static final int kLeftBackEncID = 32; // CAN ID

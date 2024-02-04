@@ -18,11 +18,10 @@ import frc.robot.subsystems.ChassisSubsystem;
 public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 
-  // The robot's subsystems and commands are defined here...
   private final ChassisSubsystem chassisSubsystem = new ChassisSubsystem();
 
   private final XboxController xboxController = new XboxController(Constants.OperatorConstants.kXboxPort);
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+
   public RobotContainer() {
     this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
     ()-> -xboxController.getLeftY(),
@@ -31,15 +30,6 @@ public class RobotContainer {
     configureBindings();
   }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
   private void configureBindings() {
     // Initilizing a start button trigger
     Trigger startTrigger = new Trigger(() -> this.xboxController.getStartButtonPressed());
