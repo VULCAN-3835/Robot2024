@@ -7,12 +7,14 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ShooterSubsystemConstants;;
+import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
   //The calculation is without a conversion ratio because Model told me it's 1:1
@@ -20,31 +22,33 @@ public class ShooterSubsystem extends SubsystemBase {
   private TalonFX shooterMotorLeft;
   private TalonFX shooterMotorRight;
   private DoubleSolenoid ampPiston;
-  private PIDController velocityController;
 
   public ShooterSubsystem() {
-    this.shooterMotorLeft = new TalonFX(ShooterSubsystemConstants.kShooterMotorPortLeft);
-    this.shooterMotorLeft.setInverted(false); //Depending on where the motor is placed Invert or delete this line
-    this.shooterMotorRight = new TalonFX(ShooterSubsystemConstants.kShooterMotorPortright);
+    this.shooterMotorLeft = new TalonFX(ShooterConstants.kShooterMotorPortLeft);
+    this.shooterMotorLeft.setInverted(true); 
+    this.shooterMotorLeft.setNeutralMode(NeutralModeValue.Brake);
+
+    this.shooterMotorRight = new TalonFX(ShooterConstants.kShooterMotorPortRight);
+    this.shooterMotorRight.setInverted(false);
+    this.shooterMotorRight.setNeutralMode(NeutralModeValue.Brake);
     
-    this.ampPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,ShooterSubsystemConstants.kPistonForwardChannelNumber,ShooterSubsystemConstants.kPistonReverseChannelNumber);
-    this.velocityController = new PIDController(ShooterSubsystemConstants.kVelocityPIDKp, 0, 0);
+    this.ampPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,ShooterConstants.kPistonForwardChannelNumber,ShooterConstants.kPistonReverseChannelNumber);
   }
 
-  public void collect()//Set the motor speed to set constant
+  public void collect() //Set the motor speed to set constant
   {
-    shooterMotorLeft.set(ShooterSubsystemConstants.kCollectSpdRPM);
-    shooterMotorRight.set(-ShooterSubsystemConstants.kCollectSpdRPM);
+    shooterMotorLeft.set(ShooterConstants.kCollectSpdRPM);
+    shooterMotorRight.set(ShooterConstants.kCollectSpdRPM);
   }
 
-  public void stopMotor(){//Stop the motor
+  public void stopMotor(){ //Stop the motor
     shooterMotorLeft.set(0);
     shooterMotorRight.set(0);
   }
 
   public void setShooterSpeed(double speed) { //set the motor to a desired speed
     shooterMotorLeft.set(speed);
-    shooterMotorRight.set(-speed);
+    shooterMotorRight.set(speed);
   }
 
   public void setPositionState(boolean state) {
@@ -58,8 +62,6 @@ public class ShooterSubsystem extends SubsystemBase {
   }
   @Override
   public void periodic() {
-    shooterMotorLeft.set(
-      velocityController.calculate(shooterMotorLeft.getVelocity().getValue() * 600 / ShooterSubsystemConstants.kTicksPerRotation));
-    //The value inside of velocityController.calculate is the motor speed
+    
   }
 }
