@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants;
+import frc.robot.Constants.ModuleConstants;
 
 /** Add your docs here. */
 public class SwerveModule {
@@ -59,6 +60,7 @@ public class SwerveModule {
         // Advannced configs:
         configEnc();
         configSteerMotor(absEncoderID);
+        configDriveMotor();
 
         // Storing the signals (suppliers) of the different feedback sensors
         this.m_drivePosition = this.driveMotor.getPosition();
@@ -100,6 +102,14 @@ public class SwerveModule {
         this.steerMotor.getConfigurator().apply(steerConfigs);
     }
 
+    private void configDriveMotor() {
+        TalonFXConfiguration driveConfigs = new TalonFXConfiguration();
+
+        driveConfigs.Feedback.SensorToMechanismRatio = ModuleConstants.kDriveMotorGearRatio;
+
+        this.driveMotor.getConfigurator().apply(driveConfigs);
+    }
+
     /**
      * returns the angle of the module in coutinous rotations (i.e 1 is a full rotation or 360 degrees to the positive side of the sensor,
      * -1 is a full rotation or -360 degrees to the negative side of the sensor)
@@ -108,6 +118,16 @@ public class SwerveModule {
     public double getModuleAngle() {
         m_steerPosition.refresh();
         return m_steerPosition.getValue();
+    }
+
+    /**
+     * returns the angle of the module in coutinous rotations (i.e 1 is a full rotation or 360 degrees to the positive side of the sensor,
+     * -1 is a full rotation or -360 degrees to the negative side of the sensor)
+     * @return The wheel's distance moved
+    */
+    public double getModuleDistance() {
+        m_drivePosition.refresh();
+        return m_drivePosition.getValue();
     }
 
     /**

@@ -6,13 +6,18 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.ChassisConstants;
 import frc.robot.Util.SwerveModule;
 
 public class ChassisSubsystem extends SubsystemBase {
@@ -23,8 +28,17 @@ public class ChassisSubsystem extends SubsystemBase {
 
   // An array of the four swerve Modules
   private SwerveModule[] swerve_modules = new SwerveModule[4];
+
+  // An array of the four swerve module's positions
+  private SwerveModulePosition[] swerve_positions = new SwerveModulePosition[4];
+
   // Inertial Measurement unit 
   private AHRS imu;
+
+  // Pose estimator responsible for keeping the robot's position on the field using gyro, encoders and camera detection
+  private SwerveDrivePoseEstimator poseEstimator;
+
+  private Field2d field;
 
   // The states of the modules
   private SwerveModuleState[] swerveModuleStates = new SwerveModuleState[] {
@@ -64,8 +78,23 @@ public class ChassisSubsystem extends SubsystemBase {
       Constants.ChassisConstants.kRightBackInverted,
       Constants.ChassisConstants.kRightBackOffset);
 
-      // Imu initlization
-      this.imu = new AHRS();
+    // Imu initlization
+    this.imu = new AHRS();
+    field = new Field2d();
+
+    updateSwervePositions();
+    this.poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.kDriveKinematics,
+      getRotation2d().unaryMinus(),
+      this.swerve_positions,
+      new Pose2d());
+  }
+
+  private void updateSwervePositions() {
+    this.swerve_positions[Wheels.LEFT_FRONT.ordinal()] = this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getPosition();
+    this.swerve_positions[Wheels.RIGHT_FRONT.ordinal()] = this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getPosition();
+    this.swerve_positions[Wheels.LEFT_BACK.ordinal()] = this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getPosition();
+    this.swerve_positions[Wheels.RIGHT_BACK.ordinal()] = this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getPosition();
+
   }
 
   /**
@@ -142,6 +171,17 @@ public class ChassisSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     setModuleStates(this.swerveModuleStates);
+
+    updateSwervePositions();
+    this.poseEstimator.update(getRotation2d().unaryMinus(), this.swerve_positions);
+    
+    this.field.setRobotPose(this.poseEstimator.getEstimatedPosition());
+    SmartDashboard.putData(field);
+
+    SmartDashboard.putNumber("Left Front Distance",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleDistance());
+    SmartDashboard.putNumber("Left Back Distance",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleDistance());
+    SmartDashboard.putNumber("Right Front Distance",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleDistance());
+    SmartDashboard.putNumber("Right Back Distance",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleDistance());
 
     SmartDashboard.putNumber("Left Front Rotation",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleAngle());
     SmartDashboard.putNumber("Left Back Rotation",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleAngle());

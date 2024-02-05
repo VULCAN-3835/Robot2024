@@ -27,7 +27,6 @@ public final class Constants {
     public static final double kWheelDiameterMeters = Units.inchesToMeters(4); // Module wheel diameter in meters
     public static final double kDriveMotorGearRatio = 6.75; // Module drive motor gear ratio
     public static final double kSteerMotorGearRatio = 12.8; // Module steer motor gear ratio
-
     
     public static double kFeedforwardGainSteer = 0.11; // The feed forward gain for the module steer control
 
