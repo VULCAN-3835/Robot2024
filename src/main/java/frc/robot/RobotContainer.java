@@ -43,6 +43,7 @@ public class RobotContainer {
     Trigger leftBumperTrigger = new Trigger(cmdXboxController.leftBumper());
 
     Trigger yTrigger = new Trigger(cmdXboxController.y());
+    Trigger bTrigger = new Trigger(cmdXboxController.b());
     Trigger aTrigger = new Trigger(cmdXboxController.a());
 
     Trigger rightTrigTrigger = new Trigger(cmdXboxController.rightTrigger());
@@ -61,8 +62,10 @@ public class RobotContainer {
     leftBumperTrigger.onFalse(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.restState)));
 
     // Applies positions open and closed buttons on y and a buttons.
-    yTrigger.onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kOpenAngle)));
-    aTrigger.onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedAngle)));
+    yTrigger.onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedAngle)));
+    bTrigger.onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kAmpAngle)));
+    aTrigger.onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kOpenAngle)));
+
 
     rightTrigTrigger.whileTrue(new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootSpd)));
     rightTrigTrigger.onFalse(new InstantCommand(() -> this.shooterSubsystem.stopMotor()));

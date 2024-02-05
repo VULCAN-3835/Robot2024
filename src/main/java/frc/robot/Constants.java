@@ -109,6 +109,7 @@ public final class Constants {
     // Angle motor positions:
     public static final double kOpenAngle = 0;
     public static final double kClosedAngle = 0.501634362540859;
+    public static final double kAmpAngle = 0.302202705805068;
 
     // Angle controller constants:
     public static final double kP = 1.55; 
@@ -127,7 +128,7 @@ public final class Constants {
 
       public static final double kTicksPerRotation = 2048;
 
-      public static final double kShootSpd = 0.7;//Desired speed for the movement of the wheel in firing
+      public static final double kShootSpd = 0.4;//Desired speed for the movement of the wheel in firing
       public static final double kCollectSpd = -0.2;//Desired speed for the movement of the wheel in collection
   }
 }
