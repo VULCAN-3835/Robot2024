@@ -13,9 +13,15 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.ChassisConstants;
 import frc.robot.Util.SwerveModule;
@@ -48,6 +54,7 @@ public class ChassisSubsystem extends SubsystemBase {
           new SwerveModuleState(0,Rotation2d.fromDegrees(0))
   };
 
+  SysIdRoutine routine;
   public ChassisSubsystem() {
     // Modules Initilization:
     this.swerve_modules[Wheels.LEFT_FRONT.ordinal()] = new SwerveModule(
@@ -87,7 +94,13 @@ public class ChassisSubsystem extends SubsystemBase {
       getRotation2d().unaryMinus(),
       this.swerve_positions,
       new Pose2d());
-  }
+
+    zeroHeading();
+    
+    routine = new SysIdRoutine(
+    new SysIdRoutine.Config(),
+    new SysIdRoutine.Mechanism(this::setSysidVolt, this::setSysidLog, this));
+}
 
   private void updateSwervePositions() {
     this.swerve_positions[Wheels.LEFT_FRONT.ordinal()] = this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getPosition();
@@ -168,9 +181,34 @@ public class ChassisSubsystem extends SubsystemBase {
     this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].set(desiredStates[3]);
   }
 
+  private void setSysidVolt(Measure<Voltage> volts) {
+      double voltageDouble = volts.magnitude();
+      setModulesVoltage(voltageDouble);
+  }
+  private void setSysidLog(SysIdRoutineLog log) {
+    //  log.motor("left-module").voltage(null);
+    //  log.motor("left-module").linearPosition(null);
+    //  log.motor("left-module").linearVelocity(null);
+  }
+
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return this.routine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return this.routine.dynamic(direction);
+  }
+
+  public void setModulesVoltage(double volt) {
+    this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].setMotorVoltage(volt);
+    this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].setMotorVoltage(volt);
+    this.swerve_modules[Wheels.LEFT_BACK.ordinal()].setMotorVoltage(volt);
+    this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].setMotorVoltage(volt);
+  }
+
   @Override
   public void periodic() {
-    setModuleStates(this.swerveModuleStates);
+    // setModuleStates(this.swerveModuleStates);
 
     updateSwervePositions();
     this.poseEstimator.update(getRotation2d().unaryMinus(), this.swerve_positions);
@@ -178,15 +216,15 @@ public class ChassisSubsystem extends SubsystemBase {
     this.field.setRobotPose(this.poseEstimator.getEstimatedPosition());
     SmartDashboard.putData(field);
 
-    SmartDashboard.putNumber("Left Front Distance",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleDistance());
-    SmartDashboard.putNumber("Left Back Distance",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleDistance());
-    SmartDashboard.putNumber("Right Front Distance",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleDistance());
-    SmartDashboard.putNumber("Right Back Distance",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleDistance());
+    SmartDashboard.putNumber("Left Front Distance",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getPosition().distanceMeters);
+    SmartDashboard.putNumber("Left Back Distance",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getPosition().distanceMeters);
+    SmartDashboard.putNumber("Right Front Distance",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getPosition().distanceMeters);
+    SmartDashboard.putNumber("Right Back Distance",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getPosition().distanceMeters);
 
-    SmartDashboard.putNumber("Left Front Rotation",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleAngle());
-    SmartDashboard.putNumber("Left Back Rotation",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleAngle());
-    SmartDashboard.putNumber("Right Front Rotation",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleAngle());
-    SmartDashboard.putNumber("Right Back Rotation",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleAngle());
+    SmartDashboard.putNumber("Left Front Rotation",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getPosition().angle.getRotations());
+    SmartDashboard.putNumber("Left Back Rotation",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getPosition().angle.getRotations());
+    SmartDashboard.putNumber("Right Front Rotation",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getPosition().angle.getRotations());
+    SmartDashboard.putNumber("Right Back Rotation",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getPosition().angle.getRotations());
 
     SmartDashboard.putNumber("Left Front Error",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleAngleError());
     SmartDashboard.putNumber("Left Back Error",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleAngleError());

@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DefaultTeleopCommand;
 import frc.robot.subsystems.ChassisSubsystem;
 
@@ -18,7 +20,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ChassisSubsystem chassisSubsystem = new ChassisSubsystem();
 
-  private final XboxController xboxController = new XboxController(Constants.OperatorConstants.kXboxPort);
+  private final XboxController xboxController = new XboxController(OperatorConstants.kXboxPort);
+  private final CommandXboxController cmdXboxController = new CommandXboxController(OperatorConstants.kXboxPort);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
@@ -38,11 +41,13 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Initilizing a start button trigger
-    Trigger startTrigger = new Trigger(() -> this.xboxController.getStartButtonPressed());
-
     // Applying zero heading method instant command to start button trigger
-    startTrigger.onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
+    cmdXboxController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
+
+    cmdXboxController.a().whileTrue(chassisSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    cmdXboxController.b().whileTrue(chassisSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    cmdXboxController.x().whileTrue(chassisSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    cmdXboxController.y().whileTrue(chassisSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
   }
 
   /**
