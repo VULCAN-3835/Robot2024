@@ -85,43 +85,9 @@ public final class Constants {
                     new Translation2d(-kWheelBase / 2, kTrackWidth / 2), //Left back
                     new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)); //Right back
   }
-  public static class IntakeConstants{
-    // Intake motor ports:
-    public static final int kIntakeMotorPort = 40;
-    public static final int kAngleMotorPort = 41;
 
-    // Intake analog ports:
-    public static final int kPieceDetectorPort = 0;
-
-    // Intake digital ports:
-    public static final int kAngleEncoderPort = 0;
-    public static final int kOpenLimitSwitchPort = 1;
-    public static final int kClosedLimitSwitchPort = 2;
-
-    // Limit constants:
-    public static final double kPieceDetectorDetectionThreshold = 2.5;
-    public static final double kAngleEncoderOffset = 0.062440651561016;
-    
-    // Intake motor speeds:
-    public static final double kIntakeMotorOutputSpeed = -0.75;
-    public static final double kIntakeMotorIntakeSpeed = 0.6;
-
-    // Angle motor positions:
-    public static final double kOpenAngle = 0;
-    public static final double kClosedAngle = 0.501634362540859;
-    public static final double kAmpAngle = 0.302202705805068;
-
-    // Angle controller constants:
-    public static final double kP = 1.55; 
-    public static final double kMaxVelocityRotPerSec = 0.65;
-    public static final double kMaxAccelerationRotPerSecSquared = 1;
-    public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(
-      IntakeConstants.kMaxVelocityRotPerSec,
-      IntakeConstants.kMaxAccelerationRotPerSecSquared);
-  }
   public static class ShooterConstants {
-      public static final int kShooterMotorPortLeft = 43;
-      public static final int kShooterMotorPortRight = 42;
+      public static final int kShooterMotorPort = 50;
 
       public static final int kPistonForwardChannelNumber = 1;
       public static final int kPistonReverseChannelNumber = 2;

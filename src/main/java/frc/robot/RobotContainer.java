@@ -6,12 +6,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.DefaultTeleopCommand;
 import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.IntakeSubsystem.STATE;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -53,18 +51,6 @@ public class RobotContainer {
     // Applying zero heading method instant command to start button trigger
     startTrigger.onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
 
-    // Applying output to intake motor on right bumper
-    rightBumperTrigger.whileTrue(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.outputState)));
-    rightBumperTrigger.onFalse(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.restState)));
-
-    // Applying collection to intake motor on left bumper
-    leftBumperTrigger.whileTrue(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.collectState)));
-    leftBumperTrigger.onFalse(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.restState)));
-
-    // Applies positions open and closed buttons on y and a buttons.
-    yTrigger.onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedAngle)));
-    bTrigger.onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kAmpAngle)));
-    aTrigger.onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kOpenAngle)));
 
 
     rightTrigTrigger.whileTrue(new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootSpd)));
