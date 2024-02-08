@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -47,13 +48,17 @@ public class IntakeSubsystem extends SubsystemBase {
     restState
   }
 
+  private XboxController xboxController;
+
   // Limelight values:
   private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   private NetworkTableEntry tx = table.getEntry("tx");
   private NetworkTableEntry ty = table.getEntry("ty");
   private NetworkTableEntry ta = table.getEntry("ta");
 
-  public IntakeSubsystem() {
+  public IntakeSubsystem(XboxController xboxController) {
+    this.xboxController = xboxController;
+
     this.intakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotorPort, MotorType.kBrushless);
     this.angleMotor = new CANSparkMax(IntakeConstants.kAngleMotorPort, MotorType.kBrushless);
 
@@ -71,6 +76,7 @@ public class IntakeSubsystem extends SubsystemBase {
     this.goalSetpoint = IntakeConstants.kClosedAngle;
     this.armPositionController.setGoal(this.goalSetpoint);
 
+    this.angleMotor.setIdleMode(IdleMode.kBrake);
   }
 
   /**
@@ -161,6 +167,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {   
     // Calculates the output for moving the arm 
     double output = this.armPositionController.calculate(getCurrentPosition());
+
+    // double output = (xboxController.getLeftTriggerAxis()-xboxController.getRightTriggerAxis())*0.3;
 
     // Creates limit for the output using limit switches
     if (isOpen() && output < 0)
