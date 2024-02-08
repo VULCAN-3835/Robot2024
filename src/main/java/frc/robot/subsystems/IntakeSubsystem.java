@@ -11,14 +11,10 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -33,8 +29,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private AnalogInput pieceDetector; // Distance sensor responsible for detecting game piece in the system
   private DigitalInput closedLimitSwitch; // Saftey limit switch for closed arm
   private DigitalInput openLimitSwitch; // Saftey limit switch for open arm
-  
-  private ArmFeedforward armFeedForward; // Feed forward values for the arm
 
   private double goalSetpoint; // Setpoint for the arm position
   private double currentPosition; // The current position of the arm
@@ -68,7 +62,7 @@ public class IntakeSubsystem extends SubsystemBase {
     this.armPositionController = new ProfiledPIDController(IntakeConstants.kP, 0, 0,
      IntakeConstants.kConstraints);
 
-    this.goalSetpoint = IntakeConstants.kClosedAngle;
+    this.goalSetpoint = IntakeConstants.kClosedRotations;
     this.armPositionController.setGoal(this.goalSetpoint);
 
   }
@@ -98,10 +92,10 @@ public class IntakeSubsystem extends SubsystemBase {
   public void setMotorMode(STATE state) {
     switch (state) {
       case collectState:
-        this.intakeMotor.set(Constants.IntakeConstants.kIntakeMotorIntakeSpeed); //Intake
+        this.intakeMotor.set(Constants.IntakeConstants.kIntakeMotorIntakePower); //Intake
         break;
       case outputState:
-        this.intakeMotor.set(Constants.IntakeConstants.kIntakeMotorOutputSpeed); //Output
+        this.intakeMotor.set(Constants.IntakeConstants.kIntakeMotorOutputPower); //Output
         break;
       case restState:
         this.intakeMotor.set(0);
@@ -169,10 +163,10 @@ public class IntakeSubsystem extends SubsystemBase {
       output = 0;
       
     // Doesn't let setpoints pass sensor limits
-    if (this.goalSetpoint<IntakeConstants.kOpenAngle)
-      this.goalSetpoint = IntakeConstants.kOpenAngle;
-    if (this.goalSetpoint>IntakeConstants.kClosedAngle)
-      this.goalSetpoint = IntakeConstants.kClosedAngle;
+    if (this.goalSetpoint<IntakeConstants.kOpenRotations)
+      this.goalSetpoint = IntakeConstants.kOpenRotations;
+    if (this.goalSetpoint>IntakeConstants.kClosedRotations)
+      this.goalSetpoint = IntakeConstants.kClosedRotations;
 
     // Applies output to motor
     this.angleMotor.set(output);
@@ -181,14 +175,10 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("setpoint", this.goalSetpoint);
     SmartDashboard.putNumber("Current", getCurrentPosition());
     SmartDashboard.putNumber("Error", this.goalSetpoint-getCurrentPosition());
-
-    double x = tx.getDouble(0.0);
-    double y = ty.getDouble(0.0);
-    double area = ta.getDouble(0.0);
   
-    SmartDashboard.putNumber("LimelightX", x);
-    SmartDashboard.putNumber("LimelightY", y);
-    SmartDashboard.putNumber("LimelightArea", area);
+    SmartDashboard.putNumber("LimelightX", tx.getDouble(0.0));
+    SmartDashboard.putNumber("LimelightY", ty.getDouble(0.0));
+    SmartDashboard.putNumber("LimelightArea", ta.getDouble(0.0));
 
     SmartDashboard.putBoolean("Open", isOpen());
     SmartDashboard.putBoolean("Closed", isClosed());

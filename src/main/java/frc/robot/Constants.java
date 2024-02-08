@@ -103,18 +103,18 @@ public final class Constants {
     public static final double kPieceDetectorDetectionThreshold = 2.5;
     public static final double kAngleEncoderOffset = 0.062440651561016;
     
-    // Intake motor speeds:
-    public static final double kIntakeMotorOutputSpeed = -0.65;
-    public static final double kIntakeMotorIntakeSpeed = 0.65;
+    // Intake motor powers:
+    public static final double kIntakeMotorOutputPower = -0.65;
+    public static final double kIntakeMotorIntakePower = 0.65;
 
     // Angle motor positions:
-    public static final double kOpenAngle = 0;
-    public static final double kClosedAngle = 0.501634362540859;
+    public static final double kOpenRotations = 0;
+    public static final double kClosedRotations = 0.501634362540859;
 
     // Angle controller constants:
     public static final double kP = 1.4; 
-    public static final double kMaxVelocityRotPerSec = 0.65;
-    public static final double kMaxAccelerationRotPerSecSquared = 1;
+    public static final double kMaxVelocityRotPerSec = 0.65; //Maximum velocity in rotations-per-sec (rot/s)
+    public static final double kMaxAccelerationRotPerSecSquared = 1; //Maximum acceleration (rot/s^2)
     public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(
       IntakeConstants.kMaxVelocityRotPerSec,
       IntakeConstants.kMaxAccelerationRotPerSecSquared);
