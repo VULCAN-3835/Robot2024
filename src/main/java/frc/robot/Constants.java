@@ -109,10 +109,10 @@ public final class Constants {
 
     // Angle motor positions:
     public static final double kOpenAngle = 0;
-    public static final double kClosedAngle = 0.52118078802952;
+    public static final double kClosedAngle = 0.501634362540859;
 
     // Angle controller constants:
-    public static final double kP = 1.1; 
+    public static final double kP = 1.4; 
     public static final double kMaxVelocityRotPerSec = 0.65;
     public static final double kMaxAccelerationRotPerSecSquared = 1;
     public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(
