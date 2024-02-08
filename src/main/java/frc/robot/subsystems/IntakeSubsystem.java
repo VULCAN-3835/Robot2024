@@ -16,6 +16,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -98,10 +99,10 @@ public class IntakeSubsystem extends SubsystemBase {
   public void setMotorMode(STATE state) {
     switch (state) {
       case collectState:
-        this.intakeMotor.set(Constants.IntakeConstants.kIntakeMotorIntakePower); //Intake
+        this.intakeMotor.set(Constants.IntakeConstants.kMotorIntakePower); //Intake
         break;
       case outputState:
-        this.intakeMotor.set(Constants.IntakeConstants.kIntakeMotorOutputPower); //Output
+        this.intakeMotor.set(Constants.IntakeConstants.kMotorOutputPower); //Output
         break;
       case restState:
         this.intakeMotor.set(0);
