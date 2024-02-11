@@ -94,7 +94,7 @@ public final class Constants {
 
       public static final double kTicksPerRotation = 2048;
 
-      public static final double kShootSpd = 0.7;//Desired speed for the movement of the wheel in firing
-      public static final double kCollectSpd = -0.2;//Desired speed for the movement of the wheel in collection
+      public static final double kShootPower = 0.7;//Desired speed for the movement of the wheel in firing
+      public static final double kCollectPower = -0.2;//Desired speed for the movement of the wheel in collection
   }
 }

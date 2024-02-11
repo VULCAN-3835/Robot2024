@@ -34,30 +34,14 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    // Initilizing a start button trigger
-    Trigger startTrigger = new Trigger(cmdXboxController.start());
-
-    Trigger rightBumperTrigger = new Trigger(cmdXboxController.rightBumper());
-    Trigger leftBumperTrigger = new Trigger(cmdXboxController.leftBumper());
-
-    Trigger yTrigger = new Trigger(cmdXboxController.y());
-    Trigger bTrigger = new Trigger(cmdXboxController.b());
-    Trigger aTrigger = new Trigger(cmdXboxController.a());
-
-    Trigger rightTrigTrigger = new Trigger(cmdXboxController.rightTrigger());
-    Trigger leftTrigTrigger = new Trigger(cmdXboxController.leftTrigger());
-
-
     // Applying zero heading method instant command to start button trigger
-    startTrigger.onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
+    cmdXboxController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
 
+    cmdXboxController.rightTrigger().whileTrue(new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower)));
+    cmdXboxController.rightTrigger().onFalse(new InstantCommand(() -> this.shooterSubsystem.stopMotor()));
 
-
-    rightTrigTrigger.whileTrue(new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootSpd)));
-    rightTrigTrigger.onFalse(new InstantCommand(() -> this.shooterSubsystem.stopMotor()));
-
-    leftTrigTrigger.whileTrue(new InstantCommand(() -> this.shooterSubsystem.collect()));
-    leftTrigTrigger.onFalse(new InstantCommand(() -> this.shooterSubsystem.stopMotor()));
+    cmdXboxController.leftTrigger().whileTrue(new InstantCommand(() -> this.shooterSubsystem.collect()));
+    cmdXboxController.leftTrigger().onFalse(new InstantCommand(() -> this.shooterSubsystem.stopMotor()));
   }
 
   /**

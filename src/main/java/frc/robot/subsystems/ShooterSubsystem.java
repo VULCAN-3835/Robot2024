@@ -4,22 +4,14 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.ControlModeValue;
 
-
-
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
-  //The calculation is without a conversion ratio because Model told me it's 1:1
-  //The radius of the shooting wheels is 2 inches x 5.08 cm The circumference of the wheels of the shooting is 31.918581324 cm
   private final TalonFX shooterMotor;
   private DoubleSolenoid ampPiston;
 
@@ -33,7 +25,7 @@ public class ShooterSubsystem extends SubsystemBase {
   */
   public void collect()
   {
-    shooterMotor.set(ShooterConstants.kCollectSpd);
+    shooterMotor.set(ShooterConstants.kCollectPower);
   }
   /**
      * Stops the motor
@@ -55,7 +47,6 @@ public class ShooterSubsystem extends SubsystemBase {
      * false closes the piston
      * @param state the state of the piston
   */
-
   public void setPositionState(boolean state) {
     if (state) {
         ampPiston.set(DoubleSolenoid.Value.kForward); 
@@ -65,6 +56,8 @@ public class ShooterSubsystem extends SubsystemBase {
         ampPiston.set(DoubleSolenoid.Value.kReverse); 
     }
   }
+
+
   @Override
   public void periodic() {
 
