@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.STATE;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -46,7 +47,7 @@ public class RobotContainer {
 
     // Applying zero heading method instant command to start button trigger
     cmdXboxController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
-
+    
     // Applying intake to intake motor on right bumper
     rightBumperTrigger.whileTrue(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.outputState)));
     rightBumperTrigger.onFalse(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.restState)));
@@ -56,7 +57,7 @@ public class RobotContainer {
 
     cmdXboxController.leftTrigger().whileTrue(new InstantCommand(() -> this.shooterSubsystem.collect()));
     cmdXboxController.leftTrigger().onFalse(new InstantCommand(() -> this.shooterSubsystem.stopMotor()));
-    
+
     // Applying output to intake motor on left bumper
     leftBumperTrigger.whileTrue(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.collectState)));
     leftBumperTrigger.onFalse(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.restState)));
