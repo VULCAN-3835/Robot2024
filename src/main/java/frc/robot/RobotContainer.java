@@ -20,13 +20,13 @@ import frc.robot.subsystems.IntakeSubsystem.STATE;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ChassisSubsystem chassisSubsystem = new ChassisSubsystem();
-
   private final XboxController xboxController = new XboxController(OperatorConstants.kXboxPort);
   private final CommandXboxController cmdXboxController = new CommandXboxController(OperatorConstants.kXboxPort);
 
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  private final ChassisSubsystem chassisSubsystem = new ChassisSubsystem();
 
-  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem(xboxController);
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
@@ -47,11 +47,8 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Initilizing a start button trigger
-    Trigger startTrigger = new Trigger(() -> this.xboxController.getStartButtonPressed());
     Trigger rightBumperTrigger = new Trigger(() -> this.xboxController.getRightBumper());
     Trigger leftBumperTrigger = new Trigger(() -> this.xboxController.getLeftBumper());
-    Trigger yTrigger = new Trigger(() -> this.xboxController.getYButtonPressed());
-    Trigger aTrigger = new Trigger(() -> this.xboxController.getAButtonPressed());
 
     // Applying zero heading method instant command to start button trigger
     cmdXboxController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
@@ -65,8 +62,8 @@ public class RobotContainer {
     leftBumperTrigger.onFalse(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.restState)));
 
     // Applies positions open and closed buttons on y and a buttons.
-    cmdXboxController.a().onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kOpenAngle)));
-    cmdXboxController.y().onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedAngle)));
+    cmdXboxController.a().onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kOpenRotations)));
+    cmdXboxController.y().onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations)));
 
   }
 

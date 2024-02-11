@@ -43,17 +43,13 @@ public class IntakeSubsystem extends SubsystemBase {
     restState
   }
 
-  private XboxController xboxController;
-
   // Limelight values:
   private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   private NetworkTableEntry tx = table.getEntry("tx");
   private NetworkTableEntry ty = table.getEntry("ty");
   private NetworkTableEntry ta = table.getEntry("ta");
 
-  public IntakeSubsystem(XboxController xboxController) {
-    this.xboxController = xboxController;
-
+  public IntakeSubsystem() {
     this.intakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotorPort, MotorType.kBrushless);
     this.angleMotor = new CANSparkMax(IntakeConstants.kAngleMotorPort, MotorType.kBrushless);
 
@@ -163,8 +159,6 @@ public class IntakeSubsystem extends SubsystemBase {
     // Calculates the output for moving the arm 
     double output = this.armPositionController.calculate(getCurrentPosition());
 
-    // double output = (xboxController.getLeftTriggerAxis()-xboxController.getRightTriggerAxis())*0.3;
-
     // Creates limit for the output using limit switches
     if (isOpen() && output < 0)
       output = 0;
@@ -180,16 +174,16 @@ public class IntakeSubsystem extends SubsystemBase {
     // Applies output to motor
     this.angleMotor.set(output);
 
-    SmartDashboard.putNumber("Output", output);
-    SmartDashboard.putNumber("setpoint", this.goalSetpoint);
-    SmartDashboard.putNumber("Current", getCurrentPosition());
-    SmartDashboard.putNumber("Error", this.goalSetpoint-getCurrentPosition());
+    SmartDashboard.putNumber("Intake Output", output);
+    SmartDashboard.putNumber("Intake setpoint", this.goalSetpoint);
+    SmartDashboard.putNumber("Intake Current", getCurrentPosition());
+    SmartDashboard.putNumber("Intake Error", this.goalSetpoint-getCurrentPosition());
   
-    SmartDashboard.putNumber("LimelightX", tx.getDouble(0.0));
-    SmartDashboard.putNumber("LimelightY", ty.getDouble(0.0));
-    SmartDashboard.putNumber("LimelightArea", ta.getDouble(0.0));
+    SmartDashboard.putNumber("Intake LimelightX", tx.getDouble(0.0));
+    SmartDashboard.putNumber("Intake LimelightY", ty.getDouble(0.0));
+    SmartDashboard.putNumber("Intake LimelightArea", ta.getDouble(0.0));
 
-    SmartDashboard.putBoolean("Open", isOpen());
-    SmartDashboard.putBoolean("Closed", isClosed());
+    SmartDashboard.putBoolean("Intake Open", isOpen());
+    SmartDashboard.putBoolean("Intake Closed", isClosed());
   } 
 }
