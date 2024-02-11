@@ -38,6 +38,7 @@ public class SwerveModule {
     // Phoenix6 suppliers for the different feedback values
     private StatusSignal<Double> m_drivePosition; // Drive position supplier
     private StatusSignal<Double> m_driveVelocity; // Drive velocity supplier
+    private StatusSignal<Double> m_driveVoltage; // Drive voltage supplier
     private StatusSignal<Double> m_steerPosition; // Steer position supplier
     private StatusSignal<Double> m_steerVelocity; // Steer velocity supplier
 
@@ -71,6 +72,7 @@ public class SwerveModule {
         // Storing the signals (suppliers) of the different feedback sensors
         this.m_drivePosition = this.driveMotor.getPosition();
         this.m_driveVelocity = this.driveMotor.getVelocity();
+        this.m_driveVoltage = this.driveMotor.getMotorVoltage();
         this.m_steerPosition = this.absEncoder.getPosition();
         this.m_steerVelocity = this.absEncoder.getVelocity();
 
@@ -229,5 +231,15 @@ public class SwerveModule {
     public void stopModule() {
         this.driveMotor.set(0);
         this.steerMotor.set(0);
+    }
+
+    public double getVelocity() {
+        this.m_driveVelocity.refresh();
+        return Conversions.RPSToMPS(this.m_driveVelocity.getValue(), ModuleConstants.kWheelCircumference);
+    }
+
+    public double getVoltage() {
+        this.m_driveVoltage.refresh();
+        return m_driveVoltage.getValue();
     }
 }

@@ -13,7 +13,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -25,6 +29,11 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.ChassisConstants;
 import frc.robot.Util.SwerveModule;
+
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 public class ChassisSubsystem extends SubsystemBase {
   // An enum with the names of the wheel modules
@@ -53,6 +62,10 @@ public class ChassisSubsystem extends SubsystemBase {
           new SwerveModuleState(0,Rotation2d.fromDegrees(0)),
           new SwerveModuleState(0,Rotation2d.fromDegrees(0))
   };
+
+  private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+  private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+  private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
 
   SysIdRoutine routine;
   public ChassisSubsystem() {
@@ -99,7 +112,18 @@ public class ChassisSubsystem extends SubsystemBase {
     
     routine = new SysIdRoutine(
     new SysIdRoutine.Config(),
-    new SysIdRoutine.Mechanism(this::setSysidVolt, this::setSysidLog, this));
+    new SysIdRoutine.Mechanism(this::setSysidVolt, 
+    log -> {
+      // set states for all 4 modules
+      for (Wheels wheel : Wheels.values()) {
+      log.motor(wheel.toString())
+          .voltage(
+              m_appliedVoltage.mut_replace(
+                  swerve_modules[wheel.ordinal()].getVoltage() * RobotController.getBatteryVoltage(), Volts))
+          .linearPosition(m_distance.mut_replace(swerve_modules[wheel.ordinal()].getPosition().distanceMeters, Meters))
+          .linearVelocity(
+              m_velocity.mut_replace(swerve_modules[wheel.ordinal()].getVelocity(), MetersPerSecond)); } }
+              , this));
 }
 
   private void updateSwervePositions() {
@@ -185,12 +209,7 @@ public class ChassisSubsystem extends SubsystemBase {
       double voltageDouble = volts.magnitude();
       setModulesVoltage(voltageDouble);
   }
-  private void setSysidLog(SysIdRoutineLog log) {
-    //  log.motor("left-module").voltage(null);
-    //  log.motor("left-module").linearPosition(null);
-    //  log.motor("left-module").linearVelocity(null);
-  }
-
+  
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return this.routine.quasistatic(direction);
   }
