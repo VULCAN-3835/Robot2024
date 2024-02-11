@@ -94,7 +94,7 @@ public final class Constants {
 
       public static final double kTicksPerRotation = 2048;
 
-      public static final double kShootPower = -0.42;//Desired speed for the movement of the wheel in firing
+      public static final double kShootPower = -0.55;//Desired speed for the movement of the wheel in firing
       public static final double kCollectPower = 0.2;//Desired speed for the movement of the wheel in collection
   }
   public static class IntakeConstants{
@@ -115,11 +115,12 @@ public final class Constants {
     public static final double kAngleEncoderOffset = 0.146389728659743;
     
     // Intake motor speeds:
-    public static final double kMotorOutputPower = -0.5;
+    public static final double kMotorOutputPower = -0.9;
     public static final double kMotorIntakePower = 0.5;
 
     // Angle motor positions:
     public static final double kOpenRotations = 0;
+    public static final double kAmpRotations = 0.361;
     public static final double kClosedRotations = 0.52118078802952;
 
     // Angle controller constants:
