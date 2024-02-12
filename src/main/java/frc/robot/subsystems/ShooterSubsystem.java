@@ -8,13 +8,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.ShooterConstants;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.system.LinearSystem;
-import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -63,11 +60,10 @@ public class ShooterSubsystem extends SubsystemBase {
         ampPiston.set(DoubleSolenoid.Value.kReverse); 
     }
   }
-
-
   @Override
   public void periodic() {
-
+      SmartDashboard.putNumber("Shooter Target Velocity", speedPIDController.getSetpoint());
+      SmartDashboard.putNumber("Actual Shooter Velocity", shooterMotor.getRotorVelocity().getValue());
   }
 }
 
