@@ -41,8 +41,7 @@ public class ClimberSubsystem extends SubsystemBase {
     TalonFXConfiguration configuration = new TalonFXConfiguration();
 
     // Feedback sensor returns rotations of axis
-    configuration.Feedback.SensorToMechanismRatio = Constants.ClimberConstants.kMotorRatio*
-      Constants.ClimberConstants.kTicksPerRotation;
+    configuration.Feedback.SensorToMechanismRatio = Constants.ClimberConstants.kMotorRatio;
 
     configuration.Slot0 = Constants.ClimberConstants.getElevatorSlot();
     configuration.MotionMagic.MotionMagicAcceleration = Constants.ClimberConstants.kElevatorAcceleration;
@@ -84,8 +83,6 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void setClimberPosition(double pos){
-    pos = pos/Constants.ClimberConstants.kLengthForRotation;
-
     this.climberMotorLeft.setControl(this.motionMagicVoltage.withPosition(pos));
     this.climberMotorRight.setControl(this.motionMagicVoltage.withPosition(pos));
   }
