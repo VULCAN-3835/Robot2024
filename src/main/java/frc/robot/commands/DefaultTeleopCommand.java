@@ -4,12 +4,36 @@
 
 package frc.robot.commands;
 
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.ChassisSubsystem;
 
 public class DefaultTeleopCommand extends Command {
-  /** Creates a new DefaultTeleopCommand. */
-  public DefaultTeleopCommand() {
-    // Use addRequirements() here to declare subsystem dependencies.
+  private final ChassisSubsystem chassisSubsystem;
+  private final Supplier<Double> xVelocitySupplier, yVelocitySupplier, turningVelocitySupplier;
+  private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
+  private boolean fieldOriented;
+
+  public DefaultTeleopCommand(ChassisSubsystem chassisSubsystem, Supplier<Double> xVelocitySupplier,
+    Supplier<Double> yVelocitySupplier, Supplier<Double> turningVelocitySupplier) {
+
+    this.chassisSubsystem = chassisSubsystem;
+    this.xVelocitySupplier = xVelocitySupplier;
+    this.yVelocitySupplier = yVelocitySupplier;
+    this.turningVelocitySupplier = turningVelocitySupplier;
+
+    // Initilizing slew rate limiters for acceleration limitations
+    this.xLimiter = new SlewRateLimiter(Constants.ChassisConstants.kTeleDriveMaxAccelerationUnitsPerSec);
+    this.yLimiter = new SlewRateLimiter(Constants.ChassisConstants.kTeleDriveMaxAccelerationUnitsPerSec);
+    this.turningLimiter = new SlewRateLimiter(Constants.ChassisConstants.kTeleDriveMaxAccelerationUnitsPerSec);
+
+    fieldOriented = true;
+    
+    addRequirements(this.chassisSubsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -18,7 +42,24 @@ public class DefaultTeleopCommand extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    // Variables to store the gains of input
+    double xVelocity = xVelocitySupplier.get();
+    double yVelocity = yVelocitySupplier.get();
+    double turningVelocity = turningVelocitySupplier.get();
+
+    // Deadband check for the input gains
+    xVelocity = Math.abs(xVelocity) > Constants.OperatorConstants.kDeadband ? xVelocity : 0;
+    yVelocity = Math.abs(yVelocity) > Constants.OperatorConstants.kDeadband ? yVelocity : 0;
+    turningVelocity = Math.abs(turningVelocity) > Constants.OperatorConstants.kDeadband ? turningVelocity : 0;
+
+    // Calculate velocity using gains with constant acceleration and max speed
+    xVelocity = xLimiter.calculate(xVelocity) * Constants.ChassisConstants.kTeleDriveMaxSpeedMetersPerSec;
+    yVelocity = yLimiter.calculate(yVelocity) * Constants.ChassisConstants.kTeleDriveMaxSpeedMetersPerSec;
+    turningVelocity = turningLimiter.calculate(turningVelocity) * Constants.ChassisConstants.kTeleDriveMaxAngulerSpeedRadiansPerSec;
+
+    this.chassisSubsystem.drive(xVelocity, yVelocity, turningVelocity, fieldOriented);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
