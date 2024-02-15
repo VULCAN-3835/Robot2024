@@ -106,8 +106,8 @@ public final class Constants {
     public static final double kElevatorAcceleration = 0;
 
     // TODO: Find motor direction
-    public static final boolean kLeftInverted = false;
-    public static final boolean kRightInverted = false;
+    public static final boolean kLeftInverted = true;
+    public static final boolean kRightInverted = true;
 
     public static Slot0Configs getElevatorSlot() {
       Slot0Configs configs = new Slot0Configs();

@@ -4,15 +4,21 @@
 
 package frc.robot.subsystems;
 
+import java.lang.management.OperatingSystemMXBean;
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;;
+import frc.robot.Constants;
+import frc.robot.Constants.OperatorConstants;;
 
 
 public class ClimberSubsystem extends SubsystemBase {
@@ -36,10 +42,10 @@ public class ClimberSubsystem extends SubsystemBase {
     this.climberMotorLeft=new TalonFX(Constants.ClimberConstants.kLeftMotorPort);
 
     this.limitSwitchRight=new DigitalInput(Constants.ClimberConstants.kRightSwitchPort);
-    this.limitSwitchRight=new DigitalInput(Constants.ClimberConstants.kLeftSwitchPort);
+    this.limitSwitchLeft=new DigitalInput(Constants.ClimberConstants.kLeftSwitchPort);
 
-    this.climberMotorLeft.setInverted(Constants.ClimberConstants.kLeftInverted);
     this.climberMotorRight.setInverted(Constants.ClimberConstants.kRightInverted);
+    this.climberMotorLeft.setInverted(Constants.ClimberConstants.kLeftInverted);
       
     TalonFXConfiguration configuration = new TalonFXConfiguration();
 
@@ -49,6 +55,8 @@ public class ClimberSubsystem extends SubsystemBase {
     configuration.Slot0 = Constants.ClimberConstants.getElevatorSlot();
     configuration.MotionMagic.MotionMagicAcceleration = Constants.ClimberConstants.kElevatorAcceleration;
     configuration.MotionMagic.MotionMagicCruiseVelocity = Constants.ClimberConstants.kElevatorMaxCruiseVelocity;
+
+    configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     
     this.climberMotorLeft.getConfigurator().apply(configuration);
     this.climberMotorRight.getConfigurator().apply(configuration);
@@ -94,10 +102,22 @@ public class ClimberSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double power = (-xboxController.getRightY())*0.3;
+    double power = 0;
+    if (xboxController.getPOV() == 0) {
+      power = -0.15;
+    }
+    else if (xboxController.getPOV() == 180) {
+      power = 0.15;
+    }
 
-    this.climberMotorLeft.set(power);
-    this.climberMotorRight.set(power);
+    this.climberMotorLeft.set(this.getLeftLimitSwitch()?0:power);
+    this.climberMotorRight.set(this.getRightLimitSwitch()?0:power);
+
+    SmartDashboard.putNumber("Elevator Power", power);
+
+
+    SmartDashboard.putBoolean("Left Limit Switch", this.getLeftLimitSwitch());
+    SmartDashboard.putBoolean("Right Limit Switch", this.getRightLimitSwitch());
 
   }
 }

@@ -25,11 +25,11 @@ public class RobotContainer {
   private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(xboxController);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
-    // ()-> -xboxController.getLeftY(),
-    // ()-> -xboxController.getLeftX(),
-    // ()-> -xboxController.getRightX()));
-    // configureBindings();
+    this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
+    ()-> -xboxController.getLeftY(),
+    ()-> -xboxController.getLeftX(),
+    ()-> -xboxController.getRightX()));
+    configureBindings();
   }
 
   /**
