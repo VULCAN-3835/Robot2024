@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;;
 
@@ -26,9 +27,11 @@ public class ClimberSubsystem extends SubsystemBase {
   private StatusSignal<Double> m_rightVelocity;
 
   MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
+
+  private XboxController xboxController;
   
   /** Creates a new ClimberSubsystem. */
-  public ClimberSubsystem() {
+  public ClimberSubsystem(XboxController xboxController) {
     this.climberMotorRight=new TalonFX(Constants.ClimberConstants.kRightMotorPort);
     this.climberMotorLeft=new TalonFX(Constants.ClimberConstants.kLeftMotorPort);
 
@@ -54,6 +57,8 @@ public class ClimberSubsystem extends SubsystemBase {
     this.m_leftVelocity = this.climberMotorLeft.getVelocity();
     this.m_rightPosition = this.climberMotorRight.getPosition();
     this.m_rightVelocity = this.climberMotorRight.getVelocity();
+
+    this.xboxController = xboxController;
   }
 
   public boolean getRightLimitSwitch(){
@@ -89,6 +94,10 @@ public class ClimberSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-  
+    double power = (-xboxController.getRightY())*0.3;
+
+    this.climberMotorLeft.set(power);
+    this.climberMotorRight.set(power);
+
   }
 }

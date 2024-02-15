@@ -5,8 +5,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DefaultTeleopCommand;
 import frc.robot.subsystems.ChassisSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -16,16 +18,18 @@ import frc.robot.subsystems.ChassisSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ChassisSubsystem chassisSubsystem = new ChassisSubsystem();
+  private final XboxController xboxController = new XboxController(OperatorConstants.kXboxPort);
+  private final CommandXboxController cmdXboxController = new CommandXboxController(OperatorConstants.kXboxPort);
 
-  private final XboxController xboxController = new XboxController(Constants.OperatorConstants.kXboxPort);
+  private final ChassisSubsystem chassisSubsystem = new ChassisSubsystem();
+  private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(xboxController);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
-    ()-> -xboxController.getLeftY(),
-    ()-> -xboxController.getLeftX(),
-    ()-> -xboxController.getRightX()));
-    configureBindings();
+    // this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
+    // ()-> -xboxController.getLeftY(),
+    // ()-> -xboxController.getLeftX(),
+    // ()-> -xboxController.getRightX()));
+    // configureBindings();
   }
 
   /**
@@ -38,11 +42,8 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Initilizing a start button trigger
-    Trigger startTrigger = new Trigger(() -> this.xboxController.getStartButtonPressed());
-
     // Applying zero heading method instant command to start button trigger
-    startTrigger.onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
+    cmdXboxController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
   }
 
   /**

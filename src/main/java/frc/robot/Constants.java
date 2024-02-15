@@ -90,15 +90,14 @@ public final class Constants {
 
 
   public static class ClimberConstants{
-    public static final int kLeftMotorPort = 40;
-    public static final int kRightMotorPort = 41;
-    public static final int kLeftSwitchPort = 0;
-    public static final int kRightSwitchPort = 1;
+    public static final int kLeftMotorPort = 61;
+    public static final int kRightMotorPort = 60;
+    public static final int kLeftSwitchPort = 3;
+    public static final int kRightSwitchPort = 4;
 
     public static final double kMaxMotorPower=0.7;
     public static final double kMaxElevatorHeight = 45.524; // CM
 
-    public static final int kTicksPerRotation =2048;
     public static final double kLengthForRotation = 12.56637061435917;// Diameter on Cm
     public static final double kMotorRatio = 28; // this is for multipling
 
