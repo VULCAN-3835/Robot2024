@@ -93,9 +93,9 @@ public final class Constants {
       public static final int kPistonReverseChannelNumber = 2;
 
       public static final double kTicksPerRotation = 2048;
-
+      // .55
       public static final double kShootPower = -0.55;//Desired speed for the movement of the wheel in firing
-      public static final double kCollectPower = 0.2;//Desired speed for the movement of the wheel in collection
+      public static final double kCollectPower = 0.3;//Desired speed for the movement of the wheel in collection
   }
   public static class IntakeConstants{
     // Intake motor ports:
