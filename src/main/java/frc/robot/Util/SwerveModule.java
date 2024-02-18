@@ -209,9 +209,9 @@ public class SwerveModule {
         // Sets control modes setpoints / outputs
         this.steerMotor.setControl(this.angleController.withPosition(angleToSetDeg));
 
-        this.driveMotor.set(optimized.speedMetersPerSecond);
+        // this.driveMotor.set(optimized.speedMetersPerSecond);
 
-        // setSpeed(optimized);
+        setSpeed(optimized);
     }
 
     public void setMotorVoltage(double voltage) {

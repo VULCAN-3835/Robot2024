@@ -227,7 +227,7 @@ public class ChassisSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // setModuleStates(this.swerveModuleStates);
+    setModuleStates(this.swerveModuleStates);
 
     updateSwervePositions();
     this.poseEstimator.update(getRotation2d().unaryMinus(), this.swerve_positions);

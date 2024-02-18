@@ -45,9 +45,9 @@ public final class Constants {
       return kSteerMotorGains;
     }
 
-    public static double kDriveKS = 0;
-    public static double kDriveKV = 0;
-    public static double kDriveKA = 0;
+    public static double kDriveKS = 0.21599;
+    public static double kDriveKV = 2.2476;
+    public static double kDriveKA = 0.040257;
 
     public static double kModuleAngleDeadband = 0.001;
 
@@ -90,10 +90,10 @@ public final class Constants {
     public static final boolean kRightBackInverted = false;
 
     // TODO: Fit from power control to velocity control
-    public static final double kMaxDrivingVelocity = 0.5;
-    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 3;
-    public static final double kTeleDriveMaxSpeedMetersPerSec = 0.5;
-    public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = 0.5;
+    public static final double kMaxDrivingVelocity = 4;
+    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 5;
+    public static final double kTeleDriveMaxSpeedMetersPerSec = 4;
+    public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = 2;
 
     // Distance between centers of right and left wheels on robot meters
     public static final double kTrackWidth = 0.5403;
