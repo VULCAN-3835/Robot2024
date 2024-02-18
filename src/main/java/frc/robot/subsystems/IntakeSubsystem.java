@@ -43,7 +43,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   // Limelight values:
-  private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+  private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-collect");
   private NetworkTableEntry tx = table.getEntry("tx");
   private NetworkTableEntry ty = table.getEntry("ty");
   private NetworkTableEntry ta = table.getEntry("ta");
@@ -184,5 +184,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     SmartDashboard.putBoolean("Intake Open", isOpen());
     SmartDashboard.putBoolean("Intake Closed", isClosed());
+
+    SmartDashboard.putBoolean("Has Piece", hasPiece());
+    SmartDashboard.putNumber("Detector Voltage",this.pieceDetector.getVoltage());
   } 
 }
