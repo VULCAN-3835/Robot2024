@@ -7,6 +7,7 @@ package frc.robot;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -41,13 +42,16 @@ public final class Constants {
     
     public static Slot0Configs getDriveMotorGains() { 
       Slot0Configs kSteerMotorGains = new Slot0Configs();
-      kSteerMotorGains.withKP(0); // The proportional gain for the module steer control TODO: Find
+      kSteerMotorGains.withKP(0.1); // The proportional gain for the module steer control TODO: Find
       return kSteerMotorGains;
     }
 
-    public static double kDriveKS = 0.21599;
-    public static double kDriveKV = 2.2476;
-    public static double kDriveKA = 0.040257;
+    public static SimpleMotorFeedforward leftFrontFF = new SimpleMotorFeedforward(0.21599, 2.2476, 0.040257);
+    public static SimpleMotorFeedforward leftBackFF = new SimpleMotorFeedforward(0.20676, 2.1653, 0.16537);
+    public static SimpleMotorFeedforward rightFrontFF = new SimpleMotorFeedforward(0.1788, 2.257, 0.036611);
+    public static SimpleMotorFeedforward rightBackFF = new SimpleMotorFeedforward(0.11961, 2.3274, 0.13714);
+
+
 
     public static double kModuleAngleDeadband = 0.001;
 
@@ -91,9 +95,9 @@ public final class Constants {
 
     // TODO: Fit from power control to velocity control
     public static final double kMaxDrivingVelocity = 4;
-    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 5;
+    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 6;
     public static final double kTeleDriveMaxSpeedMetersPerSec = 4;
-    public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = 2;
+    public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = Math.PI;
 
     // Distance between centers of right and left wheels on robot meters
     public static final double kTrackWidth = 0.5403;

@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.ChassisConstants;
+import frc.robot.Constants.ModuleConstants;
 import frc.robot.Util.SwerveModule;
 
 import static edu.wpi.first.units.MutableMeasure.mutable;
@@ -75,28 +76,32 @@ public class ChassisSubsystem extends SubsystemBase {
       Constants.ChassisConstants.kLeftFrontSteerID, 
       Constants.ChassisConstants.kLeftFrontEncID,
       Constants.ChassisConstants.kLeftFrontInverted, 
-      Constants.ChassisConstants.kLeftFrontOffset);
+      Constants.ChassisConstants.kLeftFrontOffset,
+      ModuleConstants.leftFrontFF);
 
     this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()] = new SwerveModule(
       Constants.ChassisConstants.kRightFrontDriveID,
       Constants.ChassisConstants.kRightFrontSteerID, 
       Constants.ChassisConstants.kRightFrontEncID,
       Constants.ChassisConstants.kRightFrontInverted, 
-      Constants.ChassisConstants.kRightFrontOffset);
+      Constants.ChassisConstants.kRightFrontOffset,
+      ModuleConstants.rightFrontFF);
 
     this.swerve_modules[Wheels.LEFT_BACK.ordinal()] = new SwerveModule(
       Constants.ChassisConstants.kLeftBackDriveID, 
       Constants.ChassisConstants.kLeftBackSteerID,
       Constants.ChassisConstants.kLeftBackEncID,
       Constants.ChassisConstants.kLeftBackInverted,
-      Constants.ChassisConstants.kLeftBackOffset);
+      Constants.ChassisConstants.kLeftBackOffset,
+      ModuleConstants.leftBackFF);
 
     this.swerve_modules[Wheels.RIGHT_BACK.ordinal()] = new SwerveModule(
       Constants.ChassisConstants.kRightBackDriveID,
       Constants.ChassisConstants.kRightBackSteerID,
       Constants.ChassisConstants.kRightBackEncID,
       Constants.ChassisConstants.kRightBackInverted,
-      Constants.ChassisConstants.kRightBackOffset);
+      Constants.ChassisConstants.kRightBackOffset,
+      ModuleConstants.rightBackFF);
 
     // Imu initlization
     this.imu = new AHRS();
@@ -255,8 +260,12 @@ public class ChassisSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Right Front Output",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleClosedLoopOutput());
     SmartDashboard.putNumber("Right Back Output",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleClosedLoopOutput());
   
-    SmartDashboard.putNumber("Left Front Voltage", swerve_modules[Wheels.LEFT_FRONT.ordinal()].getVoltage());
-    SmartDashboard.putNumber("Left Front Distance", swerve_modules[Wheels.LEFT_FRONT.ordinal()].getPosition().distanceMeters);
     SmartDashboard.putNumber("Left Front Velocity", swerve_modules[Wheels.LEFT_FRONT.ordinal()].getVelocity());
+    SmartDashboard.putNumber("Left Back Velocity", swerve_modules[Wheels.LEFT_BACK.ordinal()].getVelocity());
+    SmartDashboard.putNumber("Right Front Velocity", swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getVelocity());
+    SmartDashboard.putNumber("Right Back Velocity", swerve_modules[Wheels.RIGHT_BACK.ordinal()].getVelocity());
+
+
+
   }
 }

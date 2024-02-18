@@ -47,12 +47,11 @@ public class SwerveModule {
     private PositionVoltage angleController = new PositionVoltage(0); // The closed loop controller for module angle
     private VelocityVoltage velocityController = new VelocityVoltage(0);
 
-    private SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(ModuleConstants.kDriveKS,
-    ModuleConstants.kDriveKV, ModuleConstants.kDriveKA);
+    private SimpleMotorFeedforward driveFeedForward;
 
 
     public SwerveModule(int driveMotorID, int steerMotorID, int absEncoderID, 
-    boolean driveMotorInverted,double absoluteEncoderOffset) {
+    boolean driveMotorInverted,double absoluteEncoderOffset, SimpleMotorFeedforward ff) {
         // Motor controllers + Sensors initialization:
         this.driveMotor = new TalonFX(driveMotorID);
         this.steerMotor = new TalonFX(steerMotorID);
@@ -78,6 +77,8 @@ public class SwerveModule {
 
         // Config for the angle closed loop control feedforward value to overcome friction
         this.angleController.FeedForward = Constants.ModuleConstants.kFeedforwardGainSteer;
+
+        this.driveFeedForward = ff;
     }
 
     /**
