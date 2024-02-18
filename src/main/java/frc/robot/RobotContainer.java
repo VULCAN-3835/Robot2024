@@ -44,21 +44,22 @@ public class RobotContainer {
     Trigger rightBumperTrigger = new Trigger(() -> this.xboxController.getRightBumper());
     Trigger leftBumperTrigger = new Trigger(() -> this.xboxController.getLeftBumper());
 
-
-    // Applying zero heading method instant command to start button trigger
+    // Applies zero heading method instant command to start button trigger
     cmdXboxController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
 
-    // Applying intake to intake motor on right bumper
+    // Applyies intake to intake motor on right bumper
     rightBumperTrigger.whileTrue(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.outputState)));
     rightBumperTrigger.onFalse(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.restState)));
 
+    // Applies output to shooter motor on right trigger
     cmdXboxController.rightTrigger().whileTrue(new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower)));
     cmdXboxController.rightTrigger().onFalse(new InstantCommand(() -> this.shooterSubsystem.stopMotor()));
 
+    // Applies intake to shooter motor on left trigger
     cmdXboxController.leftTrigger().whileTrue(new InstantCommand(() -> this.shooterSubsystem.collect()));
     cmdXboxController.leftTrigger().onFalse(new InstantCommand(() -> this.shooterSubsystem.stopMotor()));
 
-    // Applying output to intake motor on left bumper
+    // Applies output to intake motor on left bumper
     leftBumperTrigger.whileTrue(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.collectState)));
     leftBumperTrigger.onFalse(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.restState)));
 
