@@ -119,7 +119,7 @@ public class ChassisSubsystem extends SubsystemBase {
       log.motor(wheel.toString())
           .voltage(
               m_appliedVoltage.mut_replace(
-                  swerve_modules[wheel.ordinal()].getVoltage() * RobotController.getBatteryVoltage(), Volts))
+                  swerve_modules[wheel.ordinal()].getVoltage(), Volts))
           .linearPosition(m_distance.mut_replace(swerve_modules[wheel.ordinal()].getPosition().distanceMeters, Meters))
           .linearVelocity(
               m_velocity.mut_replace(swerve_modules[wheel.ordinal()].getVelocity(), MetersPerSecond)); } }
@@ -254,5 +254,9 @@ public class ChassisSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Left Back Output",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleClosedLoopOutput());
     SmartDashboard.putNumber("Right Front Output",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleClosedLoopOutput());
     SmartDashboard.putNumber("Right Back Output",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleClosedLoopOutput());
+  
+    SmartDashboard.putNumber("Left Front Voltage", swerve_modules[Wheels.LEFT_FRONT.ordinal()].getVoltage());
+    SmartDashboard.putNumber("Left Front Distance", swerve_modules[Wheels.LEFT_FRONT.ordinal()].getPosition().distanceMeters);
+    SmartDashboard.putNumber("Left Front Velocity", swerve_modules[Wheels.LEFT_FRONT.ordinal()].getVelocity());
   }
 }
