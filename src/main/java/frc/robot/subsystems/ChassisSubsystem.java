@@ -6,14 +6,32 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.Constants.ChassisConstants;
+import frc.robot.Constants.ModuleConstants;
 import frc.robot.Util.SwerveModule;
+
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 public class ChassisSubsystem extends SubsystemBase {
   // An enum with the names of the wheel modules
@@ -23,8 +41,18 @@ public class ChassisSubsystem extends SubsystemBase {
 
   // An array of the four swerve Modules
   private SwerveModule[] swerve_modules = new SwerveModule[4];
+
+  // An array of the four swerve module's positions
+  private SwerveModulePosition[] swerve_positions = new SwerveModulePosition[4];
+
   // Inertial Measurement unit 
   private AHRS imu;
+
+  // Pose estimator responsible for keeping the robot's position on the field using gyro, encoders and camera detection
+  private SwerveDrivePoseEstimator poseEstimator;
+
+  // Field object for presenting position relative to field
+  private Field2d field;
 
   // The states of the modules
   private SwerveModuleState[] swerveModuleStates = new SwerveModuleState[] {
@@ -34,6 +62,14 @@ public class ChassisSubsystem extends SubsystemBase {
           new SwerveModuleState(0,Rotation2d.fromDegrees(0))
   };
 
+  // Sysid Measurements
+  private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+  private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+  private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
+
+  // Sysid Rotinue
+  SysIdRoutine routine;
+
   public ChassisSubsystem() {
     // Modules Initilization:
     this.swerve_modules[Wheels.LEFT_FRONT.ordinal()] = new SwerveModule(
@@ -41,31 +77,70 @@ public class ChassisSubsystem extends SubsystemBase {
       Constants.ChassisConstants.kLeftFrontSteerID, 
       Constants.ChassisConstants.kLeftFrontEncID,
       Constants.ChassisConstants.kLeftFrontInverted, 
-      Constants.ChassisConstants.kLeftFrontOffset);
+      Constants.ChassisConstants.kLeftFrontOffset,
+      ModuleConstants.leftFrontFF);
 
     this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()] = new SwerveModule(
       Constants.ChassisConstants.kRightFrontDriveID,
       Constants.ChassisConstants.kRightFrontSteerID, 
       Constants.ChassisConstants.kRightFrontEncID,
       Constants.ChassisConstants.kRightFrontInverted, 
-      Constants.ChassisConstants.kRightFrontOffset);
+      Constants.ChassisConstants.kRightFrontOffset,
+      ModuleConstants.rightFrontFF);
 
     this.swerve_modules[Wheels.LEFT_BACK.ordinal()] = new SwerveModule(
       Constants.ChassisConstants.kLeftBackDriveID, 
       Constants.ChassisConstants.kLeftBackSteerID,
       Constants.ChassisConstants.kLeftBackEncID,
       Constants.ChassisConstants.kLeftBackInverted,
-      Constants.ChassisConstants.kLeftBackOffset);
+      Constants.ChassisConstants.kLeftBackOffset,
+      ModuleConstants.leftBackFF);
 
     this.swerve_modules[Wheels.RIGHT_BACK.ordinal()] = new SwerveModule(
       Constants.ChassisConstants.kRightBackDriveID,
       Constants.ChassisConstants.kRightBackSteerID,
       Constants.ChassisConstants.kRightBackEncID,
       Constants.ChassisConstants.kRightBackInverted,
-      Constants.ChassisConstants.kRightBackOffset);
+      Constants.ChassisConstants.kRightBackOffset,
+      ModuleConstants.rightBackFF);
 
-      // Imu initlization
-      this.imu = new AHRS();
+    // Imu initlization
+    this.imu = new AHRS();
+
+    // Field initlization
+    field = new Field2d();
+
+    updateSwervePositions();
+    zeroHeading();
+
+    // Initilizing a pose estimator TODO: Add camera input
+    this.poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.kDriveKinematics,
+      getRotation2d().unaryMinus(),
+      this.swerve_positions,
+      new Pose2d());
+    
+    routine = new SysIdRoutine(
+    new SysIdRoutine.Config(),
+    new SysIdRoutine.Mechanism(this::setSysidVolt, 
+    log -> {
+      // set states for all 4 modules
+      for (Wheels wheel : Wheels.values()) {
+      log.motor(wheel.toString())
+          .voltage(
+              m_appliedVoltage.mut_replace(
+                  swerve_modules[wheel.ordinal()].getVoltage(), Volts))
+          .linearPosition(m_distance.mut_replace(swerve_modules[wheel.ordinal()].getPosition().distanceMeters, Meters))
+          .linearVelocity(
+              m_velocity.mut_replace(swerve_modules[wheel.ordinal()].getVelocity(), MetersPerSecond)); } }
+              , this));
+}
+
+  private void updateSwervePositions() {
+    this.swerve_positions[Wheels.LEFT_FRONT.ordinal()] = this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getPosition();
+    this.swerve_positions[Wheels.RIGHT_FRONT.ordinal()] = this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getPosition();
+    this.swerve_positions[Wheels.LEFT_BACK.ordinal()] = this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getPosition();
+    this.swerve_positions[Wheels.RIGHT_BACK.ordinal()] = this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getPosition();
+
   }
 
   /**
@@ -138,24 +213,63 @@ public class ChassisSubsystem extends SubsystemBase {
     this.swerve_modules[Wheels.LEFT_BACK.ordinal()].set(desiredStates[2]);
     this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].set(desiredStates[3]);
   }
+  
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return this.routine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return this.routine.dynamic(direction);
+  }
+
+  private void setSysidVolt(Measure<Voltage> volts) {
+    double voltageDouble = volts.magnitude();
+    setModulesVoltage(voltageDouble);
+  }
+
+  public void setModulesVoltage(double volt) {
+    this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].setMotorVoltage(volt);
+    this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].setMotorVoltage(volt);
+    this.swerve_modules[Wheels.LEFT_BACK.ordinal()].setMotorVoltage(volt);
+    this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].setMotorVoltage(volt);
+  }
 
   @Override
   public void periodic() {
     setModuleStates(this.swerveModuleStates);
 
-    SmartDashboard.putNumber("Left Front Rotation",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleAngle());
-    SmartDashboard.putNumber("Left Back Rotation",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleAngle());
-    SmartDashboard.putNumber("Right Front Rotation",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleAngle());
-    SmartDashboard.putNumber("Right Back Rotation",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleAngle());
+    updateSwervePositions();
+    this.poseEstimator.update(getRotation2d().unaryMinus(), this.swerve_positions);
+    
+    this.field.setRobotPose(this.poseEstimator.getEstimatedPosition());
+    SmartDashboard.putData(field);
 
-    SmartDashboard.putNumber("Left Front Error",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleAngleError());
-    SmartDashboard.putNumber("Left Back Error",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleAngleError());
-    SmartDashboard.putNumber("Right Front Error",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleAngleError());
-    SmartDashboard.putNumber("Right Back Error",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleAngleError());
+    SmartDashboard.putNumber("Left Front Distance",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getPosition().distanceMeters);
+    SmartDashboard.putNumber("Left Back Distance",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getPosition().distanceMeters);
+    SmartDashboard.putNumber("Right Front Distance",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getPosition().distanceMeters);
+    SmartDashboard.putNumber("Right Back Distance",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getPosition().distanceMeters);
 
-    SmartDashboard.putNumber("Left Front Output",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleClosedLoopOutput());
-    SmartDashboard.putNumber("Left Back Output",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleClosedLoopOutput());
-    SmartDashboard.putNumber("Right Front Output",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleClosedLoopOutput());
-    SmartDashboard.putNumber("Right Back Output",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleClosedLoopOutput());
+    SmartDashboard.putNumber("Left Front Rotation",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getPosition().angle.getRotations());
+    SmartDashboard.putNumber("Left Back Rotation",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getPosition().angle.getRotations());
+    SmartDashboard.putNumber("Right Front Rotation",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getPosition().angle.getRotations());
+    SmartDashboard.putNumber("Right Back Rotation",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getPosition().angle.getRotations());
+
+    SmartDashboard.putNumber("Left Front Rotation Error",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleAngleError());
+    SmartDashboard.putNumber("Left Back Rotation Error",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleAngleError());
+    SmartDashboard.putNumber("Right Front Rotation Error",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleAngleError());
+    SmartDashboard.putNumber("Right Back Rotation Error",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleAngleError());
+
+    SmartDashboard.putNumber("Left Front Rotation Output",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleClosedLoopOutput());
+    SmartDashboard.putNumber("Left Back Rotation Output",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleClosedLoopOutput());
+    SmartDashboard.putNumber("Right Front Rotation Output",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleClosedLoopOutput());
+    SmartDashboard.putNumber("Right Back Rotation Output",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleClosedLoopOutput());
+  
+    SmartDashboard.putNumber("Left Front Drive Velocity", swerve_modules[Wheels.LEFT_FRONT.ordinal()].getVelocity());
+    SmartDashboard.putNumber("Left Back Drive Velocity", swerve_modules[Wheels.LEFT_BACK.ordinal()].getVelocity());
+    SmartDashboard.putNumber("Right Front Drive Velocity", swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getVelocity());
+    SmartDashboard.putNumber("Right Back Drive Velocity", swerve_modules[Wheels.RIGHT_BACK.ordinal()].getVelocity());
+
+
+
   }
 }

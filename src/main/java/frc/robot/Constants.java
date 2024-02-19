@@ -5,11 +5,14 @@
 package frc.robot;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Voltage;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -26,6 +29,7 @@ public final class Constants {
   }
   public static class ModuleConstants {
     public static final double kWheelDiameterMeters = Units.inchesToMeters(4); // Module wheel diameter in meters
+    public static final double kWheelCircumference = kWheelDiameterMeters * Math.PI;
     public static final double kDriveMotorGearRatio = 6.75; // Module drive motor gear ratio
     public static final double kSteerMotorGearRatio = 12.8; // Module steer motor gear ratio
     
@@ -36,8 +40,32 @@ public final class Constants {
       kSteerMotorGains.withKP(30); // The proportional gain for the module steer control
       return kSteerMotorGains;
     }
+    
+    public static Slot0Configs getDriveMotorGains() { 
+      Slot0Configs kSteerMotorGains = new Slot0Configs();
+      kSteerMotorGains.withKP(0.1); // The proportional gain for the module steer control TODO: Find
+      return kSteerMotorGains;
+    }
+
+    public static SimpleMotorFeedforward leftFrontFF = new SimpleMotorFeedforward(0.21599, 2.2476, 0.040257);
+    public static SimpleMotorFeedforward leftBackFF = new SimpleMotorFeedforward(0.20676, 2.1653, 0.16537);
+    public static SimpleMotorFeedforward rightFrontFF = new SimpleMotorFeedforward(0.1788, 2.257, 0.036611);
+    public static SimpleMotorFeedforward rightBackFF = new SimpleMotorFeedforward(0.11961, 2.3274, 0.13714);
+
+
 
     public static double kModuleAngleDeadband = 0.001;
+
+    /* Swerve Current Limiting */
+    public static final int kSteerCurrentLimit = 25;
+    public static final int kSteerCurrentThreshold = 40;
+    public static final double kSteerCurrentThresholdTime = 0.1;
+    public static final boolean kSteerEnableCurrentLimit = true;
+
+    public static final int kDriveCurrentLimit = 35;
+    public static final int kDriveCurrentThreshold = 60;
+    public static final double kDriveCurrentThresholdTime = 0.1;
+    public static final boolean kDriveEnableCurrentLimit = true;
   }
   public static class ChassisConstants { 
     // Ports for driving motors
@@ -56,10 +84,10 @@ public final class Constants {
     public static final int kLeftBackEncID = 32; // CAN ID
     public static final int kRightBackEncID = 30; // CAN ID
     // Offsets for absolute encoders in rotations (i.e: 360 degrees = 1 rotation):
-    public static final double kLeftFrontOffset = -0.283447265625; 
-    public static final double kRightFrontOffset = -0.59765625;
-    public static final double kLeftBackOffset = -0.482666015625;
-    public static final double kRightBackOffset = -0.185546875;
+    public static final double kLeftFrontOffset = -0.284912109375; 
+    public static final double kRightFrontOffset = -0.599609375;
+    public static final double kLeftBackOffset = -0.4755859375;
+    public static final double kRightBackOffset = -0.18603515625;
     // Which motors are inverted:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   public static final boolean frontLeftDriveInverted = true;
     public static final boolean kLeftFrontInverted = false; 
     public static final boolean kRightFrontInverted = false;
@@ -67,10 +95,10 @@ public final class Constants {
     public static final boolean kRightBackInverted = false;
 
     // TODO: Fit from power control to velocity control
-    public static final double kMaxDrivingVelocity = 0.5;
-    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 3;
-    public static final double kTeleDriveMaxSpeedMetersPerSec = 0.5;
-    public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = 0.5;
+    public static final double kMaxDrivingVelocity = 4;
+    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 6;
+    public static final double kTeleDriveMaxSpeedMetersPerSec = 4;
+    public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = Math.PI;
 
     // Distance between centers of right and left wheels on robot meters
     public static final double kTrackWidth = 0.5403;

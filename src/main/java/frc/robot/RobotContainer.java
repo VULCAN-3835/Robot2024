@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
@@ -30,6 +32,8 @@ public class RobotContainer {
   private final ChassisSubsystem chassisSubsystem = new ChassisSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 
+  private final XboxController xboxController = new XboxController(OperatorConstants.kXboxPort);
+  private final CommandXboxController cmdXboxController = new CommandXboxController(OperatorConstants.kXboxPort);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
