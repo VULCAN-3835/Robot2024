@@ -25,9 +25,6 @@ import frc.robot.subsystems.IntakeSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final XboxController xboxController = new XboxController(OperatorConstants.kXboxPort);
-  private final CommandXboxController cmdXboxController = new CommandXboxController(OperatorConstants.kXboxPort);
-
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ChassisSubsystem chassisSubsystem = new ChassisSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
@@ -71,7 +68,6 @@ public class RobotContainer {
     cmdXboxController.a().onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kOpenRotations)));
     cmdXboxController.b().onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kAmpRotations)));
     cmdXboxController.y().onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations)));
-
   }
 
   /**
