@@ -16,13 +16,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -54,6 +51,7 @@ public class ChassisSubsystem extends SubsystemBase {
   // Pose estimator responsible for keeping the robot's position on the field using gyro, encoders and camera detection
   private SwerveDrivePoseEstimator poseEstimator;
 
+  // Field object for presenting position relative to field
   private Field2d field;
 
   // The states of the modules
@@ -64,11 +62,14 @@ public class ChassisSubsystem extends SubsystemBase {
           new SwerveModuleState(0,Rotation2d.fromDegrees(0))
   };
 
+  // Sysid Measurements
   private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
   private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
   private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
 
+  // Sysid Rotinue
   SysIdRoutine routine;
+
   public ChassisSubsystem() {
     // Modules Initilization:
     this.swerve_modules[Wheels.LEFT_FRONT.ordinal()] = new SwerveModule(
@@ -105,15 +106,18 @@ public class ChassisSubsystem extends SubsystemBase {
 
     // Imu initlization
     this.imu = new AHRS();
+
+    // Field initlization
     field = new Field2d();
 
     updateSwervePositions();
+    zeroHeading();
+
+    // Initilizing a pose estimator TODO: Add camera input
     this.poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.kDriveKinematics,
       getRotation2d().unaryMinus(),
       this.swerve_positions,
       new Pose2d());
-
-    zeroHeading();
     
     routine = new SysIdRoutine(
     new SysIdRoutine.Config(),
@@ -209,11 +213,6 @@ public class ChassisSubsystem extends SubsystemBase {
     this.swerve_modules[Wheels.LEFT_BACK.ordinal()].set(desiredStates[2]);
     this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].set(desiredStates[3]);
   }
-
-  private void setSysidVolt(Measure<Voltage> volts) {
-      double voltageDouble = volts.magnitude();
-      setModulesVoltage(voltageDouble);
-  }
   
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return this.routine.quasistatic(direction);
@@ -221,6 +220,11 @@ public class ChassisSubsystem extends SubsystemBase {
 
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return this.routine.dynamic(direction);
+  }
+
+  private void setSysidVolt(Measure<Voltage> volts) {
+    double voltageDouble = volts.magnitude();
+    setModulesVoltage(voltageDouble);
   }
 
   public void setModulesVoltage(double volt) {
@@ -250,20 +254,20 @@ public class ChassisSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Right Front Rotation",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getPosition().angle.getRotations());
     SmartDashboard.putNumber("Right Back Rotation",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getPosition().angle.getRotations());
 
-    SmartDashboard.putNumber("Left Front Error",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleAngleError());
-    SmartDashboard.putNumber("Left Back Error",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleAngleError());
-    SmartDashboard.putNumber("Right Front Error",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleAngleError());
-    SmartDashboard.putNumber("Right Back Error",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleAngleError());
+    SmartDashboard.putNumber("Left Front Rotation Error",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleAngleError());
+    SmartDashboard.putNumber("Left Back Rotation Error",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleAngleError());
+    SmartDashboard.putNumber("Right Front Rotation Error",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleAngleError());
+    SmartDashboard.putNumber("Right Back Rotation Error",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleAngleError());
 
-    SmartDashboard.putNumber("Left Front Output",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleClosedLoopOutput());
-    SmartDashboard.putNumber("Left Back Output",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleClosedLoopOutput());
-    SmartDashboard.putNumber("Right Front Output",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleClosedLoopOutput());
-    SmartDashboard.putNumber("Right Back Output",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleClosedLoopOutput());
+    SmartDashboard.putNumber("Left Front Rotation Output",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleClosedLoopOutput());
+    SmartDashboard.putNumber("Left Back Rotation Output",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleClosedLoopOutput());
+    SmartDashboard.putNumber("Right Front Rotation Output",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleClosedLoopOutput());
+    SmartDashboard.putNumber("Right Back Rotation Output",this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleClosedLoopOutput());
   
-    SmartDashboard.putNumber("Left Front Velocity", swerve_modules[Wheels.LEFT_FRONT.ordinal()].getVelocity());
-    SmartDashboard.putNumber("Left Back Velocity", swerve_modules[Wheels.LEFT_BACK.ordinal()].getVelocity());
-    SmartDashboard.putNumber("Right Front Velocity", swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getVelocity());
-    SmartDashboard.putNumber("Right Back Velocity", swerve_modules[Wheels.RIGHT_BACK.ordinal()].getVelocity());
+    SmartDashboard.putNumber("Left Front Drive Velocity", swerve_modules[Wheels.LEFT_FRONT.ordinal()].getVelocity());
+    SmartDashboard.putNumber("Left Back Drive Velocity", swerve_modules[Wheels.LEFT_BACK.ordinal()].getVelocity());
+    SmartDashboard.putNumber("Right Front Drive Velocity", swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getVelocity());
+    SmartDashboard.putNumber("Right Back Drive Velocity", swerve_modules[Wheels.RIGHT_BACK.ordinal()].getVelocity());
 
 
 
