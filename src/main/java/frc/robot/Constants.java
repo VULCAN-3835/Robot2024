@@ -128,6 +128,6 @@ public final class Constants {
     public static final double kDistancePidKi = 0;
     public static final double kDistancePidKd = 0;
 
-    
+    public static final double kDefaultFwdDriveSpeed = 0.45; //Find actual def speed
   }
 }

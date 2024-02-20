@@ -5,19 +5,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.controller.PIDController;
 
 public class FloorIntakeCommand extends Command {
   private final ChassisSubsystem chassisSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private final PIDController rotationPID;
-  private final PIDController distancePID;
 
   /** Creates a new FloorIntakeCommand. */
   public FloorIntakeCommand(ChassisSubsystem chassis, IntakeSubsystem intake) {
@@ -27,7 +24,6 @@ public class FloorIntakeCommand extends Command {
     addRequirements(chassisSubsystem, intakeSubsystem);
 
     this.rotationPID = new PIDController(Constants.CommandConstants.kRotationPidKp, Constants.CommandConstants.kRotationPidKi, Constants.CommandConstants.kRotationPidKd);
-    this.distancePID = new PIDController(Constants.CommandConstants.kDistancePidKp, Constants.CommandConstants.kDistancePidKi, Constants.CommandConstants.kDistancePidKd);
   }
 
   // Called when the command is initially scheduled.
@@ -41,21 +37,20 @@ public class FloorIntakeCommand extends Command {
   @Override
   public void execute() {
     double rotSpeed = rotationPID.calculate(intakeSubsystem.getPieceX()); //PID output for rot
-    double fwdSpeed = distancePID.calculate(intakeSubsystem.getPieceY()); //PID output for movement
-    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(fwdSpeed, 0, rotSpeed);
-    chassisSubsystem.drive(chassisSpeeds, false);
+    double fwdSpeed = rotationPID.atSetpoint() ? Constants.CommandConstants.kDefaultFwdDriveSpeed : 0;
+    chassisSubsystem.drive(fwdSpeed, 0, rotSpeed, false);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    chassisSubsystem.drive(new ChassisSpeeds(0, 0, 0), false);//Stops The Robot
+    chassisSubsystem.drive(0, 0, 0, false);//Stops The Robot
     intakeSubsystem.setMotorMode(IntakeSubsystem.STATE.restState);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return intakeSubsystem.hasPiece();
+    return intakeSubsystem.hasPiece() || ; //Or trigger released
   }
 }
