@@ -123,7 +123,7 @@ public class ChassisSubsystem extends SubsystemBase {
 
     // Imu initlization
     this.imu = new AHRS();
-
+    
     // Field initlization
     field = new Field2d();
 
@@ -137,21 +137,21 @@ public class ChassisSubsystem extends SubsystemBase {
     
     // Initilizing a pose estimator
     this.poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.kDriveKinematics,
-      getRotation2d().unaryMinus(),
+      getRotation2d().rotateBy(Rotation2d.fromDegrees(180)),
       this.swerve_positions,
       startingPos);
 
-    AutoBuilder.configureHolonomic(
-      this::getPose, 
-      this::resetOdometry, 
-      () -> ChassisConstants.kDriveKinematics.toChassisSpeeds(this.swerveModuleStates), 
-      this::runVelc,
-      new HolonomicPathFollowerConfig(
-        ChassisConstants.kMaxDrivingVelocity, 
-        ChassisConstants.kWheelRadius, 
-        new ReplanningConfig()),
-      () -> (Robot.allianceColor == "BLUE") ? false : true, 
-      this);
+    // AutoBuilder.configureHolonomic(
+    //   this::getPose, 
+    //   this::resetOdometry, 
+    //   () -> ChassisConstants.kDriveKinematics.toChassisSpeeds(this.swerveModuleStates), 
+    //   this::runVelc,
+    //   new HolonomicPathFollowerConfig(
+    //     ChassisConstants.kMaxDrivingVelocity, 
+    //     ChassisConstants.kWheelRadius, 
+    //     new ReplanningConfig()),
+    //   () -> (Robot.allianceColor == "BLUE") ? false : true, 
+    //   this);
     
 
     routine = new SysIdRoutine(
@@ -277,8 +277,12 @@ public class ChassisSubsystem extends SubsystemBase {
     this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].setMotorVoltage(volt);
   }
 
+  public LimelightUtil getLimelight() {
+    return this.limelight;
+  }
+
   private void resetOdometry(Pose2d pose) {
-    this.poseEstimator.resetPosition(getRotation2d().unaryMinus(), swerve_positions, pose);
+    this.poseEstimator.resetPosition(getRotation2d(), swerve_positions, pose);
   }
 
   private Pose2d getPose() {
@@ -290,7 +294,7 @@ public class ChassisSubsystem extends SubsystemBase {
     setModuleStates(this.swerveModuleStates);
 
     updateSwervePositions();
-    this.poseEstimator.update(getRotation2d().unaryMinus(), this.swerve_positions);
+    this.poseEstimator.update(getRotation2d().rotateBy(Rotation2d.fromDegrees(180)), this.swerve_positions);
     
     this.field.setRobotPose(this.poseEstimator.getEstimatedPosition());
     SmartDashboard.putData(field);

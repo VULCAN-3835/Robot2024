@@ -91,9 +91,9 @@ public final class Constants {
     public static final boolean kLeftBackInverted = false;
     public static final boolean kRightBackInverted = false;
 
-    public static final double kMaxDrivingVelocity = 3;
-    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 7;
-    public static final double kTeleDriveMaxSpeedMetersPerSec = 3;
+    public static final double kMaxDrivingVelocity = 2;
+    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 4;
+    public static final double kTeleDriveMaxSpeedMetersPerSec = 2;
     public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = Math.PI;
 
     // Distance between centers of right and left wheels on robot meters
