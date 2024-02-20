@@ -25,6 +25,7 @@ public final class Constants {
     public static final double kDeadband = 0.08; // Operator deadband
     public static final int kXboxPort = 0; // Xbox port
   }
+
   public static class ModuleConstants {
     public static final double kWheelDiameterMeters = Units.inchesToMeters(4); // Module wheel diameter in meters
     public static final double kWheelCircumference = kWheelDiameterMeters * Math.PI;
@@ -90,7 +91,6 @@ public final class Constants {
     public static final boolean kLeftBackInverted = false;
     public static final boolean kRightBackInverted = false;
 
-    // TODO: Fit from power control to velocity control
     public static final double kMaxDrivingVelocity = 3;
     public static final double kTeleDriveMaxAccelerationUnitsPerSec = 7;
     public static final double kTeleDriveMaxSpeedMetersPerSec = 3;
@@ -105,21 +105,22 @@ public final class Constants {
 
     // Swerve Kinematics:
     public static final SwerveDriveKinematics kDriveKinematics =
-            new SwerveDriveKinematics(
-                    new Translation2d(kWheelBase / 2, kTrackWidth / 2), //Left front
-                    new Translation2d(kWheelBase / 2, -kTrackWidth / 2), //Right front
-                    new Translation2d(-kWheelBase / 2, kTrackWidth / 2), //Left back
-                    new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)); //Right back
+      new SwerveDriveKinematics(
+        new Translation2d(kWheelBase / 2, kTrackWidth / 2), //Left front
+        new Translation2d(kWheelBase / 2, -kTrackWidth / 2), //Right front
+        new Translation2d(-kWheelBase / 2, kTrackWidth / 2), //Left back
+        new Translation2d(-kWheelBase / 2, -kTrackWidth / 2) //Right back
+      ); 
   }
 
   public static class ShooterConstants {
-      public static final int kShooterMotorPort = 50;
+    public static final int kShooterMotorPort = 50;
 
-      public static final int kPistonForwardChannelNumber = 1;
-      public static final int kPistonReverseChannelNumber = 2;
+    public static final int kPistonForwardChannelNumber = 1;
+    public static final int kPistonReverseChannelNumber = 2;
 
-      public static final double kShootPower = -0.45;//Desired speed for the movement of the wheel in firing
-      public static final double kCollectPower = 0.3;//Desired speed for the movement of the wheel in collection
+    public static final double kShootPower = -0.45;//Desired speed for the movement of the wheel in firing
+    public static final double kCollectPower = 0.3;//Desired speed for the movement of the wheel in collection
   }
   public static class IntakeConstants{
     // Intake motor ports:
