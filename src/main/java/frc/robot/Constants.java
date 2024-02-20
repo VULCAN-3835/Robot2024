@@ -5,14 +5,12 @@
 package frc.robot;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Voltage;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -52,18 +50,16 @@ public final class Constants {
     public static SimpleMotorFeedforward rightFrontFF = new SimpleMotorFeedforward(0.1788, 2.257, 0.036611);
     public static SimpleMotorFeedforward rightBackFF = new SimpleMotorFeedforward(0.11961, 2.3274, 0.13714);
 
-
-
     public static double kModuleAngleDeadband = 0.001;
 
     /* Swerve Current Limiting */
     public static final int kSteerCurrentLimit = 25;
-    public static final int kSteerCurrentThreshold = 40;
+    public static final int kSteerCurrentThreshold = 30;
     public static final double kSteerCurrentThresholdTime = 0.1;
     public static final boolean kSteerEnableCurrentLimit = true;
 
-    public static final int kDriveCurrentLimit = 35;
-    public static final int kDriveCurrentThreshold = 60;
+    public static final int kDriveCurrentLimit = 30;
+    public static final int kDriveCurrentThreshold = 40;
     public static final double kDriveCurrentThresholdTime = 0.1;
     public static final boolean kDriveEnableCurrentLimit = true;
   }
@@ -95,15 +91,17 @@ public final class Constants {
     public static final boolean kRightBackInverted = false;
 
     // TODO: Fit from power control to velocity control
-    public static final double kMaxDrivingVelocity = 4;
-    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 6;
-    public static final double kTeleDriveMaxSpeedMetersPerSec = 4;
+    public static final double kMaxDrivingVelocity = 3;
+    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 7;
+    public static final double kTeleDriveMaxSpeedMetersPerSec = 3;
     public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = Math.PI;
 
     // Distance between centers of right and left wheels on robot meters
     public static final double kTrackWidth = 0.5403;
     // Distance between front and back wheels on robot meters
     public static final double kWheelBase = 0.5403;
+    // Distance between middle of robot to module wheel
+    public static final double kWheelRadius = 0.38205;
 
     // Swerve Kinematics:
     public static final SwerveDriveKinematics kDriveKinematics =
@@ -120,7 +118,7 @@ public final class Constants {
       public static final int kPistonForwardChannelNumber = 1;
       public static final int kPistonReverseChannelNumber = 2;
 
-      public static final double kShootPower = -0.55;//Desired speed for the movement of the wheel in firing
+      public static final double kShootPower = -0.45;//Desired speed for the movement of the wheel in firing
       public static final double kCollectPower = 0.3;//Desired speed for the movement of the wheel in collection
   }
   public static class IntakeConstants{
@@ -141,7 +139,7 @@ public final class Constants {
     public static final double kAngleEncoderOffset = 0.146389728659743;
     
     // Intake motor speeds:
-    public static final double kMotorOutputPower = -0.9;
+    public static final double kMotorOutputPower = -0.8;
     public static final double kMotorIntakePower = 0.5;
 
     // Angle motor positions:

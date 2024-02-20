@@ -203,12 +203,10 @@ public class SwerveModule {
         // The desired module's angle in rotations
         double angleToSetDeg = optimized.angle.getRotations();
 
-        // Sets control modes setpoints / outputs
         this.steerMotor.setControl(this.angleController.withPosition(angleToSetDeg));
-
-        // this.driveMotor.set(optimized.speedMetersPerSecond);
-
         setSpeed(optimized);
+                // this.driveMotor.set(optimized.speedMetersPerSecond);
+
     }
 
     public void setMotorVoltage(double voltage) {

@@ -5,7 +5,13 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,19 +19,26 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.Constants.ChassisConstants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Util.LimelightUtil;
 import frc.robot.Util.SwerveModule;
 
 import static edu.wpi.first.units.MutableMeasure.mutable;
@@ -51,6 +64,8 @@ public class ChassisSubsystem extends SubsystemBase {
   // Pose estimator responsible for keeping the robot's position on the field using gyro, encoders and camera detection
   private SwerveDrivePoseEstimator poseEstimator;
 
+  private Pose2d startingPos;
+
   // Field object for presenting position relative to field
   private Field2d field;
 
@@ -61,6 +76,8 @@ public class ChassisSubsystem extends SubsystemBase {
           new SwerveModuleState(0,Rotation2d.fromDegrees(0)),
           new SwerveModuleState(0,Rotation2d.fromDegrees(0))
   };
+
+  private LimelightUtil limelight;
 
   // Sysid Measurements
   private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -112,13 +129,31 @@ public class ChassisSubsystem extends SubsystemBase {
 
     updateSwervePositions();
     zeroHeading();
+    this.imu.setAngleAdjustment(180);
 
-    // Initilizing a pose estimator TODO: Add camera input
+    limelight = new LimelightUtil("limelight-front");
+
+    startingPos = new Pose2d(2, 6, Rotation2d.fromDegrees(0));
+    
+    // Initilizing a pose estimator
     this.poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.kDriveKinematics,
       getRotation2d().unaryMinus(),
       this.swerve_positions,
-      new Pose2d());
+      startingPos);
+
+    AutoBuilder.configureHolonomic(
+      this::getPose, 
+      this::resetOdometry, 
+      () -> ChassisConstants.kDriveKinematics.toChassisSpeeds(this.swerveModuleStates), 
+      this::runVelc,
+      new HolonomicPathFollowerConfig(
+        ChassisConstants.kMaxDrivingVelocity, 
+        ChassisConstants.kWheelRadius, 
+        new ReplanningConfig()),
+      () -> (Robot.allianceColor == "BLUE") ? false : true, 
+      this);
     
+
     routine = new SysIdRoutine(
     new SysIdRoutine.Config(),
     new SysIdRoutine.Mechanism(this::setSysidVolt, 
@@ -133,6 +168,8 @@ public class ChassisSubsystem extends SubsystemBase {
           .linearVelocity(
               m_velocity.mut_replace(swerve_modules[wheel.ordinal()].getVelocity(), MetersPerSecond)); } }
               , this));
+
+      
 }
 
   private void updateSwervePositions() {
@@ -198,6 +235,12 @@ public class ChassisSubsystem extends SubsystemBase {
       );
     }
 
+    public void runVelc(ChassisSpeeds speeds) {
+      ChassisSpeeds discSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+
+      setModuleStates(ChassisConstants.kDriveKinematics.toSwerveModuleStates(discSpeeds));
+    }
+
     /**
      * Sets the desired states of the modules to given ones
      *
@@ -232,6 +275,14 @@ public class ChassisSubsystem extends SubsystemBase {
     this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].setMotorVoltage(volt);
     this.swerve_modules[Wheels.LEFT_BACK.ordinal()].setMotorVoltage(volt);
     this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].setMotorVoltage(volt);
+  }
+
+  private void resetOdometry(Pose2d pose) {
+    this.poseEstimator.resetPosition(getRotation2d().unaryMinus(), swerve_positions, pose);
+  }
+
+  private Pose2d getPose() {
+    return this.poseEstimator.getEstimatedPosition();
   }
 
   @Override
