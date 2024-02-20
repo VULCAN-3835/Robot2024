@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -19,6 +20,39 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static class IntakeConstants{
+    // Intake motor ports:
+    public static final int kIntakeMotorPort = 40;
+    public static final int kAngleMotorPort = 41;
+
+    // Intake analog ports:
+    public static final int kPieceDetectorPort = 0;
+
+    // Intake digital ports:
+    public static final int kAngleEncoderPort = 0;
+    public static final int kOpenLimitSwitchPort = 1;
+    public static final int kClosedLimitSwitchPort = 2;
+
+    // Limit constants:
+    public static final double kPieceDetectorDetectionThreshold = 2.5;
+    public static final double kAngleEncoderOffset = 0.146389728659743;
+    
+    // Intake motor speeds:
+    public static final double kMotorOutputPower = -0.45;
+    public static final double kMotorIntakePower = 0.45;
+
+    // Angle motor positions:
+    public static final double kOpenRotations = 0;
+    public static final double kClosedRotations = 0.52118078802952;
+
+    // Angle controller constants:
+    public static final double kP = 1.3; 
+    public static final double kMaxVelocityRotPerSec = 0.65;
+    public static final double kMaxAccelerationRotPerSecSquared = 1;
+    public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(
+      IntakeConstants.kMaxVelocityRotPerSec,
+      IntakeConstants.kMaxAccelerationRotPerSecSquared);
+  }
   public static class OperatorConstants {
     public static final double kDeadband = 0.08; // Operator deadband
     public static final int kXboxPort = 0; // Xbox port
@@ -84,5 +118,16 @@ public final class Constants {
                     new Translation2d(kWheelBase / 2, -kTrackWidth / 2), //Right front
                     new Translation2d(-kWheelBase / 2, kTrackWidth / 2), //Left back
                     new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)); //Right back
+  }
+  public static class CommandConstants{
+    public static final double kRotationPidKp = 0.5;
+    public static final double kRotationPidKi = 0;
+    public static final double kRotationPidKd = 0;
+
+    public static final double kDistancePidKp = 0.5;
+    public static final double kDistancePidKi = 0;
+    public static final double kDistancePidKd = 0;
+
+    
   }
 }
