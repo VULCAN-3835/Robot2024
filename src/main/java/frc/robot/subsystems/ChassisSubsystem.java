@@ -27,6 +27,7 @@ import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -129,7 +130,6 @@ public class ChassisSubsystem extends SubsystemBase {
 
     updateSwervePositions();
     zeroHeading();
-    this.imu.setAngleAdjustment(180);
 
     limelight = new LimelightUtil("limelight-front");
 
@@ -137,21 +137,21 @@ public class ChassisSubsystem extends SubsystemBase {
     
     // Initilizing a pose estimator
     this.poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.kDriveKinematics,
-      getRotation2d().rotateBy(Rotation2d.fromDegrees(180)),
+      getRotation2d().unaryMinus(),
       this.swerve_positions,
       startingPos);
 
-    // AutoBuilder.configureHolonomic(
-    //   this::getPose, 
-    //   this::resetOdometry, 
-    //   () -> ChassisConstants.kDriveKinematics.toChassisSpeeds(this.swerveModuleStates), 
-    //   this::runVelc,
-    //   new HolonomicPathFollowerConfig(
-    //     ChassisConstants.kMaxDrivingVelocity, 
-    //     ChassisConstants.kWheelRadius, 
-    //     new ReplanningConfig()),
-    //   () -> (Robot.allianceColor == "BLUE") ? false : true, 
-    //   this);
+    AutoBuilder.configureHolonomic(
+      this::getPose, 
+      this::resetOdometry, 
+      () -> ChassisConstants.kDriveKinematics.toChassisSpeeds(this.swerveModuleStates), 
+      this::runVelc,
+      new HolonomicPathFollowerConfig(
+        ChassisConstants.kMaxDrivingVelocity, 
+        ChassisConstants.kWheelRadius, 
+        new ReplanningConfig()),
+      () -> (Robot.allianceColor == "BLUE") ? false : true, 
+      this);
     
 
     routine = new SysIdRoutine(
@@ -282,7 +282,7 @@ public class ChassisSubsystem extends SubsystemBase {
   }
 
   private void resetOdometry(Pose2d pose) {
-    this.poseEstimator.resetPosition(getRotation2d(), swerve_positions, pose);
+    this.poseEstimator.resetPosition(getRotation2d().unaryMinus(), swerve_positions, pose);
   }
 
   private Pose2d getPose() {
@@ -292,9 +292,13 @@ public class ChassisSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     setModuleStates(this.swerveModuleStates);
-
+    
     updateSwervePositions();
-    this.poseEstimator.update(getRotation2d().rotateBy(Rotation2d.fromDegrees(180)), this.swerve_positions);
+    this.poseEstimator.update(getRotation2d().unaryMinus(), this.swerve_positions);
+
+    // if (this.limelight.hasValidTarget()) {
+    //   this.poseEstimator.addVisionMeasurement(this.limelight.getPoseFromCamera(), Timer.getFPGATimestamp() - (this.limelight.getCameraTimeStampSec()));
+    // }
     
     this.field.setRobotPose(this.poseEstimator.getEstimatedPosition());
     SmartDashboard.putData(field);

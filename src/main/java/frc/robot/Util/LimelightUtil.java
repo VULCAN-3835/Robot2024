@@ -43,7 +43,7 @@ public class LimelightUtil {
 
     // Returns the Pose2d relative to blue corner
     public Pose2d getPoseFromCamera() {
-        double[] botpose = this.limelight.getEntry("botpose_wpiblue").getDoubleArray(new double[7]);
+        double[] botpose = this.limelight.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
         double x = botpose[0];
         double y = botpose[1];
         double yaw = botpose[5];
@@ -68,5 +68,9 @@ public class LimelightUtil {
     // Returns if limelight has valid target
     public boolean hasValidTarget() {
         return cameraHasTarget() && distanceFromTargetMeters() < 3.4;
+    }
+
+    public double getAprilTagID() {
+        return this.limelight.getEntry("tid").getDouble(0);
     }
 }

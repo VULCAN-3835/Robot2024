@@ -98,8 +98,13 @@ public class IntakeSubsystem extends SubsystemBase {
    * @return The current position of the arm
   */
   public double getCurrentPosition() {
-    this.currentPosition = this.angleEncoder.getAbsolutePosition()-this.angleEncoder.getPositionOffset();
+    this.currentPosition = (this.angleEncoder.getAbsolutePosition()-this.angleEncoder.getPositionOffset());
+    this.currentPosition = normalizePosition(this.currentPosition);
     return this.currentPosition;
+  }
+
+  public double normalizePosition(double value) {
+    return (value+1)%1;
   }
 
   /**
@@ -125,7 +130,7 @@ public class IntakeSubsystem extends SubsystemBase {
    * @return True if piece is inside the intake system
   */
   public boolean hasPiece(){
-    return pieceDetector.getVoltage() > IntakeConstants.kPieceDetectorDetectionThreshold;
+    return pieceDetector.getVoltage() > IntakeConstants.kPieceDetectorDetectionThreshold && pieceDetector.getVoltage() < 2;
   }
 
   /**
@@ -185,6 +190,13 @@ public class IntakeSubsystem extends SubsystemBase {
     if (this.goalSetpoint>IntakeConstants.kClosedRotations)
       this.goalSetpoint = IntakeConstants.kClosedRotations;
 
+    if (output > 0.5)
+      output = 0.5;
+    if (output < -0.5)
+      output = -0.5;
+
+    if (getCurrentPosition() == 0.25)
+      output = 0;
     // Applies output to motor
     this.angleMotor.set(output);
 

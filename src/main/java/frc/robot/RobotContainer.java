@@ -25,6 +25,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DefaultTeleopCommand;
+import frc.robot.commands.FloorIntakeCommand;
 import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -80,6 +81,7 @@ public class RobotContainer {
     cmdXboxController.a().onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kOpenRotations)));
     cmdXboxController.b().onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kAmpRotations)));
     cmdXboxController.y().onTrue(new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations)));
+    cmdXboxController.x().onTrue(new FloorIntakeCommand(this.chassisSubsystem, this.intakeSubsystem, () -> xboxController.getBackButton()));
   }
 
   
