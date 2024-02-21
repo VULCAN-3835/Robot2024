@@ -9,32 +9,32 @@ import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.STATE;
 
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class FloorIntakeCommand extends Command {
   private final ChassisSubsystem chassisSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private final PIDController rotationPID;
   private Supplier<Boolean> backSupplier;
-  private boolean finished;
   private boolean inTolerence;
 
+  private final double kRotationPidKp = 0.045;
+  private final double kRotationPidKi = 0;
+  private final double kRotationPidKd = 0;
+  private final double kDefaultFwdDriveSpeed = 1.8; //Find actual def speed
 
   /** Creates a new FloorIntakeCommand. */
   public FloorIntakeCommand(ChassisSubsystem chassis, IntakeSubsystem intake, Supplier<Boolean> backSupplier) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.chassisSubsystem = chassis;
     this.intakeSubsystem = intake;
-    addRequirements(chassisSubsystem, intakeSubsystem);
 
-    this.rotationPID = new PIDController(Constants.CommandConstants.kRotationPidKp, Constants.CommandConstants.kRotationPidKi, Constants.CommandConstants.kRotationPidKd);
+    this.rotationPID = new PIDController(kRotationPidKp, kRotationPidKi, kRotationPidKd);
     this.backSupplier = backSupplier;
-    this.finished = false;
     this.inTolerence = false;
   }
 
@@ -43,6 +43,11 @@ public class FloorIntakeCommand extends Command {
   public void initialize() {
     this.rotationPID.setTolerance(2);
     this.rotationPID.setSetpoint(0);
+
+    this.intakeSubsystem.setMotorMode(STATE.collectState);
+
+    addRequirements(chassisSubsystem, intakeSubsystem);
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -51,42 +56,27 @@ public class FloorIntakeCommand extends Command {
     if (rotationPID.atSetpoint()) {
       inTolerence = true;
     }
+    double rotSpeed = intakeSubsystem.isOpen()?rotationPID.calculate(intakeSubsystem.getLimelight().getX()):0; //PID output for rot
+    double fwdSpeed = inTolerence ? kDefaultFwdDriveSpeed : 0;
+    
 
-    if (intakeSubsystem.hasPiece()) {
-      if (intakeSubsystem.isOpen()) {
-        this.intakeSubsystem.setMotorMode(IntakeSubsystem.STATE.restState);
-        this.chassisSubsystem.drive(0,0,0, false);
-        this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations);
-      }
-    if (this.intakeSubsystem.isClosed())
-        finished = true;
+    chassisSubsystem.drive(fwdSpeed, 0, rotSpeed, false);
     }
-    else {
-      double rotSpeed = intakeSubsystem.isOpen()?rotationPID.calculate(intakeSubsystem.getPieceX()):0; //PID output for rot
-      double fwdSpeed = inTolerence ? Constants.CommandConstants.kDefaultFwdDriveSpeed : 0;
-      if (rotationPID.atSetpoint())
-        intakeSubsystem.setMotorMode(IntakeSubsystem.STATE.collectState);
-      else 
-        intakeSubsystem.setMotorMode(IntakeSubsystem.STATE.restState);
-
-      chassisSubsystem.drive(fwdSpeed, 0, rotSpeed, false);
-    }
-  }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     chassisSubsystem.drive(0, 0, 0, false);//Stops The Robot
+    this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations);
     intakeSubsystem.setMotorMode(IntakeSubsystem.STATE.restState);
 
     // Reset flags
-    finished = false;
     inTolerence = false;
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return this.finished || backSupplier.get(); //Or trigger released
+    return (intakeSubsystem.hasPiece() && intakeSubsystem.isOpen())|| backSupplier.get(); //Or trigger released
   }
 }

@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Util.LimelightUtil;
 import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -58,10 +59,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   // Limelight values:
-  private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-collect");
-  private NetworkTableEntry tx = table.getEntry("tx");
-  private NetworkTableEntry ty = table.getEntry("ty");
-  private NetworkTableEntry ta = table.getEntry("ta");
+  private LimelightUtil limelight;
 
   public IntakeSubsystem() {
     this.intakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotorPort, MotorType.kBrushless);
@@ -78,10 +76,16 @@ public class IntakeSubsystem extends SubsystemBase {
     this.armPositionController = new ProfiledPIDController(IntakeConstants.kP, 0, 0,
      IntakeConstants.kConstraints);
 
+    this.limelight = new LimelightUtil("limelight-collect");
+
     this.goalSetpoint = IntakeConstants.kClosedRotations;
     this.armPositionController.setGoal(this.goalSetpoint);
 
     this.angleMotor.setIdleMode(IdleMode.kBrake);
+  }
+
+  public LimelightUtil getLimelight() {
+    return this.limelight;
   }
 
   /**
@@ -133,29 +137,6 @@ public class IntakeSubsystem extends SubsystemBase {
     return pieceDetector.getVoltage() > IntakeConstants.kPieceDetectorDetectionThreshold && pieceDetector.getVoltage() < 2;
   }
 
-  /**
-   * Finds the X value of the limelight from detected game piece
-   * @return X axis value from the game piece
-  */
-  public double getPieceX(){ 
-    return tx.getDouble(0.0);
-  }
-
-  /**
-   * Finds the Y value of the limelight from detected game piece
-   * @return Y axis value from the game piece
-  */
-  public double getPieceY(){ 
-    return ty.getDouble(0.0);
-  }
-
-  /**
-   * Finds the A value of the limelight from detected game piece
-   * @return The area the game piece takes in the limelight's frame
-  */
-  public double getPieceA(){ 
-    return ta.getDouble(0.0);
-  }
 
   /**
    * Checks if arm is closed
@@ -204,10 +185,6 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Intake setpoint", this.goalSetpoint);
     SmartDashboard.putNumber("Intake Current", getCurrentPosition());
     SmartDashboard.putNumber("Intake Error", this.goalSetpoint-getCurrentPosition());
-  
-    SmartDashboard.putNumber("Intake LimelightX", tx.getDouble(0.0));
-    SmartDashboard.putNumber("Intake LimelightY", ty.getDouble(0.0));
-    SmartDashboard.putNumber("Intake LimelightArea", ta.getDouble(0.0));
 
     SmartDashboard.putBoolean("Intake Open", isOpen());
     SmartDashboard.putBoolean("Intake Closed", isClosed());

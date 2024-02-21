@@ -91,9 +91,9 @@ public final class Constants {
     public static final boolean kLeftBackInverted = false;
     public static final boolean kRightBackInverted = false;
 
-    public static final double kMaxDrivingVelocity = 2;
+    public static final double kMaxDrivingVelocity = 3;
     public static final double kTeleDriveMaxAccelerationUnitsPerSec = 4;
-    public static final double kTeleDriveMaxSpeedMetersPerSec = 2;
+    public static final double kTeleDriveMaxSpeedMetersPerSec = 3;
     public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = Math.PI;
 
     // Distance between centers of right and left wheels on robot meters
@@ -119,7 +119,7 @@ public final class Constants {
     public static final int kPistonForwardChannelNumber = 1;
     public static final int kPistonReverseChannelNumber = 2;
 
-    public static final double kShootPower = -0.5;//Desired speed for the movement of the wheel in firing
+    public static final double kShootPower = -0.51;//Desired speed for the movement of the wheel in firing
     public static final double kCollectPower = 0.3;//Desired speed for the movement of the wheel in collection
   }
   public static class IntakeConstants{
@@ -149,18 +149,11 @@ public final class Constants {
     public static final double kClosedRotations = 0.597;
 
     // Angle controller constants:
-    public static final double kP = 1.8; 
+    public static final double kP = 2; 
     public static final double kMaxVelocityRotPerSec = 0.65;
     public static final double kMaxAccelerationRotPerSecSquared = 1;
     public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(
       IntakeConstants.kMaxVelocityRotPerSec,
       IntakeConstants.kMaxAccelerationRotPerSecSquared);
-  }
-  public static class CommandConstants{
-    public static final double kRotationPidKp = 0.045;
-    public static final double kRotationPidKi = 0;
-    public static final double kRotationPidKd = 0;
-
-    public static final double kDefaultFwdDriveSpeed = 1.2; //Find actual def speed
   }
 }

@@ -9,6 +9,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -144,14 +146,21 @@ public class ChassisSubsystem extends SubsystemBase {
     AutoBuilder.configureHolonomic(
       this::getPose, 
       this::resetOdometry, 
-      () -> ChassisConstants.kDriveKinematics.toChassisSpeeds(this.swerveModuleStates), 
+      () -> ChassisConstants.kDriveKinematics.toChassisSpeeds(getModStates()), 
       this::runVelc,
       new HolonomicPathFollowerConfig(
+        new PIDConstants(1, 0, 0), // Translation PID
+        new PIDConstants(1.0, 0, 0), // Rotation PID
         ChassisConstants.kMaxDrivingVelocity, 
         ChassisConstants.kWheelRadius, 
         new ReplanningConfig()),
       () -> (Robot.allianceColor == "BLUE") ? false : true, 
       this);
+
+    // Set up custom logging to add the current path to a field 2d widget
+    PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("path").setPoses(poses));
+    SmartDashboard.putData(field);
+
     
 
     routine = new SysIdRoutine(
@@ -282,11 +291,19 @@ public class ChassisSubsystem extends SubsystemBase {
   }
 
   private void resetOdometry(Pose2d pose) {
-    this.poseEstimator.resetPosition(getRotation2d().unaryMinus(), swerve_positions, pose);
+    this.poseEstimator.resetPosition(getRotation2d().unaryMinus(), getModPositions(), pose);
   }
 
-  private Pose2d getPose() {
+  public Pose2d getPose() {
     return this.poseEstimator.getEstimatedPosition();
+  }
+
+  public SwerveModulePosition[] getModPositions() {
+    return this.swerve_positions;
+  }
+
+  public SwerveModuleState[] getModStates() {
+    return this.swerveModuleStates;
   }
 
   @Override
@@ -301,7 +318,6 @@ public class ChassisSubsystem extends SubsystemBase {
     // }
     
     this.field.setRobotPose(this.poseEstimator.getEstimatedPosition());
-    SmartDashboard.putData(field);
 
     SmartDashboard.putNumber("Left Front Distance",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getPosition().distanceMeters);
     SmartDashboard.putNumber("Left Back Distance",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getPosition().distanceMeters);
@@ -328,6 +344,7 @@ public class ChassisSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Right Front Drive Velocity", swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getVelocity());
     SmartDashboard.putNumber("Right Back Drive Velocity", swerve_modules[Wheels.RIGHT_BACK.ordinal()].getVelocity());
 
+    SmartDashboard.putNumber("tid", this.limelight.getAprilTagID());
 
 
   }

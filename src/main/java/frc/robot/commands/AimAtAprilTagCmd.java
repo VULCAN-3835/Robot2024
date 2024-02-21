@@ -7,6 +7,7 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.subsystems.ChassisSubsystem;
 
@@ -15,12 +16,13 @@ import frc.robot.subsystems.ChassisSubsystem;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AimAtAprilTagCmd extends PIDCommand {
   ChassisSubsystem chassisSubsystem;
-  private double rotTolerance = 1.5;
+  private double rotTolerance = 1;
   private Supplier<Boolean> backSupplier;
+  private boolean wrongId = false;
   public AimAtAprilTagCmd(ChassisSubsystem chassisSubsystem, int id, Supplier<Boolean> backButton) {
     super(
         // The controller that the command will use
-        new PIDController(0.03, 0, 0),
+        new PIDController(0.02, 0, 0),
         // This should return the measurement
         () -> chassisSubsystem.getLimelight().getX(),
         // This should return the setpoint (can also be a constant)
@@ -29,6 +31,8 @@ public class AimAtAprilTagCmd extends PIDCommand {
         output -> {
           chassisSubsystem.drive(0, 0, output, true);// Use the output here
         });
+    this.chassisSubsystem = chassisSubsystem;
+    wrongId = (double)id != this.chassisSubsystem.getLimelight().getAprilTagID();
     getController().setTolerance(this.rotTolerance);
     this.backSupplier = backButton;
     this.chassisSubsystem = chassisSubsystem;
@@ -40,6 +44,6 @@ public class AimAtAprilTagCmd extends PIDCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return backSupplier.get() || getController().atSetpoint();
+    return backSupplier.get() || getController().atSetpoint() || wrongId;
   }
 }
