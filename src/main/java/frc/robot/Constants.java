@@ -23,7 +23,11 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
   public static class OperatorConstants {
     public static final double kDeadband = 0.08; // Operator deadband
-    public static final int kXboxPort = 0; // Xbox port
+    public static final int kXboxDrivePort = 0; // Xbox port
+    public static final int kXboxButtonPort = 1; // Xbox port
+    public static final int kLeftJoystickPort = 2; // Xbox port
+    public static final int kRightJoystickPort = 3; // Xbox port
+
   }
 
   public static class ModuleConstants {

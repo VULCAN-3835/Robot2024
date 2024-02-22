@@ -31,11 +31,9 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Util.LimelightUtil;
-import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
   
@@ -83,10 +81,16 @@ public class IntakeSubsystem extends SubsystemBase {
     this.armPositionController.setGoal(this.goalSetpoint);
 
     this.angleMotor.setIdleMode(IdleMode.kBrake);
+
+    this.armPositionController.setTolerance(2);
   }
 
   public LimelightUtil getLimelight() {
     return this.limelight;
+  }
+
+  public boolean getArmAtSetpoint() {
+    return this.armPositionController.atSetpoint();
   }
 
   /**

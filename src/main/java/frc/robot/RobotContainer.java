@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,6 +28,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -57,24 +61,19 @@ public class RobotContainer {
   private final ChassisSubsystem chassisSubsystem = new ChassisSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 
-  private final XboxController xboxControllerDrive = new XboxController(OperatorConstants.kXboxPort);
-  private final CommandXboxController cmdXboxControllerDrive = new CommandXboxController(OperatorConstants.kXboxPort);
-
-  private final XboxController xboxControllerButton = new XboxController(1);
-  private final CommandXboxController cmdXboxControllerButton = new CommandXboxController(1);
+  private final XboxController xboxControllerDrive = new XboxController(OperatorConstants.kXboxDrivePort);
+  private final XboxController xboxControllerButton = new XboxController(OperatorConstants.kXboxButtonPort);
+  private final Joystick leftJoystick = new Joystick(OperatorConstants.kLeftJoystickPort);
+  private final Joystick rightJoystick = new Joystick(OperatorConstants.kRightJoystickPort);
 
   // private final SendableChooser<Command> autoChooser;
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
-    () -> -xboxControllerDrive.getLeftY(),
-    () -> -xboxControllerDrive.getLeftX(),
-    () -> -xboxControllerDrive.getRightX()));
+    configureBindings();
 
     // autoChooser = AutoBuilder.buildAutoChooser();
     // SmartDashboard.putData("Auto Mode", autoChooser);
-    configureBindings();
     // registerCommands();
     // shuffleboardPaths();
   }
@@ -135,51 +134,56 @@ public class RobotContainer {
   // }
 
   private void configureBindings() {
-    // Initilizing a start button trigger
-    Trigger rightBumperTrigger = new Trigger(() -> this.xboxControllerDrive.getRightBumper());
-    Trigger leftBumperTrigger = new Trigger(() -> this.xboxControllerDrive.getLeftBumper());
+    this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
+    () -> -xboxControllerDrive.getLeftY(),
+    () -> -xboxControllerDrive.getLeftX(),
+    () -> -xboxControllerDrive.getRightX()));
+  }
 
+  
+  private void configureXboxBinding(int port) {
+    CommandXboxController cmdXboxController = new CommandXboxController(port);
     // Applies zero heading method instant command to start button trigger
-    cmdXboxControllerDrive.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
+    cmdXboxController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
 
-    // Applyies intake to intake motor on right bumper
-    rightBumperTrigger.whileTrue(new InstantCommand(() -> {
-      this.intakeSubsystem.setRotationPosition(0.41);
-      }));
-    rightBumperTrigger.toggleOnFalse(new InstantCommand(() -> { 
-       this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations); 
-      }));
-
-    // Applies output to shooter motor on right trigger
-    cmdXboxControllerDrive.rightTrigger().whileTrue(new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower)));
-    cmdXboxControllerDrive.rightTrigger().toggleOnFalse(new InstantCommand(() -> this.shooterSubsystem.stopMotor()));
-
-    // Applies intake to shooter motor on left trigger
-    cmdXboxControllerDrive.leftTrigger().whileTrue(new InstantCommand(() -> this.shooterSubsystem.collect()));
-    cmdXboxControllerDrive.leftTrigger().toggleOnFalse(new InstantCommand(() -> this.shooterSubsystem.stopMotor()));
-
-    // Applies output to intake motor on left bumper
-    leftBumperTrigger.whileTrue(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.collectState)));
-    leftBumperTrigger.toggleOnFalse(new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.restState)));
-
-    cmdXboxControllerDrive.a().whileTrue(new FullFloorIntakeCmd(this.chassisSubsystem, this.intakeSubsystem, () -> xboxControllerDrive.getBackButton()));
-    cmdXboxControllerDrive.a().toggleOnFalse(new InstantCommand(() -> {
+    cmdXboxController.a().whileTrue(new FullFloorIntakeCmd(this.chassisSubsystem, this.intakeSubsystem, () -> cmdXboxController.back().getAsBoolean()));
+    cmdXboxController.a().toggleOnFalse(new InstantCommand(() -> {
        this.intakeSubsystem.setMotorMode(STATE.restState);
        this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations); 
       }));
 
-    cmdXboxControllerDrive.y().whileTrue(new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> xboxControllerDrive.getBackButton()));
-    cmdXboxControllerDrive.y().toggleOnFalse(new InstantCommand(() -> {
+    cmdXboxController.b().whileTrue(new SequentialCommandGroup(
+      new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(0.41)),
+      new WaitUntilCommand(() -> intakeSubsystem.getArmAtSetpoint()),
+      new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.ampState)),
+      new WaitCommand(0.2),
+      new InstantCommand(() -> {
+       this.intakeSubsystem.setMotorMode(STATE.restState);
+       this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations); 
+      })
+    ));
+    cmdXboxController.b().toggleOnFalse(new InstantCommand(() -> {
+       this.intakeSubsystem.setMotorMode(STATE.restState);
+       this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations); 
+      }));
+
+    cmdXboxController.y().whileTrue(new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> cmdXboxController.back().getAsBoolean()));
+    cmdXboxController.y().toggleOnFalse(new InstantCommand(() -> {
        this.intakeSubsystem.setMotorMode(STATE.restState);
        this.shooterSubsystem.setShooterSpeed(0); 
       }));
 
-
-    cmdXboxControllerDrive.x().whileTrue(new InstantCommand(() -> {
+    cmdXboxController.x().whileTrue(new SequentialCommandGroup(
+      new InstantCommand(() -> {
        this.intakeSubsystem.setMotorMode(STATE.collectState);
        this.shooterSubsystem.setShooterSpeed(ShooterConstants.kCollectPower); 
-      }));
-    cmdXboxControllerDrive.x().toggleOnFalse(new InstantCommand(() -> {
+      }),
+      new WaitUntilCommand(() -> this.intakeSubsystem.hasPiece()),
+      new InstantCommand(() -> {
+      this.intakeSubsystem.setMotorMode(STATE.restState);
+      this.shooterSubsystem.setShooterSpeed(0); 
+    })));
+    cmdXboxController.x().toggleOnFalse(new InstantCommand(() -> {
       this.intakeSubsystem.setMotorMode(STATE.restState);
       this.shooterSubsystem.setShooterSpeed(0); 
     }));
