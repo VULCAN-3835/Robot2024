@@ -17,6 +17,7 @@ public class AutoShootCmd extends SequentialCommandGroup {
   public AutoShootCmd(ShooterSubsystem shooter, IntakeSubsystem intake) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new ShootCmd(shooter, intake));
+    addCommands(
+      new ShootCmd(shooter, intake));
   }
 }

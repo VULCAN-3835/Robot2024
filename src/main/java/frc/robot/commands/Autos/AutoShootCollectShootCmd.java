@@ -7,18 +7,31 @@ package frc.robot.commands.Autos;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.FloorIntakeCommand;
+import frc.robot.commands.FullFloorIntakeCmd;
+import frc.robot.commands.ShootCmd;
+import frc.robot.subsystems.ChassisSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.STATE;
+import frc.robot.subsystems.ShooterSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoShootCollectShootCmd extends SequentialCommandGroup {
   /** Creates a new AutoShootCollectShootCmd. */
-  public AutoShootCollectShootCmd() {
+  public AutoShootCollectShootCmd(ShooterSubsystem shooter, IntakeSubsystem intake, ChassisSubsystem chassis) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-    );
+      new ShootCmd(shooter, intake),
+      new FullFloorIntakeCmd(chassis, intake, () -> false),
+      new InstantCommand(() -> {
+       intake.setMotorMode(STATE.restState);
+       intake.setRotationPosition(IntakeConstants.kClosedRotations); 
+      })
+      );
   }
 }

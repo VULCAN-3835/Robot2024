@@ -4,16 +4,27 @@
 
 package frc.robot.commands.Autos;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.ShootCmd;
+import frc.robot.subsystems.ChassisSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoShootMoveCmd extends SequentialCommandGroup {
   /** Creates a new AutoShootMoveCmd. */
-  public AutoShootMoveCmd() {
+  public AutoShootMoveCmd(ShooterSubsystem shooter, IntakeSubsystem intake, ChassisSubsystem chassis) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands();
+    addCommands(
+      new ShootCmd(shooter, intake),
+      new InstantCommand(() -> chassis.drive(1,0,0, false)),
+      new WaitCommand(2),
+      new InstantCommand(() -> chassis.drive(0,0,0, false))
+      );
   }
 }
