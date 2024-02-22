@@ -55,7 +55,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public enum STATE { // Enum representing the 3 states of the intake motor
     collectState,
     outputState,
-    restState
+    restState,
+    ampState
   }
 
   // Limelight values:
@@ -126,6 +127,8 @@ public class IntakeSubsystem extends SubsystemBase {
       case restState:
         this.intakeMotor.set(0);
         break;
+      case ampState:
+        this.intakeMotor.set(IntakeConstants.kAmpOutputPower);
     }
   }
 

@@ -22,7 +22,7 @@ public class AimAtAprilTagCmd extends PIDCommand {
   public AimAtAprilTagCmd(ChassisSubsystem chassisSubsystem, int id, Supplier<Boolean> backButton) {
     super(
         // The controller that the command will use
-        new PIDController(0.02, 0, 0),
+        new PIDController(0.05, 0, 0),
         // This should return the measurement
         () -> chassisSubsystem.getLimelight().getX(),
         // This should return the setpoint (can also be a constant)
@@ -31,6 +31,7 @@ public class AimAtAprilTagCmd extends PIDCommand {
         output -> {
           chassisSubsystem.drive(0, 0, output, true);// Use the output here
         });
+    wrongId = false;
     this.chassisSubsystem = chassisSubsystem;
     wrongId = (double)id != this.chassisSubsystem.getLimelight().getAprilTagID();
     getController().setTolerance(this.rotTolerance);
@@ -44,6 +45,8 @@ public class AimAtAprilTagCmd extends PIDCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    SmartDashboard.putBoolean("Wrong ID", wrongId);
+    SmartDashboard.putNumber("ID",this.chassisSubsystem.getLimelight().getAprilTagID());
     return backSupplier.get() || getController().atSetpoint() || wrongId;
   }
 }

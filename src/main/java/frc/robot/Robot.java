@@ -32,6 +32,12 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+      allianceColor = "BLUE";
+    }
+    else if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+      allianceColor = "RED";
+    }
     m_robotContainer = new RobotContainer();
   }
 
