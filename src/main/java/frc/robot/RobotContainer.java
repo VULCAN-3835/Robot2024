@@ -45,6 +45,9 @@ import frc.robot.commands.DefaultTeleopCommand;
 import frc.robot.commands.FloorIntakeCommand;
 import frc.robot.commands.FullFloorIntakeCmd;
 import frc.robot.commands.ShootCmd;
+import frc.robot.commands.Autos.AutoShootCmd;
+import frc.robot.commands.Autos.AutoShootCollectShootCmd;
+import frc.robot.commands.Autos.AutoShootMoveCmd;
 import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -66,10 +69,18 @@ public class RobotContainer {
   private final Joystick leftJoystick = new Joystick(OperatorConstants.kLeftJoystickPort);
   private final Joystick rightJoystick = new Joystick(OperatorConstants.kRightJoystickPort);
 
+  private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+
   // private final SendableChooser<Command> autoChooser;
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    autoChooser.setDefaultOption("Empty", null);
+    autoChooser.addOption("Shoot", new AutoShootCmd(this.shooterSubsystem, this.intakeSubsystem));
+    autoChooser.addOption("Shoot Move", new AutoShootMoveCmd());
+    autoChooser.addOption("Shoot Collect Shoot", new AutoShootCollectShootCmd());
+
+    SmartDashboard.putData("Auto Chooser",autoChooser);
     configureBindings();
 
     // autoChooser = AutoBuilder.buildAutoChooser();
@@ -134,10 +145,29 @@ public class RobotContainer {
   // }
 
   private void configureBindings() {
-    this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
-    () -> -xboxControllerDrive.getLeftY(),
-    () -> -xboxControllerDrive.getLeftX(),
-    () -> -xboxControllerDrive.getRightX()));
+    setUpControllers();
+    
+  }
+  public void setUpControllers() {
+    if(xboxControllerDrive.isConnected()) {
+      this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
+      () -> -xboxControllerDrive.getLeftY(),
+      () -> -xboxControllerDrive.getLeftX(),
+      () -> -xboxControllerDrive.getRightX()));
+
+      configureXboxBinding(OperatorConstants.kXboxDrivePort);
+    }
+    else if (leftJoystick.isConnected() && rightJoystick.isConnected()) {
+      this.chassisSubsystem.setDefaultCommand(
+      new DefaultTeleopCommand(this.chassisSubsystem,
+      () -> -leftJoystick.getY(),
+      () -> -leftJoystick.getX(),
+      () -> -rightJoystick.getX()));
+    }
+
+    if (xboxControllerButton.isConnected()) {
+      configureXboxBinding(OperatorConstants.kXboxButtonPort);
+    }
   }
 
   
@@ -145,6 +175,21 @@ public class RobotContainer {
     CommandXboxController cmdXboxController = new CommandXboxController(port);
     // Applies zero heading method instant command to start button trigger
     cmdXboxController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
+
+    cmdXboxController.rightTrigger().whileTrue(new SequentialCommandGroup(
+      new InstantCommand(() -> intakeSubsystem.setRotationPosition(IntakeConstants.kOpenRotations)),
+      new WaitUntilCommand(() -> intakeSubsystem.isOpen()),
+      new InstantCommand(() -> intakeSubsystem.setMotorMode(STATE.collectState)),
+      new WaitUntilCommand(() -> intakeSubsystem.hasPiece()),
+      new InstantCommand(() -> {
+       this.intakeSubsystem.setMotorMode(STATE.restState);
+       this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations); 
+      })
+    ));
+    cmdXboxController.rightTrigger().toggleOnFalse(new InstantCommand(() -> {
+       this.intakeSubsystem.setMotorMode(STATE.restState);
+       this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations); 
+      }));
 
     cmdXboxController.a().whileTrue(new FullFloorIntakeCmd(this.chassisSubsystem, this.intakeSubsystem, () -> cmdXboxController.back().getAsBoolean()));
     cmdXboxController.a().toggleOnFalse(new InstantCommand(() -> {
@@ -154,9 +199,10 @@ public class RobotContainer {
 
     cmdXboxController.b().whileTrue(new SequentialCommandGroup(
       new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(0.41)),
+      new WaitCommand(0.2),
       new WaitUntilCommand(() -> intakeSubsystem.getArmAtSetpoint()),
       new InstantCommand(() -> this.intakeSubsystem.setMotorMode(STATE.ampState)),
-      new WaitCommand(0.2),
+      new WaitCommand(0.45),
       new InstantCommand(() -> {
        this.intakeSubsystem.setMotorMode(STATE.restState);
        this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations); 
@@ -196,6 +242,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return null;
+    return autoChooser.getSelected();
   }
 }

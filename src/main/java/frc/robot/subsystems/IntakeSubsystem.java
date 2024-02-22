@@ -82,7 +82,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     this.angleMotor.setIdleMode(IdleMode.kBrake);
 
-    this.armPositionController.setTolerance(2);
+    this.armPositionController.setTolerance(0.01);
   }
 
   public LimelightUtil getLimelight() {
@@ -198,5 +198,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     SmartDashboard.putBoolean("Has Piece", hasPiece());
     SmartDashboard.putNumber("Detector Voltage",this.pieceDetector.getVoltage());
+
+    SmartDashboard.putBoolean("At Setpoint", getArmAtSetpoint());
   } 
 }

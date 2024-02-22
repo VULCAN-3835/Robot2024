@@ -95,10 +95,10 @@ public final class Constants {
     public static final boolean kLeftBackInverted = false;
     public static final boolean kRightBackInverted = false;
 
-    public static final double kMaxDrivingVelocity = 3;
-    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 4;
-    public static final double kTeleDriveMaxSpeedMetersPerSec = 3;
-    public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = Math.PI;
+    public static final double kMaxDrivingVelocity = 4;
+    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 5;
+    public static final double kTeleDriveMaxSpeedMetersPerSec = 4;
+    public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = Math.PI*1.5;
 
     // Distance between centers of right and left wheels on robot meters
     public static final double kTrackWidth = 0.5403;
@@ -145,7 +145,7 @@ public final class Constants {
     
     // Intake motor speeds:
     public static final double kMotorOutputPower = -0.7;
-    public static final double kAmpOutputPower = 0.88;
+    public static final double kAmpOutputPower = -0.88;
     public static final double kMotorIntakePower = 0.5;
 
     // Angle motor positions:

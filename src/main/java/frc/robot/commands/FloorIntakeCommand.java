@@ -25,7 +25,7 @@ public class FloorIntakeCommand extends Command {
   private final double kRotationPidKp = 0.045;
   private final double kRotationPidKi = 0;
   private final double kRotationPidKd = 0;
-  private final double kDefaultFwdDriveSpeed = 1.8; //Find actual def speed
+  private final double kDefaultFwdDriveSpeed = 1.2; //Find actual def speed
 
   /** Creates a new FloorIntakeCommand. */
   public FloorIntakeCommand(ChassisSubsystem chassis, IntakeSubsystem intake, Supplier<Boolean> backSupplier) {
