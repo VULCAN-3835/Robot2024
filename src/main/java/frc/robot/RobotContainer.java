@@ -78,7 +78,7 @@ public class RobotContainer {
     autoChooser.setDefaultOption("Empty", null);
     autoChooser.addOption("Shoot", new AutoShootCmd(this.shooterSubsystem, this.intakeSubsystem));
     autoChooser.addOption("Shoot Move", new AutoShootMoveCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
-    autoChooser.addOption("Shoot Collect Shoot", new AutoShootCollectShootCmd());
+    autoChooser.addOption("Shoot Collect Shoot", new AutoShootCollectShootCmd(this.shooterSubsystem, this.intakeSubsystem,this.chassisSubsystem));
 
     SmartDashboard.putData("Auto Chooser",autoChooser);
     configureBindings();

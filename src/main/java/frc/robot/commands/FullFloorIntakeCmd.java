@@ -20,7 +20,7 @@ import frc.robot.subsystems.IntakeSubsystem.STATE;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class FullFloorIntakeCmd extends SequentialCommandGroup {
   /** Creates a new FullFloorIntakeCmd. */
-  public FullFloorIntakeCmd(ChassisSubsystem chassis, IntakeSubsystem intake, Supplier<Boolean> cancelButton) {
+  public  FullFloorIntakeCmd(ChassisSubsystem chassis, IntakeSubsystem intake, Supplier<Boolean> cancelButton) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(

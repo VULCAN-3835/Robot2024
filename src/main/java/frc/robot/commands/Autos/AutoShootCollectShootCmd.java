@@ -25,9 +25,15 @@ public class AutoShootCollectShootCmd extends SequentialCommandGroup {
   public AutoShootCollectShootCmd(ShooterSubsystem shooter, IntakeSubsystem intake, ChassisSubsystem chassis) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
+    addRequirements(chassis);
     addCommands(
       new ShootCmd(shooter, intake),
-      new FullFloorIntakeCmd(chassis, intake, () -> false),
+      new InstantCommand(() -> intake.setRotationPosition(IntakeConstants.kOpenRotations)),
+      new WaitUntilCommand(() -> intake.isOpen()),
+      new InstantCommand(() -> intake.setMotorMode(STATE.collectState)),
+      new InstantCommand(() -> chassis.drive(1,0,0, false)),
+      new WaitCommand(2),
+      new InstantCommand(() -> chassis.drive(0,0,0, false)),
       new InstantCommand(() -> {
        intake.setMotorMode(STATE.restState);
        intake.setRotationPosition(IntakeConstants.kClosedRotations); 

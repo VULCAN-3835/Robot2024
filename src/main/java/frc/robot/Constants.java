@@ -140,7 +140,7 @@ public final class Constants {
     public static final int kClosedLimitSwitchPort = 2;
 
     // Limit constants:
-    public static final double kPieceDetectorDetectionThreshold = 1.45;
+    public static final double kPieceDetectorDetectionThreshold = 1.5;
     public static final double kAngleEncoderOffset = 0.75;
     
     // Intake motor speeds:
