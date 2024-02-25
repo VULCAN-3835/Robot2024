@@ -9,7 +9,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.IntakeSubsystem.STATE;
+import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 
 import java.util.function.Supplier;
 
@@ -44,7 +44,7 @@ public class FloorIntakeCommand extends Command {
     this.rotationPID.setTolerance(2);
     this.rotationPID.setSetpoint(0);
 
-    this.intakeSubsystem.setMotorMode(STATE.collectState);
+    this.intakeSubsystem.setMotorMode(INTAKE_STATE.collectState);
 
     addRequirements(chassisSubsystem, intakeSubsystem);
 
@@ -68,7 +68,7 @@ public class FloorIntakeCommand extends Command {
   public void end(boolean interrupted) {
     chassisSubsystem.drive(0, 0, 0, false);//Stops The Robot
     this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations);
-    intakeSubsystem.setMotorMode(IntakeSubsystem.STATE.restState);
+    intakeSubsystem.setMotorMode(IntakeSubsystem.INTAKE_STATE.restState);
 
     // Reset flags
     inTolerence = false;

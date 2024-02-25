@@ -7,30 +7,29 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.ShooterConstants;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
-import frc.robot.subsystems.ShooterSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ShootCmd extends SequentialCommandGroup {
-  private ShooterSubsystem shooterSubsystem;
-  private IntakeSubsystem intakeSubsystem;
-  public ShootCmd(ShooterSubsystem shooterSubsystem, IntakeSubsystem intakeSubsystem) {
-    this.shooterSubsystem = shooterSubsystem;
-    this.intakeSubsystem = intakeSubsystem;
-    addRequirements(this.shooterSubsystem, this.intakeSubsystem);
+public class AmpShootCmd extends SequentialCommandGroup {
+  /** Creates a new AmpShootCmd. */
+  public AmpShootCmd(IntakeSubsystem intake) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower)),
-      new WaitCommand(0.7),
-      new InstantCommand(() -> this.intakeSubsystem.setMotorMode(INTAKE_STATE.outputState)),
+      new InstantCommand(() -> intake.setRotationPosition(0.41)),
       new WaitCommand(0.2),
-      new InstantCommand(() -> this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState)),
-      new InstantCommand(() -> this.shooterSubsystem.stopMotor())
+      new WaitUntilCommand(() -> intake.getArmAtSetpoint()),
+      new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.ampState)),
+      new WaitCommand(0.45),
+      new InstantCommand(() -> {
+       intake.setMotorMode(INTAKE_STATE.restState);
+       intake.setRotationPosition(IntakeConstants.kClosedRotations); 
+      })
     );
   }
 }

@@ -50,7 +50,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private ProfiledPIDController armPositionController; // Closed Loop controller for arm position
 
-  public enum STATE { // Enum representing the 3 states of the intake motor
+  public enum INTAKE_STATE { // Enum representing the 3 states of the intake motor
     collectState,
     outputState,
     restState,
@@ -120,7 +120,7 @@ public class IntakeSubsystem extends SubsystemBase {
    * Sets the intake motor's intake to given state
    * @param state The new state of the intake motor
   */
-  public void setMotorMode(STATE state) {
+  public void setMotorMode(INTAKE_STATE state) {
     switch (state) {
       case collectState:
         this.intakeMotor.set(IntakeConstants.kMotorIntakePower); //Intake

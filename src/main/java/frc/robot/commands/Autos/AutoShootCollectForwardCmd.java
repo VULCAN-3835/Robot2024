@@ -14,15 +14,15 @@ import frc.robot.commands.FullFloorIntakeCmd;
 import frc.robot.commands.ShootCmd;
 import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.IntakeSubsystem.STATE;
+import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 import frc.robot.subsystems.ShooterSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class AutoShootCollectShootCmd extends SequentialCommandGroup {
+public class AutoShootCollectForwardCmd extends SequentialCommandGroup {
   /** Creates a new AutoShootCollectShootCmd. */
-  public AutoShootCollectShootCmd(ShooterSubsystem shooter, IntakeSubsystem intake, ChassisSubsystem chassis) {
+  public AutoShootCollectForwardCmd(ShooterSubsystem shooter, IntakeSubsystem intake, ChassisSubsystem chassis) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addRequirements(chassis);
@@ -30,12 +30,12 @@ public class AutoShootCollectShootCmd extends SequentialCommandGroup {
       new ShootCmd(shooter, intake),
       new InstantCommand(() -> intake.setRotationPosition(IntakeConstants.kOpenRotations)),
       new WaitUntilCommand(() -> intake.isOpen()),
-      new InstantCommand(() -> intake.setMotorMode(STATE.collectState)),
+      new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.collectState)),
       new InstantCommand(() -> chassis.drive(1,0,0, false)),
       new WaitCommand(2),
       new InstantCommand(() -> chassis.drive(0,0,0, false)),
       new InstantCommand(() -> {
-       intake.setMotorMode(STATE.restState);
+       intake.setMotorMode(INTAKE_STATE.restState);
        intake.setRotationPosition(IntakeConstants.kClosedRotations); 
       })
       );

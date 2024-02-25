@@ -4,32 +4,29 @@
 
 package frc.robot.commands;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class FullFloorIntakeCmd extends SequentialCommandGroup {
-  /** Creates a new FullFloorIntakeCmd. */
-  public  FullFloorIntakeCmd(ChassisSubsystem chassis, IntakeSubsystem intake, Supplier<Boolean> cancelButton) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
+public class NormalCollectCmd extends SequentialCommandGroup {
+  /** Creates a new NormalCollectCmd. */
+  public NormalCollectCmd(IntakeSubsystem intake ) {
+    
     addCommands(
       new InstantCommand(() -> intake.setRotationPosition(IntakeConstants.kOpenRotations)),
       new WaitUntilCommand(() -> intake.isOpen()),
       new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.collectState)),
-      new WaitUntilCommand(() -> intake.getLimelight().cameraHasTarget()),
-      new FloorIntakeCommand(chassis, intake, cancelButton)
-
+      new WaitUntilCommand(() -> intake.hasPiece()),
+      new InstantCommand(() -> {
+       intake.setMotorMode(INTAKE_STATE.restState);
+       intake.setRotationPosition(IntakeConstants.kClosedRotations); 
+      })
     );
   }
 }

@@ -130,11 +130,13 @@ public class ChassisSubsystem extends SubsystemBase {
     // Field initlization
     field = new Field2d();
 
+    // Update swerve position and heading at build
     updateSwervePositions();
     zeroHeading();
 
     limelight = new LimelightUtil("limelight-front");
 
+    // Robot starting position for odometry
     startingPos = new Pose2d(2, 6, Rotation2d.fromDegrees(0));
     
     // Initilizing a pose estimator
@@ -143,6 +145,7 @@ public class ChassisSubsystem extends SubsystemBase {
       this.swerve_positions,
       startingPos);
 
+    // Configuring the controller for the path planner
     AutoBuilder.configureHolonomic(
       this::getPose, 
       this::resetOdometry, 
@@ -162,7 +165,6 @@ public class ChassisSubsystem extends SubsystemBase {
     SmartDashboard.putData(field);
 
     
-
     routine = new SysIdRoutine(
     new SysIdRoutine.Config(),
     new SysIdRoutine.Mechanism(this::setSysidVolt, 
@@ -180,7 +182,6 @@ public class ChassisSubsystem extends SubsystemBase {
 
       
 }
-
   private void updateSwervePositions() {
     this.swerve_positions[Wheels.LEFT_FRONT.ordinal()] = this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getPosition();
     this.swerve_positions[Wheels.RIGHT_FRONT.ordinal()] = this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getPosition();
@@ -244,6 +245,11 @@ public class ChassisSubsystem extends SubsystemBase {
       );
     }
 
+    /**
+     * Runs the robot following trajectory
+     *
+     * @param chassisSpeeds The desired chassisSpeeds object for module velocities
+  */
     public void runVelc(ChassisSpeeds speeds) {
       ChassisSpeeds discSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
 
@@ -345,7 +351,5 @@ public class ChassisSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Right Back Drive Velocity", swerve_modules[Wheels.RIGHT_BACK.ordinal()].getVelocity());
 
     SmartDashboard.putNumber("tid", this.limelight.getAprilTagID());
-
-
   }
 }
