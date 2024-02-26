@@ -85,19 +85,19 @@ public final class Constants {
     public static final int kLeftBackEncID = 32; // CAN ID
     public static final int kRightBackEncID = 30; // CAN ID
     // Offsets for absolute encoders in rotations (i.e: 360 degrees = 1 rotation):
-    public static final double kLeftFrontOffset = -0.284912109375; 
-    public static final double kRightFrontOffset = -0.599609375;
-    public static final double kLeftBackOffset = -0.4755859375;
-    public static final double kRightBackOffset = -0.18603515625;
+    public static final double kLeftFrontOffset = -0.53955078125; 
+    public static final double kRightFrontOffset = 0.088623046875;
+    public static final double kLeftBackOffset = 0.281982421875;
+    public static final double kRightBackOffset = 0.271240234375;
     // Which motors are inverted:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   public static final boolean frontLeftDriveInverted = true;
     public static final boolean kLeftFrontInverted = false; 
     public static final boolean kRightFrontInverted = false;
     public static final boolean kLeftBackInverted = false;
     public static final boolean kRightBackInverted = false;
 
-    public static final double kMaxDrivingVelocity = 4;
-    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 5;
-    public static final double kTeleDriveMaxSpeedMetersPerSec = 4;
+    public static final double kMaxDrivingVelocity = 3;
+    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 4;
+    public static final double kTeleDriveMaxSpeedMetersPerSec = 3;
     public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = Math.PI*1.5;
 
     // Distance between centers of right and left wheels on robot meters
@@ -123,7 +123,7 @@ public final class Constants {
     public static final int kPistonForwardChannelNumber = 1;
     public static final int kPistonReverseChannelNumber = 2;
 
-    public static final double kShootPower = -0.51;//Desired speed for the movement of the wheel in firing
+    public static final double kShootPower = -0.58;//Desired speed for the movement of the wheel in firing
     public static final double kCollectPower = 0.3;//Desired speed for the movement of the wheel in collection
   }
   public static class IntakeConstants{
@@ -141,20 +141,20 @@ public final class Constants {
 
     // Limit constants:
     public static final double kPieceDetectorDetectionThreshold = 1.5;
-    public static final double kAngleEncoderOffset = 0.75;
+    public static final double kAngleEncoderOffset = 0.08246600456165;
     
     // Intake motor speeds:
     public static final double kMotorOutputPower = -0.7;
-    public static final double kAmpOutputPower = -0.88;
-    public static final double kMotorIntakePower = 0.5;
+    public static final double kAmpOutputPower = -1;
+    public static final double kMotorIntakePower = 0.75;
 
     // Angle motor positions:
-    public static final double kOpenRotations = 0.0973;
-    public static final double kAmpRotations = 0.361;
-    public static final double kClosedRotations = 0.597;
+    public static final double kOpenRotations = 0.095;
+    public static final double kAmpRotations = 0.3575;
+    public static final double kClosedRotations = 0.5868;
 
     // Angle controller constants:
-    public static final double kP = 2; 
+    public static final double kP = 3; 
     public static final double kMaxVelocityRotPerSec = 0.65;
     public static final double kMaxAccelerationRotPerSecSquared = 1;
     public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(

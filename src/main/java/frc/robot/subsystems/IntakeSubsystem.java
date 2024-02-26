@@ -81,8 +81,11 @@ public class IntakeSubsystem extends SubsystemBase {
     this.armPositionController.setGoal(this.goalSetpoint);
 
     this.angleMotor.setIdleMode(IdleMode.kBrake);
+    this.intakeMotor.setIdleMode(IdleMode.kBrake);
 
-    this.armPositionController.setTolerance(0.01);
+    this.angleMotor.setInverted(false);
+
+    this.armPositionController.setTolerance(0.007);
   }
 
   public LimelightUtil getLimelight() {
@@ -164,12 +167,12 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {   
     // Calculates the output for moving the arm 
-    double output = this.armPositionController.calculate(getCurrentPosition());
+    double output = -this.armPositionController.calculate(getCurrentPosition());
 
     // Creates limit for the output using limit switches
-    if (isOpen() && output < 0)
+    if (isOpen() && output > 0)
       output = 0;
-    if (isClosed() && output > 0)
+    if (isClosed() && output < 0)
       output = 0;
       
     // Doesn't let setpoints pass sensor limits

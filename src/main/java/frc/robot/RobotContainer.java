@@ -50,6 +50,7 @@ import frc.robot.commands.NormalCollectCmd;
 import frc.robot.commands.ShootCmd;
 import frc.robot.commands.Autos.AutoShootCmd;
 import frc.robot.commands.Autos.AutoShootCollectForwardCmd;
+import frc.robot.commands.Autos.AutoShootCollectForwardShotCmd;
 import frc.robot.commands.Autos.AutoShootMoveCmd;
 import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -81,6 +82,7 @@ public class RobotContainer {
     autoChooser.addOption("Shoot", new AutoShootCmd(this.shooterSubsystem, this.intakeSubsystem));
     autoChooser.addOption("Shoot Move", new AutoShootMoveCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
     autoChooser.addOption("Shoot Collect Forward", new AutoShootCollectForwardCmd(this.shooterSubsystem, this.intakeSubsystem,this.chassisSubsystem));
+    autoChooser.addOption("Shoot Collect Forward Shoot",new AutoShootCollectForwardShotCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
 
     SmartDashboard.putData("Auto Chooser",autoChooser);
 

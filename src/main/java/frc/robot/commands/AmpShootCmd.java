@@ -25,7 +25,7 @@ public class AmpShootCmd extends SequentialCommandGroup {
       new WaitCommand(0.2),
       new WaitUntilCommand(() -> intake.getArmAtSetpoint()),
       new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.ampState)),
-      new WaitCommand(0.45),
+      new WaitCommand(0.8),
       new InstantCommand(() -> {
        intake.setMotorMode(INTAKE_STATE.restState);
        intake.setRotationPosition(IntakeConstants.kClosedRotations); 

@@ -26,7 +26,7 @@ public class ShootCmd extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower)),
-      new WaitCommand(0.7),
+      new WaitCommand(0.9),
       new InstantCommand(() -> this.intakeSubsystem.setMotorMode(INTAKE_STATE.outputState)),
       new WaitCommand(0.2),
       new InstantCommand(() -> this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState)),
