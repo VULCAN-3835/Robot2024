@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Util.LEDController;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.*;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -53,9 +53,6 @@ import frc.robot.commands.Autos.AutoShootCmd;
 import frc.robot.commands.Autos.AutoShootCollectForwardCmd;
 import frc.robot.commands.Autos.AutoShootCollectForwardShotCmd;
 import frc.robot.commands.Autos.AutoShootMoveCmd;
-import frc.robot.subsystems.ChassisSubsystem;
-import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 
 
 /**
@@ -94,6 +91,8 @@ public class RobotContainer {
 
     configureBindings();
 
+    LEDSubsystem.getInstance(); // just to build the singleton once
+    LEDController.setActionState(LEDController.ActionStates.DEFAULT);
   }
 
   private void configureBindings() {

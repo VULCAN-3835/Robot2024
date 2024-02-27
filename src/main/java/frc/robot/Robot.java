@@ -33,14 +33,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    LEDController.setAllianceColor(LEDController.WHITE);
-    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
-      allianceColor = "BLUE";
-    }
-    else if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-      allianceColor = "RED";
-    }
     m_robotContainer = new RobotContainer();
+    LEDController.setActionState(LEDController.ActionStates.DEFAULT);
   }
 
   /**
@@ -65,7 +59,11 @@ public class Robot extends TimedRobot {
       allianceColor = "RED";
       LEDController.setAllianceColor(LEDController.RED_ALLIANCE_COLOR);
     }
+    else {
+      LEDController.setAllianceColor(LEDController.WHITE);
+    }
     CommandScheduler.getInstance().run();
+    LEDController.updateLEDEffect();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

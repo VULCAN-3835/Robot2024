@@ -27,6 +27,7 @@ public class LEDController {
     }
 
     private static StorageStates storageState = StorageStates.EMPTY;
+    private static ActionStates actionState = ActionStates.DEFAULT;
 
     public static void setAllianceColor(Color8Bit color){
         LEDController.allianceColor = color;
@@ -36,8 +37,12 @@ public class LEDController {
         LEDController.storageState = state;
     }
 
-    public static void setActionState(ActionStates state) {
-        switch (state){
+    public static void setActionState(ActionStates state){
+        actionState = state;
+    }
+
+    public static void updateLEDEffect() {
+        switch (actionState){
             case DEFAULT: {
                 if (DriverStation.isDisabled()){
                     LEDSubsystem.getInstance().effect = () -> {};
