@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Util.LEDController;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 
@@ -21,14 +22,21 @@ public class AmpShootCmd extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new InstantCommand(() -> intake.setRotationPosition(0.41)),
+      new InstantCommand(() -> {
+          intake.setRotationPosition(0.41);
+          LEDController.setActionState(LEDController.ActionStates.AMP_AIMING);
+      }),
       new WaitCommand(0.2),
       new WaitUntilCommand(() -> intake.getArmAtSetpoint()),
-      new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.ampState)),
+      new InstantCommand(() -> {
+          intake.setMotorMode(INTAKE_STATE.ampState);
+          LEDController.setActionState(LEDController.ActionStates.AMP_SHOOTING);
+      }),
       new WaitCommand(0.8),
       new InstantCommand(() -> {
        intake.setMotorMode(INTAKE_STATE.restState);
-       intake.setRotationPosition(IntakeConstants.kClosedRotations); 
+       intake.setRotationPosition(IntakeConstants.kClosedRotations);
+       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
       })
     );
   }

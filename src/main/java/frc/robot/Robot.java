@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Util.LEDController;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,6 +33,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+    LEDController.setAllianceColor(LEDController.WHITE);
     if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
       allianceColor = "BLUE";
     }
@@ -57,9 +59,11 @@ public class Robot extends TimedRobot {
     
     if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
       allianceColor = "BLUE";
+      LEDController.setAllianceColor(LEDController.BLUE_ALLIANCE_COLOR);
     }
     else if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
       allianceColor = "RED";
+      LEDController.setAllianceColor(LEDController.RED_ALLIANCE_COLOR);
     }
     CommandScheduler.getInstance().run();
   }

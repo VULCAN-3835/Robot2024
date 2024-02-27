@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Util.LEDController;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -129,36 +130,41 @@ public class RobotContainer {
     // RIGHT TRIGGER
     cmdXboxController.rightTrigger().whileTrue(new NormalCollectCmd(this.intakeSubsystem));
     cmdXboxController.rightTrigger().toggleOnFalse(new InstantCommand(() -> {
-       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-       this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations); 
+      this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
+      this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
 
     // A TRIGGER
     cmdXboxController.a().whileTrue(new FullFloorIntakeCmd(this.chassisSubsystem, this.intakeSubsystem, () -> cmdXboxController.back().getAsBoolean()));
     cmdXboxController.a().toggleOnFalse(new InstantCommand(() -> {
-       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-       this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations); 
-      }));
+      this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
+      this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+    }));
 
     // B Trigger
     cmdXboxController.b().whileTrue(new AmpShootCmd(intakeSubsystem));
     cmdXboxController.b().toggleOnFalse(new InstantCommand(() -> {
-       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-       this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations); 
-      }));
+      this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
+      this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+    }));
 
     // Y Trigger
     cmdXboxController.y().whileTrue(new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> cmdXboxController.back().getAsBoolean()));
     cmdXboxController.y().toggleOnFalse(new InstantCommand(() -> {
-       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-       this.shooterSubsystem.setShooterSpeed(0); 
-      }));
+      this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
+      this.shooterSubsystem.setShooterSpeed(0);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+    }));
 
     // X Trigger
     cmdXboxController.x().whileTrue(new CollectCmd(intakeSubsystem, shooterSubsystem));
     cmdXboxController.x().toggleOnFalse(new InstantCommand(() -> {
       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-      this.shooterSubsystem.setShooterSpeed(0); 
+      this.shooterSubsystem.setShooterSpeed(0);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
   }
 
