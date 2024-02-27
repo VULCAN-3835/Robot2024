@@ -53,6 +53,7 @@ import frc.robot.commands.Autos.AutoShootCollectForwardCmd;
 import frc.robot.commands.Autos.AutoShootCollectForwardShotCmd;
 import frc.robot.commands.Autos.AutoShootMoveCmd;
 import frc.robot.subsystems.ChassisSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 
@@ -72,6 +73,9 @@ public class RobotContainer {
   private final XboxController xboxControllerButton = new XboxController(OperatorConstants.kXboxButtonPort);
   private final Joystick leftJoystick = new Joystick(OperatorConstants.kLeftJoystickPort);
   private final Joystick rightJoystick = new Joystick(OperatorConstants.kRightJoystickPort);
+
+    private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(this.xboxControllerDrive);
+
 
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
   

@@ -144,7 +144,7 @@ public class IntakeSubsystem extends SubsystemBase {
    * @return True if piece is inside the intake system
   */
   public boolean hasPiece(){
-    return pieceDetector.getVoltage() > IntakeConstants.kPieceDetectorDetectionThreshold && pieceDetector.getVoltage() <1.9;
+    return pieceDetector.getVoltage() > IntakeConstants.kPieceDetectorDetectionThreshold && pieceDetector.getVoltage() <1.95;
   }
 
 
@@ -181,10 +181,10 @@ public class IntakeSubsystem extends SubsystemBase {
     if (this.goalSetpoint>IntakeConstants.kClosedRotations)
       this.goalSetpoint = IntakeConstants.kClosedRotations;
 
-    if (output > 0.5)
-      output = 0.5;
-    if (output < -0.5)
-      output = -0.5;
+    if (output > 0.6)
+      output = 0.6;
+    if (output < -0.6)
+      output = -0.6;
 
     if (getCurrentPosition() == 0.25)
       output = 0;

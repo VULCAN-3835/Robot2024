@@ -152,9 +152,9 @@ public class ChassisSubsystem extends SubsystemBase {
       () -> ChassisConstants.kDriveKinematics.toChassisSpeeds(getModStates()), 
       this::runVelc,
       new HolonomicPathFollowerConfig(
-        new PIDConstants(1, 0, 0), // Translation PID
+        new PIDConstants(1.0, 0, 0), // Translation PID
         new PIDConstants(1.0, 0, 0), // Rotation PID
-        ChassisConstants.kMaxDrivingVelocity, 
+        4.0, 
         ChassisConstants.kWheelRadius, 
         new ReplanningConfig()),
       () -> (Robot.allianceColor == "BLUE") ? false : true, 

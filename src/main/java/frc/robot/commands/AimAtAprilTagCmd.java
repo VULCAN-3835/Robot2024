@@ -22,7 +22,7 @@ public class AimAtAprilTagCmd extends PIDCommand {
   public AimAtAprilTagCmd(ChassisSubsystem chassisSubsystem, int id, Supplier<Boolean> backButton) {
     super(
         // The controller that the command will use
-        new PIDController(0.05, 0, 0),
+        new PIDController(0.04, 0, 0),
         // This should return the measurement
         () -> chassisSubsystem.getLimelight().getX(),
         // This should return the setpoint (can also be a constant)
@@ -37,6 +37,7 @@ public class AimAtAprilTagCmd extends PIDCommand {
     getController().setTolerance(this.rotTolerance);
     this.backSupplier = backButton;
     this.chassisSubsystem = chassisSubsystem;
+    SmartDashboard.putNumber("Got ID", id);
     addRequirements(this.chassisSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.

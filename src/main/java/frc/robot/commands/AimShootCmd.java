@@ -22,7 +22,7 @@ public class AimShootCmd extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new AimAtAprilTagCmd(chassis, Robot.allianceColor == "BLUE"?7:4, backButton),
+      new AimAtAprilTagCmd(chassis, Robot.allianceColor == "BLUE"?8:4, backButton),
       new ShootCmd(shooter, intake));
   }
 }

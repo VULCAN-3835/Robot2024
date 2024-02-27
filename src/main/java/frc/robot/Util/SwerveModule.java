@@ -13,6 +13,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -56,13 +57,10 @@ public class SwerveModule {
         // Offset storing:
         this.absoluteEncoderOffset = absoluteEncoderOffset;
 
-        // General configs:
-        this.driveMotor.setInverted(driveMotorInverted);
-
         // Advannced configs:
         configEnc();
         configSteerMotor(absEncoderID);
-        configDriveMotor();
+        configDriveMotor(driveMotorInverted);
 
         // Storing the signals (suppliers) of the different feedback sensors
         this.m_drivePosition = this.driveMotor.getPosition();
@@ -114,7 +112,7 @@ public class SwerveModule {
         this.steerMotor.getConfigurator().apply(steerConfigs);
     }
 
-    private void configDriveMotor() {
+    private void configDriveMotor(boolean inverted) {
         TalonFXConfiguration driveConfigs = new TalonFXConfiguration();
 
         driveConfigs.Feedback.SensorToMechanismRatio = ModuleConstants.kDriveMotorGearRatio;
@@ -125,6 +123,7 @@ public class SwerveModule {
         driveConfigs.CurrentLimits.SupplyCurrentLimitEnable = ModuleConstants.kDriveEnableCurrentLimit;
 
         driveConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        driveConfigs.MotorOutput.Inverted = inverted?InvertedValue.Clockwise_Positive:InvertedValue.CounterClockwise_Positive;
 
         this.driveMotor.getConfigurator().apply(driveConfigs);
         this.driveMotor.getConfigurator().setPosition(0);

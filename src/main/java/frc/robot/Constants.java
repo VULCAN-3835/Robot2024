@@ -46,7 +46,7 @@ public final class Constants {
     
     public static Slot0Configs getDriveMotorGains() { 
       Slot0Configs kSteerMotorGains = new Slot0Configs();
-      kSteerMotorGains.withKP(0.1); // The proportional gain for the module steer control TODO: Find
+      kSteerMotorGains.withKP(0.15); // The proportional gain for the module steer control TODO: Find
       return kSteerMotorGains;
     }
 
@@ -85,19 +85,19 @@ public final class Constants {
     public static final int kLeftBackEncID = 32; // CAN ID
     public static final int kRightBackEncID = 30; // CAN ID
     // Offsets for absolute encoders in rotations (i.e: 360 degrees = 1 rotation):
-    public static final double kLeftFrontOffset = -0.53955078125; 
-    public static final double kRightFrontOffset = 0.088623046875;
-    public static final double kLeftBackOffset = 0.281982421875;
-    public static final double kRightBackOffset = 0.271240234375;
+    public static final double kLeftFrontOffset = -0.029296875; 
+    public static final double kRightFrontOffset = -0.4111328125;
+    public static final double kLeftBackOffset = -0.217041015625;
+    public static final double kRightBackOffset = -0.228515625;
     // Which motors are inverted:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   public static final boolean frontLeftDriveInverted = true;
-    public static final boolean kLeftFrontInverted = false; 
-    public static final boolean kRightFrontInverted = false;
-    public static final boolean kLeftBackInverted = false;
-    public static final boolean kRightBackInverted = false;
+    public static final boolean kLeftFrontInverted = true; 
+    public static final boolean kRightFrontInverted = true;
+    public static final boolean kLeftBackInverted = true;
+    public static final boolean kRightBackInverted = true;
 
-    public static final double kMaxDrivingVelocity = 3;
-    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 4;
-    public static final double kTeleDriveMaxSpeedMetersPerSec = 3;
+    public static final double kMaxDrivingVelocity = 3.5;
+    public static final double kTeleDriveMaxAccelerationUnitsPerSec = 4.5;
+    public static final double kTeleDriveMaxSpeedMetersPerSec = 3.5;
     public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = Math.PI*1.5;
 
     // Distance between centers of right and left wheels on robot meters
@@ -154,11 +154,39 @@ public final class Constants {
     public static final double kClosedRotations = 0.5868;
 
     // Angle controller constants:
-    public static final double kP = 3; 
-    public static final double kMaxVelocityRotPerSec = 0.65;
+    public static final double kP = 3.9; 
+    public static final double kMaxVelocityRotPerSec = 0.7;
     public static final double kMaxAccelerationRotPerSecSquared = 1;
     public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(
       IntakeConstants.kMaxVelocityRotPerSec,
       IntakeConstants.kMaxAccelerationRotPerSecSquared);
+  }
+  public static class ClimberConstants{
+    public static final int kLeftMotorPort = 60;
+    public static final int kRightMotorPort = 61;
+    public static final int kLeftSwitchPort = 3;
+    public static final int kRightSwitchPort = 4;
+
+    public static final double kMaxMotorPower=0.7;
+    public static final double kMaxElevatorHeight = 45.524; // CM
+
+    public static final double kLengthForRotation = 12.56637061435917;// Diameter on Cm
+    public static final double kMotorRatio = 83; // this is for multipling
+
+    // TODO: Find values
+    public static final double kElevatorMaxCruiseVelocity = 0;
+    public static final double kElevatorAcceleration = 0;
+
+    // TODO: Find motor direction
+    public static final boolean kLeftInverted = false;
+    public static final boolean kRightInverted = false;
+
+    public static Slot0Configs getElevatorSlot() {
+      Slot0Configs configs = new Slot0Configs();
+      configs.withKS(0); // TODO: Find voltage to overcome static friction
+      configs.withKP(0.7); // TODO: Find real proportion
+
+      return configs;
+    }
   }
 }
