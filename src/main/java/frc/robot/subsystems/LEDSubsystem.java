@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Util.LedEffect;
@@ -36,7 +37,7 @@ public class LEDSubsystem extends SubsystemBase {
      * the {@link #getInstance()} method to get the singleton instance.
      */
 
-    private final int PWM_PORT = 9; // PWM port that the signal pin is connected to
+    private final int PWM_PORT = 0; // PWM port that the signal pin is connected to
     private final int STRIP_LENGTH = 38; // number of LEDs in each side strip
     private final AddressableLED led; // WIP's AddressableLED
     private final AddressableLEDBuffer ledBuffer; // WIP's AddressableLED

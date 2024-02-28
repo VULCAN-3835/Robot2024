@@ -72,8 +72,7 @@ public class RobotContainer {
   private final Joystick leftJoystick = new Joystick(OperatorConstants.kLeftJoystickPort);
   private final Joystick rightJoystick = new Joystick(OperatorConstants.kRightJoystickPort);
 
-    private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(this.xboxControllerDrive);
-
+  private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(this.xboxControllerButton);
 
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
   
@@ -107,7 +106,7 @@ public class RobotContainer {
 
       configureXboxBinding(OperatorConstants.kXboxDrivePort);
     }
-    else if (leftJoystick.isConnected() && rightJoystick.isConnected()) {
+    else if (leftJoystick.isConnected() || rightJoystick.isConnected()) {
       this.chassisSubsystem.setDefaultCommand(
       new DefaultTeleopCommand(this.chassisSubsystem,
       () -> -leftJoystick.getY(),
@@ -127,15 +126,23 @@ public class RobotContainer {
     cmdXboxController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
 
     // RIGHT TRIGGER
-    cmdXboxController.rightTrigger().whileTrue(new NormalCollectCmd(this.intakeSubsystem));
+    cmdXboxController.rightTrigger().whileTrue(new ShootCmd(shooterSubsystem, intakeSubsystem));
     cmdXboxController.rightTrigger().toggleOnFalse(new InstantCommand(() -> {
+      this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
+      this.shooterSubsystem.setShooterSpeed(0);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+    }));
+
+    // LEFT TRIGGER
+    cmdXboxController.leftTrigger().whileTrue(new NormalCollectCmd(this.intakeSubsystem));
+    cmdXboxController.leftTrigger().toggleOnFalse(new InstantCommand(() -> {
       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
       this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations);
       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
 
     // A TRIGGER
-    cmdXboxController.a().whileTrue(new FullFloorIntakeCmd(this.chassisSubsystem, this.intakeSubsystem, () -> cmdXboxController.back().getAsBoolean()));
+    cmdXboxController.a().whileTrue(new FullFloorIntakeCmd(chassisSubsystem, intakeSubsystem, () -> cmdXboxController.back().getAsBoolean()));
     cmdXboxController.a().toggleOnFalse(new InstantCommand(() -> {
       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
       this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations);

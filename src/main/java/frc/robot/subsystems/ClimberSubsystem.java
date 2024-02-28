@@ -110,7 +110,7 @@ public class ClimberSubsystem extends SubsystemBase {
     }
     else if (xboxController.getPOV() == 180) {
       power = -0.35;
-      LEDController.setActionState(LEDController.ActionStates.OPENING_CLIMBER);
+      LEDController.setActionState(LEDController.ActionStates.CLOSING_CLIMBER);
       ledTrigger = true;
     }
     else if (ledTrigger){
@@ -120,7 +120,6 @@ public class ClimberSubsystem extends SubsystemBase {
     
     this.climberMotorLeft.set(this.getLeftLimitSwitch()&&power<0?0:power);
     this.climberMotorRight.set(this.getRightLimitSwitch()&&power<0?0:power);
-
     SmartDashboard.putNumber("Elevator Power", power);
 
     

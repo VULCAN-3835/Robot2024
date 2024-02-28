@@ -25,7 +25,7 @@ public class AimShootCmd extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new InstantCommand(() -> LEDController.setActionState(LEDController.ActionStates.SPEAKER_AIMING)),
-      new AimAtAprilTagCmd(chassis, Robot.allianceColor == "BLUE"?8:4, backButton),
+      new AimAtAprilTagCmd(chassis, Robot.allianceColor == "BLUE"?7:4, backButton),
       new ShootCmd(shooter, intake));
   }
 }
