@@ -17,12 +17,15 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Util.LEDController;
 
 public class ClimberSubsystem extends SubsystemBase {
   private TalonFX climberMotorRight;
   private TalonFX climberMotorLeft;
   private DigitalInput limitSwitchRight;
   private DigitalInput limitSwitchLeft;
+
+  private boolean ledTrigger;
   
 
   private StatusSignal<Double> m_leftPosition;
@@ -62,17 +65,16 @@ public class ClimberSubsystem extends SubsystemBase {
     this.m_rightPosition = this.climberMotorRight.getPosition();
     this.m_rightVelocity = this.climberMotorRight.getVelocity();
 
+    ledTrigger = false;
     this.xboxController = xboxController;
   }
 
   public boolean getRightLimitSwitch(){
-    return false;
-    // return this.limitSwitchRight.get();
+    return this.limitSwitchRight.get();
   }
 
    public boolean getLeftLimitSwitch(){
-    return false;
-    // return this.limitSwitchLeft.get();
+    return this.limitSwitchLeft.get();
   }
 
   public double getLeftRotations() {
@@ -103,13 +105,21 @@ public class ClimberSubsystem extends SubsystemBase {
     double power = 0;
     if (xboxController.getPOV() == 0) {
       power = 0.35;
+      LEDController.setActionState(LEDController.ActionStates.OPENING_CLIMBER);
+      ledTrigger = true;
     }
     else if (xboxController.getPOV() == 180) {
       power = -0.35;
+      LEDController.setActionState(LEDController.ActionStates.OPENING_CLIMBER);
+      ledTrigger = true;
     }
-
-    this.climberMotorLeft.set(this.getLeftLimitSwitch()?0:power);
-    this.climberMotorRight.set(this.getRightLimitSwitch()?0:power);
+    else if (ledTrigger){
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+      ledTrigger = false;
+    }
+    
+    this.climberMotorLeft.set(this.getLeftLimitSwitch()&&power<0?0:power);
+    this.climberMotorRight.set(this.getRightLimitSwitch()&&power<0?0:power);
 
     SmartDashboard.putNumber("Elevator Power", power);
 

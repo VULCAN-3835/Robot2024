@@ -22,7 +22,7 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static class OperatorConstants {
-    public static final double kDeadband = 0.08; // Operator deadband
+    public static final double kDeadband = 0.1; // Operator deadband
     public static final int kXboxDrivePort = 0; // Xbox port
     public static final int kXboxButtonPort = 1; // Xbox port
     public static final int kLeftJoystickPort = 2; // Xbox port
@@ -164,8 +164,8 @@ public final class Constants {
   public static class ClimberConstants{
     public static final int kLeftMotorPort = 60;
     public static final int kRightMotorPort = 61;
-    public static final int kLeftSwitchPort = 3;
-    public static final int kRightSwitchPort = 4;
+    public static final int kLeftSwitchPort = 4;
+    public static final int kRightSwitchPort = 3;
 
     public static final double kMaxMotorPower=0.7;
     public static final double kMaxElevatorHeight = 45.524; // CM
