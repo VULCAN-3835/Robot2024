@@ -149,7 +149,7 @@ public final class Constants {
     public static final double kMotorIntakePower = 0.75;
 
     // Angle motor positions:
-    public static final double kOpenRotations = 0.095;
+    public static final double kOpenRotations = 0.0845;
     public static final double kAmpRotations = 0.3575;
     public static final double kClosedRotations = 0.5868;
 
