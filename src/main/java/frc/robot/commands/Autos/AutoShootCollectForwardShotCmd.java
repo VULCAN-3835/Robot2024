@@ -25,11 +25,12 @@ public class AutoShootCollectForwardShotCmd extends SequentialCommandGroup {
     addRequirements(chassis);
     addCommands(
       new ShootCmd(shooter, intake),
+      new WaitCommand(5),
       new InstantCommand(() -> intake.setRotationPosition(IntakeConstants.kOpenRotations)),
       new WaitUntilCommand(() -> intake.isOpen()),
       new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.collectState)),
-      new InstantCommand(() -> chassis.drive(1,0,0, false)),
-      new WaitCommand(2),
+      new InstantCommand(() -> chassis.drive(1.2,0,0, false)),
+      new WaitCommand(1.66),
       new InstantCommand(() -> chassis.drive(0,0,0, false)),
       new InstantCommand(() -> {
        intake.setMotorMode(INTAKE_STATE.restState);
@@ -38,7 +39,12 @@ public class AutoShootCollectForwardShotCmd extends SequentialCommandGroup {
       new InstantCommand(() -> chassis.drive(-1,0,0, false)),
       new WaitCommand(1.85),
       new InstantCommand(() -> chassis.drive(0,0,0, false)),
-      new ShootCmd(shooter, intake)
+      new WaitCommand(1),
+      new ShootCmd(shooter, intake),
+      new WaitCommand(1),
+      new InstantCommand(() -> chassis.drive(1,0,0, false)),
+      new WaitCommand(3),
+      new InstantCommand(() -> chassis.drive(0,0,0, false))
       );
   }
 }

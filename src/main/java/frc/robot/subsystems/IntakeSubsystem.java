@@ -190,7 +190,7 @@ public class IntakeSubsystem extends SubsystemBase {
     if (getCurrentPosition() == 0.25)
       output = 0;
     // Applies output to motor
-    // this.angleMotor.set(output);
+    this.angleMotor.set(output);
 
     LEDController.setStorageState(hasPiece() ?
             LEDController.StorageStates.HOLDING_PIECE :  LEDController.StorageStates.EMPTY);

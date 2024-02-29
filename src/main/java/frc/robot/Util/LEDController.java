@@ -11,7 +11,7 @@ public class LEDController {
     public static final Color8Bit BLUE_ALLIANCE_COLOR = new Color8Bit(0x0, 0x6d, 0xfe);
     public static final Color8Bit RED_ALLIANCE_COLOR = new Color8Bit(255, 0, 0);
     public static final Color8Bit WHITE = new Color8Bit(100, 100, 100);
-    public static final Color8Bit ORANGE = new Color8Bit(255, 165, 0);
+    public static final Color8Bit ORANGE = new Color8Bit(255, 100, 0);
     public static final Color8Bit GREEN = new Color8Bit(0, 255, 0);
     private static Color8Bit allianceColor = WHITE;
 
@@ -50,25 +50,25 @@ public class LEDController {
                 }
                 else if (storageState == StorageStates.HOLDING_PIECE){
                     LEDSubsystem.getInstance().effect = () ->
-                            LEDSubsystem.getInstance().blinkColor(1, ORANGE);
+                            LEDSubsystem.getInstance().blinkColor(2, ORANGE);
                 }
                 else if(DriverStation.isAutonomousEnabled()){
                     LEDSubsystem.getInstance().effect = () ->
-                            LEDSubsystem.getInstance().breathingColor(1, allianceColor);
+                            LEDSubsystem.getInstance().breathingColor(10, allianceColor);
                 }
                 else if (DriverStation.isTeleopEnabled()){
                     LEDSubsystem.getInstance().effect = () ->
-                            LEDSubsystem.getInstance().breathingColor(2, allianceColor);
+                            LEDSubsystem.getInstance().breathingColor(10, allianceColor);
                 }
                 break;
             }
             case FLOOR_COLLECTING:
                 LEDSubsystem.getInstance().effect = () ->
-                        LEDSubsystem.getInstance().WaveColor(20, true, ORANGE);
+                        LEDSubsystem.getInstance().WaveColor(40, true, ORANGE);
                 break;
             case SOURCE_COLLECTING:
                 LEDSubsystem.getInstance().effect = () ->
-                        LEDSubsystem.getInstance().WaveColor(20, false, allianceColor);
+                        LEDSubsystem.getInstance().WaveColor(40, false, allianceColor);
                 break;
             case AMP_AIMING:
                 LEDSubsystem.getInstance().effect = () ->
@@ -84,15 +84,15 @@ public class LEDController {
                 break;
             case SPEAKER_SHOOTING:
                 LEDSubsystem.getInstance().effect = () ->
-                        LEDSubsystem.getInstance().WaveColor(20, true, GREEN);
+                        LEDSubsystem.getInstance().WaveColor(40, true, GREEN);
                 break;
             case OPENING_CLIMBER:
                 LEDSubsystem.getInstance().effect = () ->
-                        LEDSubsystem.getInstance().WaveColor(20, false, WHITE);
+                        LEDSubsystem.getInstance().WaveColor(40, false, WHITE);
                 break;
             case CLOSING_CLIMBER:
                 LEDSubsystem.getInstance().effect = () ->
-                        LEDSubsystem.getInstance().WaveColor(20, true, WHITE);
+                        LEDSubsystem.getInstance().WaveColor(40, true, WHITE);
                 break;
         }
     }

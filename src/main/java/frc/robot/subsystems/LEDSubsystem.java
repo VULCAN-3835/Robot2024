@@ -65,6 +65,7 @@ public class LEDSubsystem extends SubsystemBase {
         }
     }
 
+
     // blinks all the LEDs between a color and black
     public void blinkColor(double frequency, Color8Bit color){
         blinkColor(frequency, color, BLACK_COLOR);
@@ -82,7 +83,9 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     public void breathingColor(double frequency, Color8Bit color){
-        double brightness = Math.abs((tick%(1/frequency))-(1/(2*frequency)));
+        // double brightness = Math.abs((tick%(1/frequency))-(1/(2*frequency)));
+        // double brightness = Math.cos(a*Math.PI)
+        double brightness = 0.8;
         for(int i = 0; i < ledBuffer.getLength(); i++){
             this.ledBuffer.setRGB(i, (int)(color.red * brightness), (int)(color.green * brightness), (int)(color.blue * brightness));
         }
@@ -100,11 +103,23 @@ public class LEDSubsystem extends SubsystemBase {
 
             ledBuffer.setRGB(i, red, green, blue); // dims every led to 75%
         }
-        int index = (tick/((int)(TPS/frequency)))%ledBuffer.getLength();
-        if (backward){
-            index = ledBuffer.getLength() - 1 - index;
+        // int index = (tick/((int)(TPS/frequency)))%ledBuffer.getLength();
+        // if (backward){
+        //     index = ledBuffer.getLength() - 1 - index;
+        // }
+        // ledBuffer.setLED(index, color); // sets a new LED to full brightness
+        int start = ((int)(tick/(TPS/frequency)))%5;
+        if (backward) {
+            for (int i = ledBuffer.getLength()-start-1; i < 0; i-=5) {
+                ledBuffer.setLED(i, color);
+            }
         }
-        ledBuffer.setLED(index, color); // sets a new LED to full brightness
+        else{
+            for (int i = start; i < ledBuffer.getLength(); i+=5) {
+                ledBuffer.setLED(i, color);
+            }
+        }
+        
     }
 
     @Override

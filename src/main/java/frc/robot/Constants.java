@@ -123,7 +123,7 @@ public final class Constants {
     public static final int kPistonForwardChannelNumber = 1;
     public static final int kPistonReverseChannelNumber = 2;
 
-    public static final double kShootPower = -0.595;//Desired speed for the movement of the wheel in firing
+    public static final double kShootPower = -0.75;//Desired speed for the movement of the wheel in firing
     public static final double kCollectPower = 0.3;//Desired speed for the movement of the wheel in collection
   }
   public static class IntakeConstants{
@@ -141,7 +141,7 @@ public final class Constants {
 
     // Limit constants:
     public static final double kPieceDetectorDetectionThreshold = 1.5;
-    public static final double kAngleEncoderOffset = 0.08246600456165;
+    public static final double kAngleEncoderOffset = 0.561475516536888;
     
     // Intake motor speeds:
     public static final double kMotorOutputPower = -0.7;
@@ -149,12 +149,12 @@ public final class Constants {
     public static final double kMotorIntakePower = 0.75;
 
     // Angle motor positions:
-    public static final double kOpenRotations = 0.0845;
+    public static final double kOpenRotations = 0.1;
     public static final double kAmpRotations = 0.3575;
-    public static final double kClosedRotations = 0.5868;
+    public static final double kClosedRotations = 0.599653737491343;
 
     // Angle controller constants:
-    public static final double kP = 3.9; 
+    public static final double kP = 3.6; 
     public static final double kMaxVelocityRotPerSec = 0.7;
     public static final double kMaxAccelerationRotPerSecSquared = 1;
     public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(
