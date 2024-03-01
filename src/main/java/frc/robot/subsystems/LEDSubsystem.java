@@ -4,6 +4,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Util.LedEffect;
@@ -83,9 +84,7 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     public void breathingColor(double frequency, Color8Bit color){
-        // double brightness = Math.abs((tick%(1/frequency))-(1/(2*frequency)));
-        // double brightness = Math.cos(a*Math.PI)
-        double brightness = 0.8;
+        double brightness = (1+Math.cos((tick*frequency/TPS)*2*Math.PI))/2;
         for(int i = 0; i < ledBuffer.getLength(); i++){
             this.ledBuffer.setRGB(i, (int)(color.red * brightness), (int)(color.green * brightness), (int)(color.blue * brightness));
         }
@@ -122,9 +121,23 @@ public class LEDSubsystem extends SubsystemBase {
         
     }
 
+    private void errorEffect(){
+        for(int i = 0; i < (ledBuffer.getLength()/2)-1; i++){
+            this.ledBuffer.setLED(i, Color.kBlue);
+        }
+        for(int i = ledBuffer.getLength()/2; i < ledBuffer.getLength(); i++){
+            this.ledBuffer.setLED(i, Color.kRed);
+        }
+    }
+
     @Override
     public void periodic() {
-        effect.updateBuffer();
+        try{
+            effect.updateBuffer();
+        }
+        catch (Exception exception){
+            errorEffect();
+        }
         led.setData(ledBuffer);
         led.start();
         tick++;
