@@ -34,11 +34,9 @@ public class ClimberSubsystem extends SubsystemBase {
   private StatusSignal<Double> m_rightVelocity;
 
   MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
-  
-  private XboxController xboxController;
-  
+    
   /** Creates a new ClimberSubsystem. */
-  public ClimberSubsystem(XboxController xboxController) {
+  public ClimberSubsystem() {
     this.climberMotorRight=new TalonFX(Constants.ClimberConstants.kRightMotorPort);
     this.climberMotorLeft=new TalonFX(Constants.ClimberConstants.kLeftMotorPort);
 
@@ -66,7 +64,6 @@ public class ClimberSubsystem extends SubsystemBase {
     this.m_rightVelocity = this.climberMotorRight.getVelocity();
 
     ledTrigger = false;
-    this.xboxController = xboxController;
   }
 
   public boolean getRightLimitSwitch(){

@@ -137,7 +137,7 @@ public class ChassisSubsystem extends SubsystemBase {
     limelight = new LimelightUtil("limelight-front");
 
     // Robot starting position for odometry
-    startingPos = new Pose2d(2, 6, Rotation2d.fromDegrees(0));
+    startingPos = new Pose2d(1.39, 5.52, Rotation2d.fromDegrees(0));
     
     // Initilizing a pose estimator
     this.poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.kDriveKinematics,
@@ -152,12 +152,12 @@ public class ChassisSubsystem extends SubsystemBase {
       () -> ChassisConstants.kDriveKinematics.toChassisSpeeds(getModStates()), 
       this::runVelc,
       new HolonomicPathFollowerConfig(
-        new PIDConstants(1.0, 0, 0), // Translation PID
-        new PIDConstants(1.0, 0, 0), // Rotation PID
+        new PIDConstants(6.5, 0, 0), // Translation PID
+        new PIDConstants(5.0, 0, 0), // Rotation PID
         4.0, 
         ChassisConstants.kWheelRadius, 
         new ReplanningConfig()),
-      () -> (Robot.allianceColor == "BLUE") ? false : true, 
+      () -> !(Robot.allianceColor == "BLUE"), 
       this);
 
     // Set up custom logging to add the current path to a field 2d widget
@@ -253,7 +253,7 @@ public class ChassisSubsystem extends SubsystemBase {
     public void runVelc(ChassisSpeeds speeds) {
       ChassisSpeeds discSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
 
-      setModuleStates(ChassisConstants.kDriveKinematics.toSwerveModuleStates(discSpeeds));
+      this.swerveModuleStates = ChassisConstants.kDriveKinematics.toSwerveModuleStates(discSpeeds);
     }
 
     /**
@@ -325,6 +325,8 @@ public class ChassisSubsystem extends SubsystemBase {
     
     this.field.setRobotPose(this.poseEstimator.getEstimatedPosition());
 
+    SmartDashboard.putNumber("Gyro Heading", getHeading());
+
     SmartDashboard.putNumber("Left Front Distance",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getPosition().distanceMeters);
     SmartDashboard.putNumber("Left Back Distance",this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getPosition().distanceMeters);
     SmartDashboard.putNumber("Right Front Distance",this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getPosition().distanceMeters);
@@ -349,6 +351,11 @@ public class ChassisSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Left Back Drive Velocity", swerve_modules[Wheels.LEFT_BACK.ordinal()].getVelocity());
     SmartDashboard.putNumber("Right Front Drive Velocity", swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getVelocity());
     SmartDashboard.putNumber("Right Back Drive Velocity", swerve_modules[Wheels.RIGHT_BACK.ordinal()].getVelocity());
+
+    SmartDashboard.putNumber("Left Front Drive Output", swerve_modules[Wheels.LEFT_FRONT.ordinal()].getModuleDriveOutput());
+    SmartDashboard.putNumber("Left Back Drive Output", swerve_modules[Wheels.LEFT_BACK.ordinal()].getModuleDriveOutput());
+    SmartDashboard.putNumber("Right Front Drive Output", swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getModuleDriveOutput());
+    SmartDashboard.putNumber("Right Back Drive Output", swerve_modules[Wheels.RIGHT_BACK.ordinal()].getModuleDriveOutput());
 
     SmartDashboard.putNumber("tid", this.limelight.getAprilTagID());
   }

@@ -150,6 +150,12 @@ public class SwerveModule {
         return output.getValue();
     }
 
+    public double getModuleDriveOutput() {
+        var output = this.driveMotor.getClosedLoopOutput();
+        output.refresh();
+        return output.getValue();
+    }
+
     /**
      * Returns the module's position using the feedback sensors with latency compensation
      * @return the module's current position

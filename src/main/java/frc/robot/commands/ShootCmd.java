@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Util.LEDController;
+import frc.robot.Util.LEDController.ActionStates;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -27,7 +28,10 @@ public class ShootCmd extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower)),
+      new InstantCommand(() -> {
+        this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower);
+        LEDController.setActionState(ActionStates.SPEAKER_SHOOTING);
+      }),
       new WaitCommand(0.1), 
       new WaitUntilCommand(() -> (Math.abs(shooterSubsystem.getShooterSpeedRPM()) >= 3800)),
       new InstantCommand(() -> {
@@ -36,7 +40,11 @@ public class ShootCmd extends SequentialCommandGroup {
       }),
       new WaitCommand(0.2),
       new InstantCommand(() -> this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState)),
-      new InstantCommand(() -> this.shooterSubsystem.stopMotor())
+      new InstantCommand(() -> {
+        this.shooterSubsystem.stopMotor();
+        LEDController.setActionState(ActionStates.DEFAULT);
+    })
+      
     );
   }
 }

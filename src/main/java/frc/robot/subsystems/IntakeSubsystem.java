@@ -206,6 +206,8 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Has Piece", hasPiece());
     SmartDashboard.putNumber("Detector Voltage",this.pieceDetector.getVoltage());
 
+    SmartDashboard.putBoolean("Camera has target", this.limelight.cameraHasTarget());
+
     SmartDashboard.putBoolean("At Setpoint", getArmAtSetpoint());
   } 
 }

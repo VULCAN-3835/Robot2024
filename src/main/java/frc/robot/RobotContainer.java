@@ -67,15 +67,16 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ChassisSubsystem chassisSubsystem = new ChassisSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 
   private final XboxController xboxControllerDrive = new XboxController(OperatorConstants.kXboxDrivePort);
   private final XboxController xboxControllerButton = new XboxController(OperatorConstants.kXboxButtonPort);
   private final Joystick leftJoystick = new Joystick(OperatorConstants.kLeftJoystickPort);
   private final Joystick rightJoystick = new Joystick(OperatorConstants.kRightJoystickPort);
 
-  private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(this.xboxControllerButton);
-
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+  private SendableChooser<Command> PFautoChooser = new SendableChooser<>();
+
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -87,6 +88,12 @@ public class RobotContainer {
     autoChooser.addOption("Shoot Collect Forward Shoot",new AutoShootCollectForwardShotCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
 
     SmartDashboard.putData("Auto Chooser",autoChooser);
+
+    NamedCommands.registerCommand("ShootCmd", new ShootCmd(shooterSubsystem, intakeSubsystem));
+    NamedCommands.registerCommand("AutoCollect", new FullFloorIntakeCmd(chassisSubsystem, intakeSubsystem, () -> false));
+
+    PFautoChooser = AutoBuilder.buildAutoChooser(); 
+    SmartDashboard.putData("PF Auto Chooser", PFautoChooser);
 
 
     configureBindings();
@@ -203,6 +210,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    // return autoChooser.getSelected();
+    Command auto = PFautoChooser.getSelected();
+    return auto;
   }
 }

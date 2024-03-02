@@ -1,9 +1,7 @@
 package frc.robot.Util;
 
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.robot.Robot;
 import frc.robot.subsystems.LEDSubsystem;
 
 public class LEDController {
@@ -54,21 +52,21 @@ public class LEDController {
                 }
                 else if(DriverStation.isAutonomousEnabled()){
                     LEDSubsystem.getInstance().effect = () ->
-                            LEDSubsystem.getInstance().breathingColor(10, allianceColor);
+                            LEDSubsystem.getInstance().breathingColor(1, allianceColor);
                 }
                 else if (DriverStation.isTeleopEnabled()){
                     LEDSubsystem.getInstance().effect = () ->
-                            LEDSubsystem.getInstance().breathingColor(10, allianceColor);
+                            LEDSubsystem.getInstance().breathingColor(2, allianceColor);
                 }
                 break;
             }
             case FLOOR_COLLECTING:
                 LEDSubsystem.getInstance().effect = () ->
-                        LEDSubsystem.getInstance().WaveColor(40, true, ORANGE);
+                        LEDSubsystem.getInstance().WaveColor(20, true, ORANGE);
                 break;
             case SOURCE_COLLECTING:
                 LEDSubsystem.getInstance().effect = () ->
-                        LEDSubsystem.getInstance().WaveColor(40, false, allianceColor);
+                        LEDSubsystem.getInstance().WaveColor(20, false, allianceColor);
                 break;
             case AMP_AIMING:
                 LEDSubsystem.getInstance().effect = () ->
