@@ -170,6 +170,9 @@ public final class Constants {
     public static final double kMaxMotorPower=0.7;
     public static final double kMaxElevatorHeight = 45.524; // CM
 
+    public static final double kClimbUpPower = 0.35;
+    public static final double kClimbDownPower = -0.35;
+
     public static final double kLengthForRotation = 12.56637061435917;// Diameter on Cm
     public static final double kMotorRatio = 83; // this is for multipling
 

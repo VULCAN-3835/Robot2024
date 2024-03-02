@@ -25,7 +25,6 @@ public class AutoShootCollectForwardShotCmd extends SequentialCommandGroup {
     addRequirements(chassis);
     addCommands(
       new ShootCmd(shooter, intake),
-      new WaitCommand(5),
       new InstantCommand(() -> intake.setRotationPosition(IntakeConstants.kOpenRotations)),
       new WaitUntilCommand(() -> intake.isOpen()),
       new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.collectState)),

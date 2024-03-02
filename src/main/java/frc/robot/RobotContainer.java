@@ -38,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Util.Conversions;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AimAtAprilTagCmd;
@@ -172,6 +173,27 @@ public class RobotContainer {
       this.shooterSubsystem.setShooterSpeed(0);
       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
+
+    // POV UP Trigger
+    cmdXboxController.povUp().whileTrue(new InstantCommand(() -> {
+      this.climberSubsystem.setMotorsPowers(ClimberConstants.kClimbUpPower);
+      LEDController.setActionState(LEDController.ActionStates.OPENING_CLIMBER);
+    }));
+    cmdXboxController.povUp().toggleOnFalse(new InstantCommand(() -> {
+      this.climberSubsystem.setMotorsPowers(0);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+    }));
+
+    cmdXboxController.povDown().whileTrue(new InstantCommand(() -> {
+      this.climberSubsystem.setMotorsPowers(ClimberConstants.kClimbDownPower);
+      LEDController.setActionState(LEDController.ActionStates.OPENING_CLIMBER);
+    }));
+    cmdXboxController.povDown().toggleOnFalse(new InstantCommand(() -> {
+      this.climberSubsystem.setMotorsPowers(0);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+    }));
+
+
   }
 
   

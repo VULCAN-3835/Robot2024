@@ -100,28 +100,14 @@ public class ClimberSubsystem extends SubsystemBase {
     this.climberMotorRight.setControl(this.motionMagicVoltage.withPosition(pos));
   }
 
-  @Override
-  public void periodic() {
-    double power = 0;
-    if (xboxController.getPOV() == 0) {
-      power = 0.35;
-      LEDController.setActionState(LEDController.ActionStates.OPENING_CLIMBER);
-      ledTrigger = true;
-    }
-    else if (xboxController.getPOV() == 180) {
-      power = -0.35;
-      LEDController.setActionState(LEDController.ActionStates.CLOSING_CLIMBER);
-      ledTrigger = true;
-    }
-    else if (ledTrigger){
-      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
-      ledTrigger = false;
-    }
-    
+  public void setMotorsPowers(double power) {
     this.climberMotorLeft.set(this.getLeftLimitSwitch()&&power<0?0:power);
     this.climberMotorRight.set(this.getRightLimitSwitch()&&power<0?0:power);
     SmartDashboard.putNumber("Elevator Power", power);
+  }
 
+  @Override
+  public void periodic() {
     
     SmartDashboard.putBoolean("Left Limit Switch", this.getLeftLimitSwitch());
     SmartDashboard.putBoolean("Right Limit Switch", this.getRightLimitSwitch());
