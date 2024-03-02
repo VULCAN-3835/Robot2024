@@ -22,7 +22,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.Util.LEDController;
+import frc.robot.subsystems.*;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -37,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Util.Conversions;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AimAtAprilTagCmd;
@@ -52,9 +54,6 @@ import frc.robot.commands.Autos.AutoShootCmd;
 import frc.robot.commands.Autos.AutoShootCollectForwardCmd;
 import frc.robot.commands.Autos.AutoShootCollectForwardShotCmd;
 import frc.robot.commands.Autos.AutoShootMoveCmd;
-import frc.robot.subsystems.ChassisSubsystem;
-import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 
 
 /**
@@ -74,8 +73,7 @@ public class RobotContainer {
   private final Joystick leftJoystick = new Joystick(OperatorConstants.kLeftJoystickPort);
   private final Joystick rightJoystick = new Joystick(OperatorConstants.kRightJoystickPort);
 
-    private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(this.xboxControllerDrive);
-
+  private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(this.xboxControllerButton);
 
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
   
@@ -93,6 +91,8 @@ public class RobotContainer {
 
     configureBindings();
 
+    LEDSubsystem.getInstance(); // just to build the singleton once
+    LEDController.setActionState(LEDController.ActionStates.DEFAULT);
   }
 
   private void configureBindings() {
@@ -107,7 +107,7 @@ public class RobotContainer {
 
       configureXboxBinding(OperatorConstants.kXboxDrivePort);
     }
-    else if (leftJoystick.isConnected() && rightJoystick.isConnected()) {
+    else if (leftJoystick.isConnected() || rightJoystick.isConnected()) {
       this.chassisSubsystem.setDefaultCommand(
       new DefaultTeleopCommand(this.chassisSubsystem,
       () -> -leftJoystick.getY(),
@@ -127,39 +127,73 @@ public class RobotContainer {
     cmdXboxController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
 
     // RIGHT TRIGGER
-    cmdXboxController.rightTrigger().whileTrue(new NormalCollectCmd(this.intakeSubsystem));
+    cmdXboxController.rightTrigger().whileTrue(new ShootCmd(shooterSubsystem, intakeSubsystem));
     cmdXboxController.rightTrigger().toggleOnFalse(new InstantCommand(() -> {
-       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-       this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations); 
+      this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
+      this.shooterSubsystem.setShooterSpeed(0);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+    }));
+
+    // LEFT TRIGGER
+    cmdXboxController.leftTrigger().whileTrue(new NormalCollectCmd(this.intakeSubsystem));
+    cmdXboxController.leftTrigger().toggleOnFalse(new InstantCommand(() -> {
+      this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
+      this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
 
     // A TRIGGER
-    cmdXboxController.a().whileTrue(new FullFloorIntakeCmd(this.chassisSubsystem, this.intakeSubsystem, () -> cmdXboxController.back().getAsBoolean()));
+    cmdXboxController.a().whileTrue(new FullFloorIntakeCmd(chassisSubsystem, intakeSubsystem, () -> cmdXboxController.back().getAsBoolean()));
     cmdXboxController.a().toggleOnFalse(new InstantCommand(() -> {
-       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-       this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations); 
-      }));
+      this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
+      this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+    }));
 
     // B Trigger
     cmdXboxController.b().whileTrue(new AmpShootCmd(intakeSubsystem));
     cmdXboxController.b().toggleOnFalse(new InstantCommand(() -> {
-       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-       this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations); 
-      }));
+      this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
+      this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+    }));
 
     // Y Trigger
     cmdXboxController.y().whileTrue(new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> cmdXboxController.back().getAsBoolean()));
     cmdXboxController.y().toggleOnFalse(new InstantCommand(() -> {
-       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-       this.shooterSubsystem.setShooterSpeed(0); 
-      }));
+      this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
+      this.shooterSubsystem.setShooterSpeed(0);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+    }));
 
     // X Trigger
     cmdXboxController.x().whileTrue(new CollectCmd(intakeSubsystem, shooterSubsystem));
     cmdXboxController.x().toggleOnFalse(new InstantCommand(() -> {
       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-      this.shooterSubsystem.setShooterSpeed(0); 
+      this.shooterSubsystem.setShooterSpeed(0);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
+
+    // POV UP Trigger
+    cmdXboxController.povUp().whileTrue(new InstantCommand(() -> {
+      this.climberSubsystem.setMotorsPowers(ClimberConstants.kClimbUpPower);
+      LEDController.setActionState(LEDController.ActionStates.OPENING_CLIMBER);
+    }));
+    cmdXboxController.povUp().toggleOnFalse(new InstantCommand(() -> {
+      this.climberSubsystem.setMotorsPowers(0);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+    }));
+
+    cmdXboxController.povDown().whileTrue(new InstantCommand(() -> {
+      this.climberSubsystem.setMotorsPowers(ClimberConstants.kClimbDownPower);
+      LEDController.setActionState(LEDController.ActionStates.OPENING_CLIMBER);
+    }));
+    cmdXboxController.povDown().toggleOnFalse(new InstantCommand(() -> {
+      this.climberSubsystem.setMotorsPowers(0);
+      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+    }));
+
+
   }
 
   

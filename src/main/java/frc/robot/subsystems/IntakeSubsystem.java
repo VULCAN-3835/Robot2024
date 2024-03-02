@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Util.LEDController;
 import frc.robot.Util.LimelightUtil;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -190,6 +191,9 @@ public class IntakeSubsystem extends SubsystemBase {
       output = 0;
     // Applies output to motor
     this.angleMotor.set(output);
+
+    LEDController.setStorageState(hasPiece() ?
+            LEDController.StorageStates.HOLDING_PIECE :  LEDController.StorageStates.EMPTY);
 
     SmartDashboard.putNumber("Intake Output", output);
     SmartDashboard.putNumber("Intake setpoint", this.goalSetpoint);

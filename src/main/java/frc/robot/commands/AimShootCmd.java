@@ -7,8 +7,10 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Robot;
+import frc.robot.Util.LEDController;
 import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -22,7 +24,8 @@ public class AimShootCmd extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new AimAtAprilTagCmd(chassis, Robot.allianceColor == "BLUE"?8:4, backButton),
+      new InstantCommand(() -> LEDController.setActionState(LEDController.ActionStates.SPEAKER_AIMING)),
+      new AimAtAprilTagCmd(chassis, Robot.allianceColor == "BLUE"?7:4, backButton),
       new ShootCmd(shooter, intake));
   }
 }

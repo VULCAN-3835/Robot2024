@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Util.LEDController;
+import frc.robot.Util.LEDController.ActionStates;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,13 +34,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
-      allianceColor = "BLUE";
-    }
-    else if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-      allianceColor = "RED";
-    }
     m_robotContainer = new RobotContainer();
+    LEDController.setActionState(LEDController.ActionStates.DEFAULT);
   }
 
   /**
@@ -57,16 +54,24 @@ public class Robot extends TimedRobot {
     
     if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
       allianceColor = "BLUE";
+      LEDController.setAllianceColor(LEDController.BLUE_ALLIANCE_COLOR);
     }
     else if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
       allianceColor = "RED";
+      LEDController.setAllianceColor(LEDController.RED_ALLIANCE_COLOR);
+    }
+    else {
+      LEDController.setAllianceColor(LEDController.WHITE);
     }
     CommandScheduler.getInstance().run();
+    LEDController.updateLEDEffect();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    LEDController.setActionState(ActionStates.DEFAULT);
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -95,6 +100,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    LEDController.setActionState(ActionStates.DEFAULT);
   }
 
   /** This function is called periodically during operator control. */

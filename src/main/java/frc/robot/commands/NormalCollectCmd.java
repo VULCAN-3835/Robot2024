@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Util.LEDController;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 
@@ -21,11 +22,15 @@ public class NormalCollectCmd extends SequentialCommandGroup {
     addCommands(
       new InstantCommand(() -> intake.setRotationPosition(IntakeConstants.kOpenRotations)),
       new WaitUntilCommand(() -> intake.isOpen()),
-      new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.collectState)),
+      new InstantCommand(() -> {
+          intake.setMotorMode(INTAKE_STATE.collectState);
+          LEDController.setActionState(LEDController.ActionStates.FLOOR_COLLECTING);
+      }),
       new WaitUntilCommand(() -> intake.hasPiece()),
       new InstantCommand(() -> {
        intake.setMotorMode(INTAKE_STATE.restState);
-       intake.setRotationPosition(IntakeConstants.kClosedRotations); 
+       intake.setRotationPosition(IntakeConstants.kClosedRotations);
+       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
       })
     );
   }
