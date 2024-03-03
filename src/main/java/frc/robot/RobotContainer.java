@@ -74,27 +74,28 @@ public class RobotContainer {
   private final Joystick leftJoystick = new Joystick(OperatorConstants.kLeftJoystickPort);
   private final Joystick rightJoystick = new Joystick(OperatorConstants.kRightJoystickPort);
 
-  private final SendableChooser<Command> autoChooser = new SendableChooser<>();
-  private SendableChooser<Command> PFautoChooser = new SendableChooser<>();
+  private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Autonomous chooser
+    autoChooser = AutoBuilder.buildAutoChooser();
+
     autoChooser.setDefaultOption("Empty", null);
     autoChooser.addOption("Shoot", new AutoShootCmd(this.shooterSubsystem, this.intakeSubsystem));
     autoChooser.addOption("Shoot Move", new AutoShootMoveCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
     autoChooser.addOption("Shoot Collect Forward", new AutoShootCollectForwardCmd(this.shooterSubsystem, this.intakeSubsystem,this.chassisSubsystem));
     autoChooser.addOption("Shoot Collect Forward Shoot",new AutoShootCollectForwardShotCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
 
-    SmartDashboard.putData("Auto Chooser",autoChooser);
-
     NamedCommands.registerCommand("ShootCmd", new ShootCmd(shooterSubsystem, intakeSubsystem));
+    NamedCommands.registerCommand("AimShootCmd", new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> false));
     NamedCommands.registerCommand("AutoCollect", new FullFloorIntakeCmd(chassisSubsystem, intakeSubsystem, () -> false));
+    NamedCommands.registerCommand("AmpShootCmd", new AmpShootCmd(intakeSubsystem));
+    NamedCommands.registerCommand("OpenIntake", new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kOpenRotations)));
+    NamedCommands.registerCommand("CloseIntake", new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations)));
 
-    PFautoChooser = AutoBuilder.buildAutoChooser(); 
-    SmartDashboard.putData("PF Auto Chooser", PFautoChooser);
-
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     configureBindings();
 
@@ -140,7 +141,6 @@ public class RobotContainer {
       this.shooterSubsystem.setShooterSpeed(0);
       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
-
     // LEFT TRIGGER
     cmdXboxController.leftTrigger().whileTrue(new NormalCollectCmd(this.intakeSubsystem));
     cmdXboxController.leftTrigger().toggleOnFalse(new InstantCommand(() -> {
@@ -211,7 +211,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // return autoChooser.getSelected();
-    Command auto = PFautoChooser.getSelected();
+    Command auto = autoChooser.getSelected();
     return auto;
   }
 }

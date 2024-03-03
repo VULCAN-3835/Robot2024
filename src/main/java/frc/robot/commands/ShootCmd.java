@@ -28,6 +28,9 @@ public class ShootCmd extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
+      new InstantCommand(() -> this.intakeSubsystem.setMotorMode(INTAKE_STATE.collectState)),
+      new WaitCommand(0.1),
+      new InstantCommand(() -> this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState)),
       new InstantCommand(() -> {
         this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower);
         LEDController.setActionState(ActionStates.SPEAKER_SHOOTING);

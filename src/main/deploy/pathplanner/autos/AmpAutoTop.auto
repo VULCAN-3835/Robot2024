@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.39,
-      "y": 5.52
+      "x": 0.7193498096269378,
+      "y": 6.63
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -18,15 +18,15 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "AutoCollect"
+            "pathName": "PathBeforeAmpCollect"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "BackToSpeaker"
+            "name": "AutoCollect"
           }
         },
         {
@@ -36,9 +36,15 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "GoToAmp"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "ShootCmd"
+            "name": "AmpShootCmd"
           }
         }
       ]

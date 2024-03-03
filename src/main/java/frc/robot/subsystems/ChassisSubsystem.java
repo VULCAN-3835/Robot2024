@@ -30,6 +30,7 @@ import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -222,10 +223,14 @@ public class ChassisSubsystem extends SubsystemBase {
      * @param fieldRelative  Is field relative or not
   */
   public void drive(double xVelocity, double yVelocity, double rot, boolean fieldRelative) {
+    var invert = 1;
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent() && alliance.get() == Alliance.Red)
+      invert = -1;
     // Kinematics turns the Chassis speeds to desired swerveModule states depending on if field relative or not
     this.swerveModuleStates =
     Constants.ChassisConstants.kDriveKinematics.toSwerveModuleStates(
-            fieldRelative? ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, rot, this.imu.getRotation2d())
+            fieldRelative? ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity*invert, yVelocity*invert, rot, this.imu.getRotation2d())
                 : new ChassisSpeeds(xVelocity, yVelocity, rot));
 
   }
@@ -322,7 +327,6 @@ public class ChassisSubsystem extends SubsystemBase {
     // if (this.limelight.hasValidTarget()) {
     //   this.poseEstimator.addVisionMeasurement(this.limelight.getPoseFromCamera(), Timer.getFPGATimestamp() - (this.limelight.getCameraTimeStampSec()));
     // }
-    
     this.field.setRobotPose(this.poseEstimator.getEstimatedPosition());
 
     SmartDashboard.putNumber("Gyro Heading", getHeading());
