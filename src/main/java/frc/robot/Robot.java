@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Util.LEDController;
@@ -51,17 +52,18 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
-    
-    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+    if (DriverStation.getAlliance().isPresent()) {
+      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
       allianceColor = "BLUE";
       LEDController.setAllianceColor(LEDController.BLUE_ALLIANCE_COLOR);
-    }
-    else if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-      allianceColor = "RED";
-      LEDController.setAllianceColor(LEDController.RED_ALLIANCE_COLOR);
-    }
-    else {
-      LEDController.setAllianceColor(LEDController.WHITE);
+      }
+      else if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+        allianceColor = "RED";
+        LEDController.setAllianceColor(LEDController.RED_ALLIANCE_COLOR);
+      }
+      else {
+        LEDController.setAllianceColor(LEDController.WHITE);
+      }
     }
     CommandScheduler.getInstance().run();
     LEDController.updateLEDEffect();

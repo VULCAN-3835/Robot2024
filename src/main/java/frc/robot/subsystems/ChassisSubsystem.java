@@ -13,6 +13,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -21,6 +22,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.Distance;
@@ -82,6 +84,7 @@ public class ChassisSubsystem extends SubsystemBase {
   };
 
   private LimelightUtil limelight;
+  private Field2d llField;
 
   // Sysid Measurements
   private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -138,7 +141,7 @@ public class ChassisSubsystem extends SubsystemBase {
     limelight = new LimelightUtil("limelight-front");
 
     // Robot starting position for odometry
-    startingPos = new Pose2d(1.39, 5.52, Rotation2d.fromDegrees(0));
+    startingPos = new Pose2d(1.3, 5.52, Rotation2d.fromDegrees(0));
     
     // Initilizing a pose estimator
     this.poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.kDriveKinematics,
@@ -153,7 +156,7 @@ public class ChassisSubsystem extends SubsystemBase {
       () -> ChassisConstants.kDriveKinematics.toChassisSpeeds(getModStates()), 
       this::runVelc,
       new HolonomicPathFollowerConfig(
-        new PIDConstants(6.5, 0, 0), // Translation PID
+        new PIDConstants(1.75, 0, 0), // Translation PID
         new PIDConstants(5.0, 0, 0), // Rotation PID
         4.0, 
         ChassisConstants.kWheelRadius, 
@@ -164,6 +167,9 @@ public class ChassisSubsystem extends SubsystemBase {
     // Set up custom logging to add the current path to a field 2d widget
     PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("path").setPoses(poses));
     SmartDashboard.putData(field);
+
+    llField = new Field2d();
+    SmartDashboard.putData("Limelight Field", llField);
 
     
     routine = new SysIdRoutine(
@@ -317,17 +323,59 @@ public class ChassisSubsystem extends SubsystemBase {
     return this.swerveModuleStates;
   }
 
+  private void updatePoseEstimatorWithVisionBotPose() {
+    Pose2d visionBotPose = this.limelight.getPoseFromCamera();
+    if (visionBotPose.getX() == 0.0) {
+      return;
+    }
+
+    // distance from current pose to vision estimated pose
+    double poseDifference = poseEstimator.getEstimatedPosition().getTranslation()
+        .getDistance(visionBotPose.getTranslation());
+
+    if (this.limelight.cameraHasTarget()) {
+      double xyStds;
+      double degStds;
+      // multiple targets detected
+      if (this.limelight.cameraHasTarget()) {
+        xyStds = 0.5;
+        degStds = 6;
+      }
+      // 1 target with large area and close to estimated pose
+      if (this.limelight.getA() > 0.8 && poseDifference < 0.5) {
+        xyStds = 0.75;
+        degStds = 10;
+      }
+      // 1 target farther away and estimated pose is close
+      if (this.limelight.getA() > 0.1 && poseDifference < 0.3) {
+        xyStds = 1.0;
+        degStds = 20;
+      }
+      // conditions don't match to add a vision measurement
+      else {
+        return;
+      }
+
+      poseEstimator.setVisionMeasurementStdDevs(
+          VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
+      poseEstimator.addVisionMeasurement(visionBotPose,
+          Timer.getFPGATimestamp() - (this.limelight.getCameraTimeStampSec()));
+    }
+  }
+
   @Override
   public void periodic() {
     setModuleStates(this.swerveModuleStates);
     
     updateSwervePositions();
     this.poseEstimator.update(getRotation2d().unaryMinus(), this.swerve_positions);
+    updatePoseEstimatorWithVisionBotPose();
 
     // if (this.limelight.hasValidTarget()) {
     //   this.poseEstimator.addVisionMeasurement(this.limelight.getPoseFromCamera(), Timer.getFPGATimestamp() - (this.limelight.getCameraTimeStampSec()));
     // }
     this.field.setRobotPose(this.poseEstimator.getEstimatedPosition());
+    this.llField.setRobotPose(this.limelight.getPoseFromCamera());
 
     SmartDashboard.putNumber("Gyro Heading", getHeading());
 

@@ -1,12 +1,6 @@
 {
   "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 1.39,
-      "y": 5.52
-    },
-    "rotation": 0
-  },
+  "startingPose": null,
   "command": {
     "type": "sequential",
     "data": {
@@ -18,9 +12,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "PathBeforeLeft2Collect"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "PositionMiddle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "OpenIntake"
+                }
+              }
+            ]
           }
         },
         {
@@ -38,7 +45,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.7
+            "waitTime": 0.3
           }
         },
         {
@@ -48,9 +55,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "PathBeforeLeft2Collect"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "PositionLeft"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "OpenIntake"
+                }
+              }
+            ]
           }
         },
         {
@@ -68,13 +88,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.7
+            "waitTime": 0.3
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AimShootCmd"
+            "name": "ShootCmd"
           }
         }
       ]

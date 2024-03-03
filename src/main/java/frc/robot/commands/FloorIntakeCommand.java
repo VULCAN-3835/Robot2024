@@ -22,10 +22,10 @@ public class FloorIntakeCommand extends Command {
   private Supplier<Boolean> backSupplier;
   private boolean inTolerence;
 
-  private final double kRotationPidKp = 0.045;
+  private final double kRotationPidKp = 0.05;
   private final double kRotationPidKi = 0;
   private final double kRotationPidKd = 0;
-  private final double kDefaultFwdDriveSpeed = 1.2; //Find actual def speed
+  private final double kDefaultFwdDriveSpeed = 1.5; //Find actual def speed
 
   /** Creates a new FloorIntakeCommand. */
   public FloorIntakeCommand(ChassisSubsystem chassis, IntakeSubsystem intake, Supplier<Boolean> backSupplier) {
@@ -41,8 +41,8 @@ public class FloorIntakeCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.rotationPID.setTolerance(2);
-    this.rotationPID.setSetpoint(0);
+    this.rotationPID.setTolerance(1.7);
+    this.rotationPID.setSetpoint(2); // Camera not totally centralized
 
     this.intakeSubsystem.setMotorMode(INTAKE_STATE.collectState);
 
@@ -77,6 +77,6 @@ public class FloorIntakeCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (intakeSubsystem.hasPiece() && intakeSubsystem.isOpen())|| backSupplier.get(); //Or trigger released
+    return (intakeSubsystem.hasPiece())|| backSupplier.get(); //Or trigger released
   }
 }

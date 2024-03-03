@@ -80,6 +80,14 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Autonomous chooser
+    NamedCommands.registerCommand("ShootCmd", new ShootCmd(shooterSubsystem, intakeSubsystem));
+    NamedCommands.registerCommand("AimShootCmd", new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> false));
+    NamedCommands.registerCommand("AutoCollect", new FullFloorIntakeCmd(chassisSubsystem, intakeSubsystem, () -> false));
+    NamedCommands.registerCommand("AmpShootCmd", new AmpShootCmd(intakeSubsystem));
+    NamedCommands.registerCommand("OpenIntake", new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kOpenRotations)));
+    NamedCommands.registerCommand("CloseIntake", new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations)));
+    NamedCommands.registerCommand("ActivateShooter", new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower)));
+
     autoChooser = AutoBuilder.buildAutoChooser();
 
     autoChooser.setDefaultOption("Empty", null);
@@ -87,13 +95,6 @@ public class RobotContainer {
     autoChooser.addOption("Shoot Move", new AutoShootMoveCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
     autoChooser.addOption("Shoot Collect Forward", new AutoShootCollectForwardCmd(this.shooterSubsystem, this.intakeSubsystem,this.chassisSubsystem));
     autoChooser.addOption("Shoot Collect Forward Shoot",new AutoShootCollectForwardShotCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
-
-    NamedCommands.registerCommand("ShootCmd", new ShootCmd(shooterSubsystem, intakeSubsystem));
-    NamedCommands.registerCommand("AimShootCmd", new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> false));
-    NamedCommands.registerCommand("AutoCollect", new FullFloorIntakeCmd(chassisSubsystem, intakeSubsystem, () -> false));
-    NamedCommands.registerCommand("AmpShootCmd", new AmpShootCmd(intakeSubsystem));
-    NamedCommands.registerCommand("OpenIntake", new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kOpenRotations)));
-    NamedCommands.registerCommand("CloseIntake", new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations)));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 

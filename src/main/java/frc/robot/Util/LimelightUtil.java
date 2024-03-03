@@ -48,6 +48,7 @@ public class LimelightUtil {
         double y = botpose[1];
         double yaw = botpose[5];
         return new Pose2d(x,y,Rotation2d.fromDegrees(yaw));
+        
     }
 
     // Returns the total latency of limelight camera
@@ -60,14 +61,15 @@ public class LimelightUtil {
     public double distanceFromTargetMeters() {
         double[] botpose_apriltag = this.limelight.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
         double z = botpose_apriltag[2];
+        double y = botpose_apriltag[1];
         double x = botpose_apriltag[0];
 
-        return Math.sqrt(Math.pow(z,2)+Math.pow(x,2));
+        return Math.sqrt(Math.pow(z,2)+Math.pow(x,2)+Math.pow(y, 2));
     }
 
     // Returns if limelight has valid target
     public boolean hasValidTarget() {
-        return cameraHasTarget() && distanceFromTargetMeters() < 3.4;
+        return cameraHasTarget() && distanceFromTargetMeters() < 5;
     }
 
     public double getAprilTagID() {
