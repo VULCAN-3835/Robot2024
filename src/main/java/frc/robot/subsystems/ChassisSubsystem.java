@@ -231,7 +231,7 @@ public class ChassisSubsystem extends SubsystemBase {
   public void drive(double xVelocity, double yVelocity, double rot, boolean fieldRelative) {
     var invert = 1;
     var alliance = DriverStation.getAlliance();
-    if (alliance.isPresent() && alliance.get() == Alliance.Red)
+    if (alliance.isPresent() && alliance.get() == Alliance.Red && fieldRelative)
       invert = -1;
     // Kinematics turns the Chassis speeds to desired swerveModule states depending on if field relative or not
     this.swerveModuleStates =
@@ -341,16 +341,16 @@ public class ChassisSubsystem extends SubsystemBase {
         xyStds = 0.5;
         degStds = 6;
       }
-      // 1 target with large area and close to estimated pose
-      if (this.limelight.getA() > 0.8 && poseDifference < 0.5) {
-        xyStds = 0.75;
-        degStds = 10;
-      }
-      // 1 target farther away and estimated pose is close
-      if (this.limelight.getA() > 0.1 && poseDifference < 0.3) {
-        xyStds = 1.0;
-        degStds = 20;
-      }
+      // // 1 target with large area and close to estimated pose
+      // if (this.limelight.getA() > 0.8 && poseDifference < 0.5) {
+      //   xyStds = 0.75;
+      //   degStds = 10;
+      // }
+      // // 1 target farther away and estimated pose is close
+      // if (this.limelight.getA() > 0.1 && poseDifference < 0.3) {
+      //   xyStds = 1.0;
+      //   degStds = 20;
+      // }
       // conditions don't match to add a vision measurement
       else {
         return;

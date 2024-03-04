@@ -182,10 +182,10 @@ public class IntakeSubsystem extends SubsystemBase {
     if (this.goalSetpoint>IntakeConstants.kClosedRotations)
       this.goalSetpoint = IntakeConstants.kClosedRotations;
 
-    if (output > 0.6)
-      output = 0.6;
-    if (output < -0.6)
-      output = -0.6;
+    if (output > 0.71)
+      output = 0.71;
+    if (output < -0.71)
+      output = -0.71;
 
     if (getCurrentPosition() == 0.25)
       output = 0;

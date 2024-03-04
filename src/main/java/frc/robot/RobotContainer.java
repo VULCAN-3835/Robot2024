@@ -116,7 +116,8 @@ public class RobotContainer {
 
       configureXboxBinding(OperatorConstants.kXboxDrivePort);
     }
-    else if (leftJoystick.isConnected() || rightJoystick.isConnected()) {
+    else {
+      configureXboxBinding(OperatorConstants.kXboxButtonPort);
       this.chassisSubsystem.setDefaultCommand(
       new DefaultTeleopCommand(this.chassisSubsystem,
       () -> -leftJoystick.getY(),
@@ -124,7 +125,7 @@ public class RobotContainer {
       () -> -rightJoystick.getX()));
     }
 
-    if (xboxControllerButton.isConnected()) {
+    if (xboxControllerButton.isConnected() && xboxControllerDrive.isConnected()) {
       configureXboxBinding(OperatorConstants.kXboxButtonPort);
     }
   }

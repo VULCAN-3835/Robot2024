@@ -149,14 +149,14 @@ public final class Constants {
     public static final double kMotorIntakePower = 0.75;
 
     // Angle motor positions:
-    public static final double kOpenRotations = 0.0965;
+    public static final double kOpenRotations = 0.092;
     public static final double kAmpRotations = 0.3575;
     public static final double kClosedRotations = 0.599653737491343;
 
     // Angle controller constants:
-    public static final double kP = 3.5; 
-    public static final double kMaxVelocityRotPerSec = 0.7;
-    public static final double kMaxAccelerationRotPerSecSquared = 1;
+    public static final double kP = 5.4; 
+    public static final double kMaxVelocityRotPerSec = 2;
+    public static final double kMaxAccelerationRotPerSecSquared = 3;
     public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(
       IntakeConstants.kMaxVelocityRotPerSec,
       IntakeConstants.kMaxAccelerationRotPerSecSquared);
@@ -170,8 +170,8 @@ public final class Constants {
     public static final double kMaxMotorPower=0.7;
     public static final double kMaxElevatorHeight = 45.524; // CM
 
-    public static final double kClimbUpPower = 0.35;
-    public static final double kClimbDownPower = -0.35;
+    public static final double kClimbUpPower = 0.7;
+    public static final double kClimbDownPower = -0.7;
 
     public static final double kLengthForRotation = 12.56637061435917;// Diameter on Cm
     public static final double kMotorRatio = 83; // this is for multipling
