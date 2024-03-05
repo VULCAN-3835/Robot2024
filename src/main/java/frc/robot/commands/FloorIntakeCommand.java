@@ -41,7 +41,7 @@ public class FloorIntakeCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.rotationPID.setTolerance(1.7);
+    this.rotationPID.setTolerance(2);
     this.rotationPID.setSetpoint(2); // Camera not totally centralized
 
     this.intakeSubsystem.setMotorMode(INTAKE_STATE.collectState);
