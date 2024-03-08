@@ -90,6 +90,7 @@ public class LEDSubsystem extends SubsystemBase {
         }
     }
 
+    // TODO: Fix
     public void WaveColor(double frequency, boolean backward, Color8Bit color){
         if (tick%((int)(TPS/frequency)) != 0){ // skips runs
             return;

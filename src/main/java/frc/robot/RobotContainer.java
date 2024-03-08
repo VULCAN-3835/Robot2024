@@ -107,6 +107,7 @@ public class RobotContainer {
   private void configureBindings() {
     setUpControllers();
   }
+
   public void setUpControllers() {
     if(xboxControllerDrive.isConnected()) {
       this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
@@ -115,17 +116,17 @@ public class RobotContainer {
       () -> -xboxControllerDrive.getRightX()));
 
       configureXboxBinding(OperatorConstants.kXboxDrivePort);
+
+      if (xboxControllerButton.isConnected() && xboxControllerDrive.isConnected()) {
+        configureXboxBinding(OperatorConstants.kXboxButtonPort);
+      }
     }
     else {
-      configureXboxBinding(OperatorConstants.kXboxButtonPort);
       this.chassisSubsystem.setDefaultCommand(
       new DefaultTeleopCommand(this.chassisSubsystem,
       () -> -leftJoystick.getY(),
       () -> -leftJoystick.getX(),
       () -> -rightJoystick.getX()));
-    }
-
-    if (xboxControllerButton.isConnected() && xboxControllerDrive.isConnected()) {
       configureXboxBinding(OperatorConstants.kXboxButtonPort);
     }
   }
@@ -133,6 +134,7 @@ public class RobotContainer {
   
   private void configureXboxBinding(int port) {
     CommandXboxController cmdXboxController = new CommandXboxController(port);
+    
     // Applies zero heading method instant command to start button trigger
     cmdXboxController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
 
