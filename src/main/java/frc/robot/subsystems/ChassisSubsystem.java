@@ -52,6 +52,8 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import org.littletonrobotics.junction.Logger;
+
 public class ChassisSubsystem extends SubsystemBase {
   // An enum with the names of the wheel modules
   public enum Wheels {
@@ -377,6 +379,8 @@ public class ChassisSubsystem extends SubsystemBase {
     this.field.setRobotPose(this.poseEstimator.getEstimatedPosition());
     this.llField.setRobotPose(this.limelight.getPoseFromCamera());
 
+    Logger.recordOutput("SwerveStates", swerveModuleStates);
+    
     SmartDashboard.putNumber("Gyro Heading", getHeading());
 
     SmartDashboard.putNumber("Left Front Distance",this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getPosition().distanceMeters);

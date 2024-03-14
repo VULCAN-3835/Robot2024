@@ -140,21 +140,21 @@ public final class Constants {
     public static final int kClosedLimitSwitchPort = 2;
 
     // Limit constants:
-    public static final double kPieceDetectorDetectionThreshold = 1.5;
-    public static final double kAngleEncoderOffset = 0.561475516536888;
+    public static final double kPieceDetectorDetectionThreshold = 1.45;
+    public static final double kAngleEncoderOffset = 0.152;
     
     // Intake motor speeds:
     public static final double kMotorOutputPower = -0.7;
-    public static final double kAmpOutputPower = -1;
-    public static final double kMotorIntakePower = 0.75;
+    public static final double kAmpOutputPower = -0.925;
+    public static final double kMotorIntakePower = 0.76;
 
     // Angle motor positions:
     public static final double kOpenRotations = 0.092;
     public static final double kAmpRotations = 0.3575;
-    public static final double kClosedRotations = 0.599653737491343;
+    public static final double kClosedRotations = 0.589653737491343;
 
     // Angle controller constants:
-    public static final double kP = 5.4; 
+    public static final double kP = 6.4; 
     public static final double kMaxVelocityRotPerSec = 2;
     public static final double kMaxAccelerationRotPerSecSquared = 3;
     public static final TrapezoidProfile.Constraints kConstraints = new TrapezoidProfile.Constraints(

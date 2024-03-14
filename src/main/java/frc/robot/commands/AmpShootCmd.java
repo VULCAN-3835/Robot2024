@@ -22,6 +22,9 @@ public class AmpShootCmd extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
+      new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.collectState)),
+      new WaitCommand(0.125),
+      new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.restState)),
       new InstantCommand(() -> {
           intake.setRotationPosition(0.41);
           LEDController.setActionState(LEDController.ActionStates.AMP_AIMING);

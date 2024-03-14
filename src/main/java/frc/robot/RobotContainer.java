@@ -109,7 +109,7 @@ public class RobotContainer {
   }
 
   public void setUpControllers() {
-    if(xboxControllerDrive.isConnected()) {
+    if(xboxControllerDrive.isConnected() || true) {
       this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
       () -> -xboxControllerDrive.getLeftY(),
       () -> -xboxControllerDrive.getLeftX(),

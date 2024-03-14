@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -11,7 +15,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -38,7 +42,7 @@ import frc.robot.Util.LimelightUtil;
 
 public class IntakeSubsystem extends SubsystemBase {
   
-  private CANSparkMax intakeMotor; // Motor responsible for intake and output of game pieces
+  private TalonFX intakeMotor; // Motor responsible for intake and output of game pieces
   private CANSparkMax angleMotor; // Motor responsible for the angle of the arm
   private DutyCycleEncoder angleEncoder; // Encoder responsible for keeping the absolute position of the arm
 
@@ -50,6 +54,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private double currentPosition; // The current position of the arm
 
   private ProfiledPIDController armPositionController; // Closed Loop controller for arm position
+  private ArmFeedforward armFF = new ArmFeedforward(0,0,0,0);
 
   public enum INTAKE_STATE { // Enum representing the 3 states of the intake motor
     collectState,
@@ -57,12 +62,11 @@ public class IntakeSubsystem extends SubsystemBase {
     restState,
     ampState
   }
-
   // Limelight values:
   private LimelightUtil limelight;
 
   public IntakeSubsystem() {
-    this.intakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotorPort, MotorType.kBrushless);
+    this.intakeMotor = new TalonFX(IntakeConstants.kIntakeMotorPort);
     this.angleMotor = new CANSparkMax(IntakeConstants.kAngleMotorPort, MotorType.kBrushless);
 
     this.angleEncoder = new DutyCycleEncoder(IntakeConstants.kAngleEncoderPort);
@@ -75,15 +79,14 @@ public class IntakeSubsystem extends SubsystemBase {
     
     this.armPositionController = new ProfiledPIDController(IntakeConstants.kP, 0, 0,
      IntakeConstants.kConstraints);
-
+    
     this.limelight = new LimelightUtil("limelight-collect");
 
     this.goalSetpoint = IntakeConstants.kClosedRotations;
     this.armPositionController.setGoal(this.goalSetpoint);
 
     this.angleMotor.setIdleMode(IdleMode.kBrake);
-    this.intakeMotor.setIdleMode(IdleMode.kBrake);
-
+    this.intakeMotor.setNeutralMode(NeutralModeValue.Brake);
     this.angleMotor.setInverted(false);
 
     this.armPositionController.setTolerance(0.007);
@@ -145,7 +148,7 @@ public class IntakeSubsystem extends SubsystemBase {
    * @return True if piece is inside the intake system
   */
   public boolean hasPiece(){
-    return pieceDetector.getVoltage() > IntakeConstants.kPieceDetectorDetectionThreshold && pieceDetector.getVoltage() <1.95;
+    return pieceDetector.getVoltage() > IntakeConstants.kPieceDetectorDetectionThreshold && pieceDetector.getVoltage() <2;
   }
 
 
@@ -182,10 +185,10 @@ public class IntakeSubsystem extends SubsystemBase {
     if (this.goalSetpoint>IntakeConstants.kClosedRotations)
       this.goalSetpoint = IntakeConstants.kClosedRotations;
 
-    if (output > 0.71)
-      output = 0.71;
-    if (output < -0.71)
-      output = -0.71;
+    if (output > 0.825)
+      output = 0.825;
+    if (output < -0.825)
+      output = -0.825;
 
     if (getCurrentPosition() == 0.25)
       output = 0;
@@ -194,6 +197,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     LEDController.setStorageState(hasPiece() ?
             LEDController.StorageStates.HOLDING_PIECE :  LEDController.StorageStates.EMPTY);
+
 
     SmartDashboard.putNumber("Intake Output", output);
     SmartDashboard.putNumber("Intake setpoint", this.goalSetpoint);

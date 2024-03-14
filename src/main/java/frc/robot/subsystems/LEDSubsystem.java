@@ -38,7 +38,7 @@ public class LEDSubsystem extends SubsystemBase {
      * the {@link #getInstance()} method to get the singleton instance.
      */
 
-    private final int PWM_PORT = 0; // PWM port that the signal pin is connected to
+    private final int PWM_PORT = 1; // PWM port that the signal pin is connected to
     private final int STRIP_LENGTH = 38; // number of LEDs in each side strip
     private final AddressableLED led; // WIP's AddressableLED
     private final AddressableLEDBuffer ledBuffer; // WIP's AddressableLED
