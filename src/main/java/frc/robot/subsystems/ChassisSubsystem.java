@@ -379,7 +379,10 @@ public class ChassisSubsystem extends SubsystemBase {
     this.field.setRobotPose(this.poseEstimator.getEstimatedPosition());
     this.llField.setRobotPose(this.limelight.getPoseFromCamera());
 
-    Logger.recordOutput("SwerveStates", swerveModuleStates);
+    Logger.recordOutput("Swerve/SwerveStates", swerveModuleStates);
+    Logger.recordOutput("Swerve/Heading", imu.getAngle());
+
+    Logger.recordOutput("Field/RobotPose", getPose());
     
     SmartDashboard.putNumber("Gyro Heading", getHeading());
 

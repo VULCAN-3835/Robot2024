@@ -123,7 +123,7 @@ public final class Constants {
     public static final int kPistonForwardChannelNumber = 1;
     public static final int kPistonReverseChannelNumber = 2;
 
-    public static final double kShootPower = -0.75;//Desired speed for the movement of the wheel in firing
+    public static final double kShootPower = -0.85;//Desired speed for the movement of the wheel in firing
     public static final double kCollectPower = 0.3;//Desired speed for the movement of the wheel in collection
   }
   public static class IntakeConstants{
@@ -140,12 +140,12 @@ public final class Constants {
     public static final int kClosedLimitSwitchPort = 2;
 
     // Limit constants:
-    public static final double kPieceDetectorDetectionThreshold = 1.45;
+    public static final double kPieceDetectorDetectionThreshold = 1.4;
     public static final double kAngleEncoderOffset = 0.152;
     
     // Intake motor speeds:
     public static final double kMotorOutputPower = -0.7;
-    public static final double kAmpOutputPower = -0.925;
+    public static final double kAmpOutputPower = -0.93;
     public static final double kMotorIntakePower = 0.76;
 
     // Angle motor positions:
