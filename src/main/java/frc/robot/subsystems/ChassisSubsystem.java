@@ -77,6 +77,8 @@ public class ChassisSubsystem extends SubsystemBase {
   // Field object for presenting position relative to field
   private Field2d field;
 
+  private boolean hasNotReset = true;
+
   // The states of the modules
   private SwerveModuleState[] swerveModuleStates = new SwerveModuleState[] {
           new SwerveModuleState(0,Rotation2d.fromDegrees(0)),
@@ -339,7 +341,9 @@ public class ChassisSubsystem extends SubsystemBase {
       double xyStds;
       double degStds;
       // multiple targets detected
-      if (this.limelight.cameraHasTarget()) {
+      xyStds = 0.1;
+      degStds = 1;
+      if (this.limelight.getA() > 0.3) {
         xyStds = 0.5;
         degStds = 6;
       }
@@ -383,6 +387,7 @@ public class ChassisSubsystem extends SubsystemBase {
     Logger.recordOutput("Swerve/Heading", imu.getAngle());
 
     Logger.recordOutput("Field/RobotPose", getPose());
+    Logger.recordOutput("Field/CameraA", limelight.getA());
     
     SmartDashboard.putNumber("Gyro Heading", getHeading());
 

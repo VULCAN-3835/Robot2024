@@ -83,6 +83,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("ShootCmd", new ShootCmd(shooterSubsystem, intakeSubsystem));
     NamedCommands.registerCommand("AimShootCmd", new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> false));
     NamedCommands.registerCommand("AutoCollect", new FullFloorIntakeCmd(chassisSubsystem, intakeSubsystem, () -> false));
+    NamedCommands.registerCommand("StartCollecting", new InstantCommand(() -> this.intakeSubsystem.setMotorMode(INTAKE_STATE.collectState)));
+    NamedCommands.registerCommand("EndCollecting", new InstantCommand(() -> this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState)));
     NamedCommands.registerCommand("AmpShootCmd", new AmpShootCmd(intakeSubsystem));
     NamedCommands.registerCommand("OpenIntake", new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kOpenRotations)));
     NamedCommands.registerCommand("CloseIntake", new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations)));
