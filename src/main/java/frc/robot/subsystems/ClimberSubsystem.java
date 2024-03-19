@@ -27,6 +27,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   private boolean ledTrigger;
   
+  private double motorOutput = 0;
 
   private StatusSignal<Double> m_leftPosition;
   private StatusSignal<Double> m_leftVelocity;
@@ -98,14 +99,15 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void setMotorsPowers(double power) {
-    this.climberMotorLeft.set(this.getLeftLimitSwitch()&&power<0?0:power);
-    this.climberMotorRight.set(this.getRightLimitSwitch()&&power<0?0:power);
+    motorOutput = power;
     SmartDashboard.putNumber("Elevator Power", power);
   }
 
   @Override
   public void periodic() {
-    
+    this.climberMotorLeft.set(this.getLeftLimitSwitch()&&motorOutput<0?0:motorOutput);
+    this.climberMotorRight.set(this.getRightLimitSwitch()&&motorOutput<0?0:motorOutput);
+
     SmartDashboard.putBoolean("Left Limit Switch", this.getLeftLimitSwitch());
     SmartDashboard.putBoolean("Right Limit Switch", this.getRightLimitSwitch());
 
