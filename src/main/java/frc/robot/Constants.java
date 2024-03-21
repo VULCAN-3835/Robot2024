@@ -145,12 +145,12 @@ public final class Constants {
     
     // Intake motor speeds:
     public static final double kMotorOutputPower = -0.7;
-    public static final double kAmpOutputPower = -0.98;
+    public static final double kAmpOutputPower = -0.995;
     public static final double kMotorIntakePower = 0.76;
 
     // Angle motor positions:
-    public static final double kOpenRotations = 0.092;
-    public static final double kAmpRotations = 0.3575;
+    public static final double kOpenRotations = 0.078;
+    public static final double kAmpRotations = 0.4105; // 0.402
     public static final double kClosedRotations = 0.589653737491343;
 
     // Angle controller constants:
