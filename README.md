@@ -1,10 +1,17 @@
 # Robot2024
-
-## Description
 Welcome to Team 3835's Robot2024 project repository, showcasing our robot designed specifically for the 2024 FRC competition, Crescendo.
 
-## Autonomous Commands with PathPlanner
+## Overview
+Our robot Sisyphus for the 2024 FRC season, Crescendo, was built in our workshop in Tichon Hadash Tel Aviv in order to compete. This repository contains all the code and configurations required for operating our robot.
 
+## Subsystems
+* ChassisSubsystem
+* ClimberSubsystem
+* IntakeSubsystem
+* LEDSubsystem
+* ShooterSubsystem
+
+## Autonomous Commands with PathPlanner
 ### ChassisSubsystem Configuration
 In the `chassisSubsystem.java` file, our robot's holonomic drive system is fine-tuned for optimal path following using the `AutoBuilder.configureHolonomic()` method. This configuration ensures smooth traversal of specified paths during autonomous operations.
 
