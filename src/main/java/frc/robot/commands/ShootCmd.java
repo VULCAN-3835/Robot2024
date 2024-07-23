@@ -15,18 +15,17 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 import frc.robot.subsystems.ShooterSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ShootCmd extends SequentialCommandGroup {
   private ShooterSubsystem shooterSubsystem;
   private IntakeSubsystem intakeSubsystem;
+
+  /** Creates a new ShootCmd. */
   public ShootCmd(ShooterSubsystem shooterSubsystem, IntakeSubsystem intakeSubsystem) {
     this.shooterSubsystem = shooterSubsystem;
     this.intakeSubsystem = intakeSubsystem;
+
     addRequirements(this.shooterSubsystem, this.intakeSubsystem);
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
+
     addCommands(
       new InstantCommand(() -> this.intakeSubsystem.setMotorMode(INTAKE_STATE.collectState)),
       new WaitCommand(0.1),
@@ -47,7 +46,6 @@ public class ShootCmd extends SequentialCommandGroup {
         this.shooterSubsystem.stopMotor();
         LEDController.setActionState(ActionStates.DEFAULT);
     })
-      
     );
   }
 }

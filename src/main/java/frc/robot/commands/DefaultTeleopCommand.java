@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.ChassisSubsystem;
 
 public class DefaultTeleopCommand extends Command {
@@ -18,6 +17,7 @@ public class DefaultTeleopCommand extends Command {
   private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
   private boolean fieldOriented;
 
+    /** Creates a new DefaultTeleopCommand. */
   public DefaultTeleopCommand(ChassisSubsystem chassisSubsystem, Supplier<Double> xVelocitySupplier,
     Supplier<Double> yVelocitySupplier, Supplier<Double> turningVelocitySupplier) {
 

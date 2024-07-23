@@ -11,14 +11,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.subsystems.ChassisSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AimAtAprilTagCmd extends PIDCommand {
   ChassisSubsystem chassisSubsystem;
   private double rotTolerance = 1;
   private Supplier<Boolean> backSupplier;
   private boolean wrongId = false;
+
+  /** Creates a new AimAtAprilTagCmd. */
   public AimAtAprilTagCmd(ChassisSubsystem chassisSubsystem, int id, Supplier<Boolean> backButton) {
     super(
         // The controller that the command will use
@@ -38,9 +37,8 @@ public class AimAtAprilTagCmd extends PIDCommand {
     this.backSupplier = backButton;
     this.chassisSubsystem = chassisSubsystem;
     SmartDashboard.putNumber("Got ID", id);
+
     addRequirements(this.chassisSubsystem);
-    // Use addRequirements() here to declare subsystem dependencies.
-    // Configure additional PID options by calling `getController` here.
   }
 
   // Returns true when the command should end.

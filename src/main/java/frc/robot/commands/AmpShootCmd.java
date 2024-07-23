@@ -13,14 +13,10 @@ import frc.robot.Util.LEDController;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AmpShootCmd extends SequentialCommandGroup {
+
   /** Creates a new AmpShootCmd. */
   public AmpShootCmd(IntakeSubsystem intake) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new InstantCommand(() -> {
           intake.setRotationPosition(0.41);

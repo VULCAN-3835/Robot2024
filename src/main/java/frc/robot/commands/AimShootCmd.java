@@ -15,14 +15,10 @@ import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AimShootCmd extends SequentialCommandGroup {
+
   /** Creates a new AimShootCmd. */
   public AimShootCmd(ChassisSubsystem chassis, IntakeSubsystem intake, ShooterSubsystem shooter, Supplier<Boolean> backButton) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new InstantCommand(() -> LEDController.setActionState(LEDController.ActionStates.SPEAKER_AIMING)),
       new AimAtAprilTagCmd(chassis, Robot.allianceColor == "BLUE"?7:4, backButton),

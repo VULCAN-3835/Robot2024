@@ -15,14 +15,12 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 import frc.robot.subsystems.ShooterSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoShootCollectForwardShotCmd extends SequentialCommandGroup {
+
   /** Creates a new AutoShootCollectForwardShotCmd. */
   public AutoShootCollectForwardShotCmd(ShooterSubsystem shooter, IntakeSubsystem intake, ChassisSubsystem chassis) {
-    // Add your commands in the addCommands() call, e.g.
     addRequirements(chassis);
+    
     addCommands(
       new ShootCmd(shooter, intake),
       new InstantCommand(() -> intake.setRotationPosition(IntakeConstants.kOpenRotations)),
