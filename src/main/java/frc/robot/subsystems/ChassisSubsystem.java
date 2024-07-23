@@ -6,15 +6,12 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,8 +20,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
@@ -36,8 +31,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
@@ -83,6 +76,7 @@ public class ChassisSubsystem extends SubsystemBase {
           new SwerveModuleState(0,Rotation2d.fromDegrees(0))
   };
 
+  // Limelight util and field initilazation
   private LimelightUtil limelight;
   private Field2d llField;
 
@@ -171,7 +165,6 @@ public class ChassisSubsystem extends SubsystemBase {
     llField = new Field2d();
     SmartDashboard.putData("Limelight Field", llField);
 
-    
     routine = new SysIdRoutine(
     new SysIdRoutine.Config(),
     new SysIdRoutine.Mechanism(this::setSysidVolt, 
@@ -186,15 +179,16 @@ public class ChassisSubsystem extends SubsystemBase {
           .linearVelocity(
               m_velocity.mut_replace(swerve_modules[wheel.ordinal()].getVelocity(), MetersPerSecond)); } }
               , this));
+  }
 
-      
-}
+  /**
+     * Updates the swerve_positions array based on the current SwerveModulePositions reported by the SwerveModules
+  */
   private void updateSwervePositions() {
     this.swerve_positions[Wheels.LEFT_FRONT.ordinal()] = this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].getPosition();
     this.swerve_positions[Wheels.RIGHT_FRONT.ordinal()] = this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].getPosition();
     this.swerve_positions[Wheels.LEFT_BACK.ordinal()] = this.swerve_modules[Wheels.LEFT_BACK.ordinal()].getPosition();
     this.swerve_positions[Wheels.RIGHT_BACK.ordinal()] = this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].getPosition();
-
   }
 
   /**
@@ -247,31 +241,31 @@ public class ChassisSubsystem extends SubsystemBase {
      * @param chassisSpeeds The desired chassisSpeeds object for module velocities
      * @param fieldRelative  Is field relative or not
   */
-    public void drive(ChassisSpeeds chassisSpeeds, boolean fieldRelative) {
-      // Makes a swerve module-state array from chassisSpeeds
-        this.swerveModuleStates = 
-        Constants.ChassisConstants.kDriveKinematics.toSwerveModuleStates(
-          fieldRelative?ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, this.imu.getRotation2d())
-          :chassisSpeeds
-      );
-    }
+  public void drive(ChassisSpeeds chassisSpeeds, boolean fieldRelative) {
+    // Makes a swerve module-state array from chassisSpeeds
+      this.swerveModuleStates = 
+      Constants.ChassisConstants.kDriveKinematics.toSwerveModuleStates(
+        fieldRelative?ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, this.imu.getRotation2d())
+        :chassisSpeeds
+    );
+  }
 
-    /**
-     * Runs the robot following trajectory
-     *
-     * @param chassisSpeeds The desired chassisSpeeds object for module velocities
+  /**
+   * Runs the robot following trajectory
+   *
+   * @param chassisSpeeds The desired chassisSpeeds object for module velocities
   */
-    public void runVelc(ChassisSpeeds speeds) {
-      ChassisSpeeds discSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+  public void runVelc(ChassisSpeeds speeds) {
+    ChassisSpeeds discSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
 
-      this.swerveModuleStates = ChassisConstants.kDriveKinematics.toSwerveModuleStates(discSpeeds);
-    }
+    this.swerveModuleStates = ChassisConstants.kDriveKinematics.toSwerveModuleStates(discSpeeds);
+  }
 
-    /**
-     * Sets the desired states of the modules to given ones
-     *
-     * @param desiredStates  Desired array of 4 module states
-     */
+  /**
+    * Sets the desired states of the modules to given ones
+    *
+    * @param desiredStates  Desired array of 4 module states
+  */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     // Sets max acceleration and velocity to Wheels
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.ChassisConstants.kMaxDrivingVelocity);
@@ -283,19 +277,37 @@ public class ChassisSubsystem extends SubsystemBase {
     this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].set(desiredStates[3]);
   }
   
+  /**
+     * Command to execute quasistatic routine based on direction
+     * @param direction The direction of the robot during routine
+     * @return The command that executes the routine
+  */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return this.routine.quasistatic(direction);
   }
 
+  /**
+     * Command to execute Dynamic routine based on direction
+     * @param direction The direction of the robot during routine
+     * @return The command that executes the routine
+  */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return this.routine.dynamic(direction);
   }
 
+  /**
+     * Setter for swerve modules voltage, used only in sysid routine
+     * @param volts The voltage to apply
+  */
   private void setSysidVolt(Measure<Voltage> volts) {
     double voltageDouble = volts.magnitude();
     setModulesVoltage(voltageDouble);
   }
 
+  /**
+     * Setter for swerve module voltage
+     * @param volt The voltage to apply
+  */
   public void setModulesVoltage(double volt) {
     this.swerve_modules[Wheels.LEFT_FRONT.ordinal()].setMotorVoltage(volt);
     this.swerve_modules[Wheels.RIGHT_FRONT.ordinal()].setMotorVoltage(volt);
@@ -303,26 +315,49 @@ public class ChassisSubsystem extends SubsystemBase {
     this.swerve_modules[Wheels.RIGHT_BACK.ordinal()].setMotorVoltage(volt);
   }
 
+  /**
+     * Getter for the Limelight utility used by the subsystem for vision processing
+     * @return Limelight utility object used by the subsystem for vision processing
+  */
   public LimelightUtil getLimelight() {
     return this.limelight;
   }
 
+  /**
+     * Resets the odometry to a given pose
+     * @param pose The new pose2d of the robot
+  */
   private void resetOdometry(Pose2d pose) {
     this.poseEstimator.resetPosition(getRotation2d().unaryMinus(), getModPositions(), pose);
   }
 
+  /**
+     * Getter for the current pose2d estimated by the PoseEstimator
+     * @return The current reported position of the robot
+  */
   public Pose2d getPose() {
     return this.poseEstimator.getEstimatedPosition();
   }
 
+  /**
+     * Getter for the current reported swerve module positions
+     * @return The current reported swerve module positions
+  */
   public SwerveModulePosition[] getModPositions() {
     return this.swerve_positions;
   }
 
+  /**
+     * Getter for the current reported swerve module states
+     * @return The current reported swerve module states
+  */
   public SwerveModuleState[] getModStates() {
     return this.swerveModuleStates;
   }
 
+  /**
+     * Update pose estimator using vision data from the limelight
+  */
   private void updatePoseEstimatorWithVisionBotPose() {
     Pose2d visionBotPose = this.limelight.getPoseFromCamera();
     if (visionBotPose.getX() == 0.0) {
@@ -330,28 +365,16 @@ public class ChassisSubsystem extends SubsystemBase {
     }
 
     // distance from current pose to vision estimated pose
-    double poseDifference = poseEstimator.getEstimatedPosition().getTranslation()
-        .getDistance(visionBotPose.getTranslation());
+    double poseDifference = poseEstimator.getEstimatedPosition().getTranslation().getDistance(visionBotPose.getTranslation());
 
     if (this.limelight.cameraHasTarget()) {
       double xyStds;
       double degStds;
-      // multiple targets detected
+
       if (this.limelight.cameraHasTarget()) {
         xyStds = 0.5;
         degStds = 6;
       }
-      // // 1 target with large area and close to estimated pose
-      // if (this.limelight.getA() > 0.8 && poseDifference < 0.5) {
-      //   xyStds = 0.75;
-      //   degStds = 10;
-      // }
-      // // 1 target farther away and estimated pose is close
-      // if (this.limelight.getA() > 0.1 && poseDifference < 0.3) {
-      //   xyStds = 1.0;
-      //   degStds = 20;
-      // }
-      // conditions don't match to add a vision measurement
       else {
         return;
       }

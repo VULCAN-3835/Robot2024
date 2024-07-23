@@ -4,41 +4,24 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Util.LEDController;
 import frc.robot.Util.LimelightUtil;
 
 public class IntakeSubsystem extends SubsystemBase {
-  
-  private CANSparkMax intakeMotor; // Motor responsible for intake and output of game pieces
+  private TalonFX intakeMotor; // Motor responsible for intake and output of game pieces
   private CANSparkMax angleMotor; // Motor responsible for the angle of the arm
   private DutyCycleEncoder angleEncoder; // Encoder responsible for keeping the absolute position of the arm
 
@@ -50,6 +33,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private double currentPosition; // The current position of the arm
 
   private ProfiledPIDController armPositionController; // Closed Loop controller for arm position
+  private ArmFeedforward armFF = new ArmFeedforward(0,0,0,0);
 
   public enum INTAKE_STATE { // Enum representing the 3 states of the intake motor
     collectState,
@@ -62,7 +46,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private LimelightUtil limelight;
 
   public IntakeSubsystem() {
-    this.intakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotorPort, MotorType.kBrushless);
+    this.intakeMotor = new TalonFX(IntakeConstants.kIntakeMotorPort);
     this.angleMotor = new CANSparkMax(IntakeConstants.kAngleMotorPort, MotorType.kBrushless);
 
     this.angleEncoder = new DutyCycleEncoder(IntakeConstants.kAngleEncoderPort);
@@ -75,24 +59,31 @@ public class IntakeSubsystem extends SubsystemBase {
     
     this.armPositionController = new ProfiledPIDController(IntakeConstants.kP, 0, 0,
      IntakeConstants.kConstraints);
-
+    
     this.limelight = new LimelightUtil("limelight-collect");
 
     this.goalSetpoint = IntakeConstants.kClosedRotations;
     this.armPositionController.setGoal(this.goalSetpoint);
 
     this.angleMotor.setIdleMode(IdleMode.kBrake);
-    this.intakeMotor.setIdleMode(IdleMode.kBrake);
-
+    this.intakeMotor.setNeutralMode(NeutralModeValue.Brake);
     this.angleMotor.setInverted(false);
 
     this.armPositionController.setTolerance(0.007);
   }
 
+  /**
+     * Getter for the Limelight utility used by the subsystem for vision processing
+     * @return Limelight utility object used by the subsystem for vision processing
+  */
   public LimelightUtil getLimelight() {
     return this.limelight;
   }
 
+  /**
+     * Getter for the arm setpoint (goal)
+     * @return The setpoint of the arm in rotations (1 = 360*)
+  */
   public boolean getArmAtSetpoint() {
     return this.armPositionController.atSetpoint();
   }
@@ -116,6 +107,14 @@ public class IntakeSubsystem extends SubsystemBase {
     return this.currentPosition;
   }
 
+  /**
+    * Normalizes a position value to be within the range [0, 1).
+    * This method takes a value, adds 1 to it, and then uses the modulo operation 
+    * to ensure the result is within the specified range. This is useful for wrapping 
+    * values around when they exceed the range of [0, 1).
+    * @param value The position value to be normalized.
+    * @return The normalized position value within the range [0, 1).
+  */
   public double normalizePosition(double value) {
     return (value+1)%1;
   }
@@ -145,7 +144,7 @@ public class IntakeSubsystem extends SubsystemBase {
    * @return True if piece is inside the intake system
   */
   public boolean hasPiece(){
-    return pieceDetector.getVoltage() > IntakeConstants.kPieceDetectorDetectionThreshold && pieceDetector.getVoltage() <1.95;
+    return pieceDetector.getVoltage() > IntakeConstants.kPieceDetectorDetectionThreshold && pieceDetector.getVoltage() <2.1;
   }
 
 
@@ -182,18 +181,18 @@ public class IntakeSubsystem extends SubsystemBase {
     if (this.goalSetpoint>IntakeConstants.kClosedRotations)
       this.goalSetpoint = IntakeConstants.kClosedRotations;
 
-    if (output > 0.71)
-      output = 0.71;
-    if (output < -0.71)
-      output = -0.71;
+    if (output > 0.825)
+      output = 0.825;
+    if (output < -0.825)
+      output = -0.825;
 
     if (getCurrentPosition() == 0.25)
       output = 0;
     // Applies output to motor
     this.angleMotor.set(output);
 
-    LEDController.setStorageState(hasPiece() ?
-            LEDController.StorageStates.HOLDING_PIECE :  LEDController.StorageStates.EMPTY);
+    LEDController.setStorageState(hasPiece() ? LEDController.StorageStates.HOLDING_PIECE :  LEDController.StorageStates.EMPTY);
+
 
     SmartDashboard.putNumber("Intake Output", output);
     SmartDashboard.putNumber("Intake setpoint", this.goalSetpoint);
