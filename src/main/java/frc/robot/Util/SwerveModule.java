@@ -87,9 +87,9 @@ public class SwerveModule {
     }
 
     /**
-     * Configures the steer motor's feedback sennsor, source, rotor to sensor ratio and countinous readings
+     * Configures the steer motor's feedback sensor, source, rotor to sensor ratio and countinous readings
      *
-     * @param absEncoderID The id of the absolut encoder to set as the new feedback sensor
+     * @param absEncoderID The id of the absolute encoder to set as the new feedback sensor
     */
     private void configSteerMotor(int absEncoderID) { 
         TalonFXConfiguration steerConfigs = new TalonFXConfiguration();
@@ -112,6 +112,10 @@ public class SwerveModule {
         this.steerMotor.getConfigurator().apply(steerConfigs);
     }
 
+    /**
+     * Configures the drive motor's direction and supply limits and thresholds
+     * @param inverted Invert direction of drive motor
+    */
     private void configDriveMotor(boolean inverted) {
         TalonFXConfiguration driveConfigs = new TalonFXConfiguration();
 
@@ -150,6 +154,10 @@ public class SwerveModule {
         return output.getValue();
     }
 
+    /**
+     * Getter for the current power output the drive motor is recieving
+     * @return the drive motor's current power output in precentage (0 - 1)
+    */
     public double getModuleDriveOutput() {
         var output = this.driveMotor.getClosedLoopOutput();
         output.refresh();
@@ -214,11 +222,19 @@ public class SwerveModule {
 
     }
 
+    /**
+     * Sets direct voltage to the drive motor while maintaining wheel angle at base position
+     * @param voltage The voltage to apply to the motor
+    */
     public void setMotorVoltage(double voltage) {
         this.steerMotor.setControl(this.angleController.withPosition(0));
         this.driveMotor.setVoltage(voltage);
     }
 
+    /**
+     * Sets the drive motor's applied voltage control based on a desired state with MPS velocity
+     * @param desiredState the desired state for the module with it's speed being in MPS
+    */
     private void setSpeed(SwerveModuleState desiredState) {
         this.velocityController.Velocity = Conversions.MPSToRPS(desiredState.speedMetersPerSecond, ModuleConstants.kWheelCircumference);
         this.velocityController.FeedForward = this.driveFeedForward.calculate(desiredState.speedMetersPerSecond);
@@ -233,11 +249,19 @@ public class SwerveModule {
         this.steerMotor.set(0);
     }
 
+    /**
+     * Getter for the current velocity (RPM) of the robot
+     * @return The velocity of the robot (RPM)
+    */
     public double getVelocity() {
         this.m_driveVelocity.refresh();
         return Conversions.RPSToMPS(this.m_driveVelocity.getValue(), ModuleConstants.kWheelCircumference);
     }
 
+    /**
+     * Getter for the current applied voltage on the drive motor
+     * @return The currently applied voltage on the drive motor
+    */
     public double getVoltage() {
         this.m_driveVoltage.refresh();
         return m_driveVoltage.getValue();

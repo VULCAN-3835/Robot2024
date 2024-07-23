@@ -1,23 +1,7 @@
 package frc.robot;
 
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.util.PIDConstants;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -26,27 +10,16 @@ import frc.robot.Util.LEDController;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.Util.Conversions;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.AimAtAprilTagCmd;
 import frc.robot.commands.AimShootCmd;
 import frc.robot.commands.AmpShootCmd;
 import frc.robot.commands.CollectCmd;
 import frc.robot.commands.DefaultTeleopCommand;
-import frc.robot.commands.FloorIntakeCommand;
 import frc.robot.commands.FullFloorIntakeCmd;
 import frc.robot.commands.NormalCollectCmd;
 import frc.robot.commands.ShootCmd;
@@ -54,7 +27,6 @@ import frc.robot.commands.Autos.AutoShootCmd;
 import frc.robot.commands.Autos.AutoShootCollectForwardCmd;
 import frc.robot.commands.Autos.AutoShootCollectForwardShotCmd;
 import frc.robot.commands.Autos.AutoShootMoveCmd;
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -203,8 +175,6 @@ public class RobotContainer {
       this.climberSubsystem.setMotorsPowers(0);
       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
-
-
   }
 
   

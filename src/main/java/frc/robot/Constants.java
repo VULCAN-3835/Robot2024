@@ -5,7 +5,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -46,7 +45,7 @@ public final class Constants {
     
     public static Slot0Configs getDriveMotorGains() { 
       Slot0Configs kSteerMotorGains = new Slot0Configs();
-      kSteerMotorGains.withKP(0.15); // The proportional gain for the module steer control TODO: Find
+      kSteerMotorGains.withKP(0.15); // The proportional gain for the module steer control 
       return kSteerMotorGains;
     }
 
@@ -176,18 +175,16 @@ public final class Constants {
     public static final double kLengthForRotation = 12.56637061435917;// Diameter on Cm
     public static final double kMotorRatio = 83; // this is for multipling
 
-    // TODO: Find values
     public static final double kElevatorMaxCruiseVelocity = 0;
     public static final double kElevatorAcceleration = 0;
 
-    // TODO: Find motor direction
     public static final boolean kLeftInverted = false;
     public static final boolean kRightInverted = false;
 
     public static Slot0Configs getElevatorSlot() {
       Slot0Configs configs = new Slot0Configs();
-      configs.withKS(0); // TODO: Find voltage to overcome static friction
-      configs.withKP(0.7); // TODO: Find real proportion
+      configs.withKS(0); 
+      configs.withKP(0.7); 
 
       return configs;
     }
