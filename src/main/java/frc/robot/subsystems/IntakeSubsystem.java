@@ -33,7 +33,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private double currentPosition; // The current position of the arm
 
   private ProfiledPIDController armPositionController; // Closed Loop controller for arm position
-  private ArmFeedforward armFF = new ArmFeedforward(0,0,0,0);
 
   public enum INTAKE_STATE { // Enum representing the 3 states of the intake motor
     collectState,
