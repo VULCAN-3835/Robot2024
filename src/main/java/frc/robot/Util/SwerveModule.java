@@ -8,18 +8,20 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants;
+import frc.robot.Constants.ModuleConstants;
 
 /** Add your docs here. */
 public class SwerveModule {
@@ -34,15 +36,19 @@ public class SwerveModule {
     // Phoenix6 suppliers for the different feedback values
     private StatusSignal<Double> m_drivePosition; // Drive position supplier
     private StatusSignal<Double> m_driveVelocity; // Drive velocity supplier
+    private StatusSignal<Double> m_driveVoltage; // Drive voltage supplier
     private StatusSignal<Double> m_steerPosition; // Steer position supplier
     private StatusSignal<Double> m_steerVelocity; // Steer velocity supplier
 
     private SwerveModulePosition swervePosition = new SwerveModulePosition(); // The position of the module (Releveant for poseEstimator)
 
-    private PositionVoltage angleSetter = new PositionVoltage(0); // The closed loop controller for module angle
+    private PositionVoltage angleController = new PositionVoltage(0); // The closed loop controller for module angle
+    private VelocityVoltage velocityController = new VelocityVoltage(0);
+
+    private SimpleMotorFeedforward driveFeedForward;
 
     public SwerveModule(int driveMotorID, int steerMotorID, int absEncoderID, 
-    boolean driveMotorInverted,double absoluteEncoderOffset) {
+    boolean driveMotorInverted,double absoluteEncoderOffset, SimpleMotorFeedforward ff) {
         // Motor controllers + Sensors initialization:
         this.driveMotor = new TalonFX(driveMotorID);
         this.steerMotor = new TalonFX(steerMotorID);
@@ -51,23 +57,22 @@ public class SwerveModule {
         // Offset storing:
         this.absoluteEncoderOffset = absoluteEncoderOffset;
 
-        // General configs:
-        this.driveMotor.setInverted(driveMotorInverted);
-        this.driveMotor.setNeutralMode(NeutralModeValue.Brake);
-        this.steerMotor.setNeutralMode(NeutralModeValue.Brake);
-
         // Advannced configs:
         configEnc();
         configSteerMotor(absEncoderID);
+        configDriveMotor(driveMotorInverted);
 
         // Storing the signals (suppliers) of the different feedback sensors
         this.m_drivePosition = this.driveMotor.getPosition();
         this.m_driveVelocity = this.driveMotor.getVelocity();
+        this.m_driveVoltage = this.driveMotor.getMotorVoltage();
         this.m_steerPosition = this.absEncoder.getPosition();
         this.m_steerVelocity = this.absEncoder.getVelocity();
 
         // Config for the angle closed loop control feedforward value to overcome friction
-        this.angleSetter.FeedForward = Constants.ModuleConstants.kFeedforwardGainSteer;
+        this.angleController.FeedForward = Constants.ModuleConstants.kFeedforwardGainSteer;
+
+        this.driveFeedForward = ff;
     }
 
     /**
@@ -82,9 +87,9 @@ public class SwerveModule {
     }
 
     /**
-     * Configures the steer motor's feedback sennsor, source, rotor to sensor ratio and countinous readings
+     * Configures the steer motor's feedback sensor, source, rotor to sensor ratio and countinous readings
      *
-     * @param absEncoderID The id of the absolut encoder to set as the new feedback sensor
+     * @param absEncoderID The id of the absolute encoder to set as the new feedback sensor
     */
     private void configSteerMotor(int absEncoderID) { 
         TalonFXConfiguration steerConfigs = new TalonFXConfiguration();
@@ -97,17 +102,35 @@ public class SwerveModule {
 
         steerConfigs.ClosedLoopGeneral.ContinuousWrap = true; // Changes closed loop into continues values
 
+        steerConfigs.CurrentLimits.SupplyCurrentLimit = ModuleConstants.kSteerCurrentLimit;
+        steerConfigs.CurrentLimits.SupplyCurrentThreshold = ModuleConstants.kSteerCurrentThreshold;
+        steerConfigs.CurrentLimits.SupplyTimeThreshold = ModuleConstants.kSteerCurrentThresholdTime;
+        steerConfigs.CurrentLimits.SupplyCurrentLimitEnable = ModuleConstants.kSteerEnableCurrentLimit;
+
+        steerConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
         this.steerMotor.getConfigurator().apply(steerConfigs);
     }
 
     /**
-     * returns the angle of the module in coutinous rotations (i.e 1 is a full rotation or 360 degrees to the positive side of the sensor,
-     * -1 is a full rotation or -360 degrees to the negative side of the sensor)
-     * @return The angle rotation of the module
+     * Configures the drive motor's direction and supply limits and thresholds
+     * @param inverted Invert direction of drive motor
     */
-    public double getModuleAngle() {
-        m_steerPosition.refresh();
-        return m_steerPosition.getValue();
+    private void configDriveMotor(boolean inverted) {
+        TalonFXConfiguration driveConfigs = new TalonFXConfiguration();
+
+        driveConfigs.Feedback.SensorToMechanismRatio = ModuleConstants.kDriveMotorGearRatio;
+
+        driveConfigs.CurrentLimits.SupplyCurrentLimit = ModuleConstants.kDriveCurrentLimit;
+        driveConfigs.CurrentLimits.SupplyCurrentThreshold = ModuleConstants.kDriveCurrentThreshold;
+        driveConfigs.CurrentLimits.SupplyTimeThreshold = ModuleConstants.kDriveCurrentThresholdTime;
+        driveConfigs.CurrentLimits.SupplyCurrentLimitEnable = ModuleConstants.kDriveEnableCurrentLimit;
+
+        driveConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        driveConfigs.MotorOutput.Inverted = inverted?InvertedValue.Clockwise_Positive:InvertedValue.CounterClockwise_Positive;
+
+        this.driveMotor.getConfigurator().apply(driveConfigs);
+        this.driveMotor.getConfigurator().setPosition(0);
     }
 
     /**
@@ -132,6 +155,16 @@ public class SwerveModule {
     }
 
     /**
+     * Getter for the current power output the drive motor is recieving
+     * @return the drive motor's current power output in precentage (0 - 1)
+    */
+    public double getModuleDriveOutput() {
+        var output = this.driveMotor.getClosedLoopOutput();
+        output.refresh();
+        return output.getValue();
+    }
+
+    /**
      * Returns the module's position using the feedback sensors with latency compensation
      * @return the module's current position
     */
@@ -146,7 +179,7 @@ public class SwerveModule {
         double angle_rot =
             BaseStatusSignal.getLatencyCompensatedValue(m_steerPosition, m_steerVelocity);
 
-        swervePosition.distanceMeters = drive_rot; // Current module's drive position
+        swervePosition.distanceMeters = Conversions.rotationsToMeters(drive_rot, ModuleConstants.kWheelCircumference); // Current module's drive position
         swervePosition.angle = Rotation2d.fromRotations(angle_rot); // Current module's angle in Rotation2d
 
         return swervePosition;
@@ -167,6 +200,7 @@ public class SwerveModule {
         double angle_rot =
             BaseStatusSignal.getLatencyCompensatedValue(m_steerPosition, m_steerVelocity);
 
+
         // Optimizing module's desired state
         SwerveModuleState optimized = SwerveModuleState.optimize(this.state, Rotation2d.fromRotations(angle_rot));
 
@@ -177,14 +211,34 @@ public class SwerveModule {
         }
 
         // Change feedforward value based on negative / positive error
-        this.angleSetter.FeedForward = getModuleAngleError()>=0?Constants.ModuleConstants.kFeedforwardGainSteer:-Constants.ModuleConstants.kFeedforwardGainSteer;
+        this.angleController.FeedForward = getModuleAngleError()>=0?Constants.ModuleConstants.kFeedforwardGainSteer:-Constants.ModuleConstants.kFeedforwardGainSteer;
 
         // The desired module's angle in rotations
         double angleToSetDeg = optimized.angle.getRotations();
 
-        // Sets control modes setpoints / outputs
-        this.steerMotor.setControl(this.angleSetter.withPosition(angleToSetDeg));
-        driveMotor.set(optimized.speedMetersPerSecond);
+        this.steerMotor.setControl(this.angleController.withPosition(angleToSetDeg));
+        setSpeed(optimized);
+                // this.driveMotor.set(optimized.speedMetersPerSecond);
+
+    }
+
+    /**
+     * Sets direct voltage to the drive motor while maintaining wheel angle at base position
+     * @param voltage The voltage to apply to the motor
+    */
+    public void setMotorVoltage(double voltage) {
+        this.steerMotor.setControl(this.angleController.withPosition(0));
+        this.driveMotor.setVoltage(voltage);
+    }
+
+    /**
+     * Sets the drive motor's applied voltage control based on a desired state with MPS velocity
+     * @param desiredState the desired state for the module with it's speed being in MPS
+    */
+    private void setSpeed(SwerveModuleState desiredState) {
+        this.velocityController.Velocity = Conversions.MPSToRPS(desiredState.speedMetersPerSecond, ModuleConstants.kWheelCircumference);
+        this.velocityController.FeedForward = this.driveFeedForward.calculate(desiredState.speedMetersPerSecond);
+        this.driveMotor.setControl(this.velocityController);
     }
 
     /**
@@ -193,5 +247,23 @@ public class SwerveModule {
     public void stopModule() {
         this.driveMotor.set(0);
         this.steerMotor.set(0);
+    }
+
+    /**
+     * Getter for the current velocity (RPM) of the robot
+     * @return The velocity of the robot (RPM)
+    */
+    public double getVelocity() {
+        this.m_driveVelocity.refresh();
+        return Conversions.RPSToMPS(this.m_driveVelocity.getValue(), ModuleConstants.kWheelCircumference);
+    }
+
+    /**
+     * Getter for the current applied voltage on the drive motor
+     * @return The currently applied voltage on the drive motor
+    */
+    public double getVoltage() {
+        this.m_driveVoltage.refresh();
+        return m_driveVoltage.getValue();
     }
 }

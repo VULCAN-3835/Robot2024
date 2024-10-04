@@ -4,9 +4,15 @@
 
 package frc.robot;
 
+import java.util.Optional;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Util.LEDController;
+import frc.robot.Util.LEDController.ActionStates;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -19,6 +25,8 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  public static String allianceColor;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -28,6 +36,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    LEDController.setActionState(LEDController.ActionStates.DEFAULT);
   }
 
   /**
@@ -43,12 +52,28 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
+    if (DriverStation.getAlliance().isPresent()) {
+      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+      allianceColor = "BLUE";
+      LEDController.setAllianceColor(LEDController.BLUE_ALLIANCE_COLOR);
+      }
+      else if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+        allianceColor = "RED";
+        LEDController.setAllianceColor(LEDController.RED_ALLIANCE_COLOR);
+      }
+      else {
+        LEDController.setAllianceColor(LEDController.WHITE);
+      }
+    }
     CommandScheduler.getInstance().run();
+    LEDController.updateLEDEffect();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    LEDController.setActionState(ActionStates.DEFAULT);
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -77,6 +102,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    LEDController.setActionState(ActionStates.DEFAULT);
   }
 
   /** This function is called periodically during operator control. */

@@ -4,26 +4,23 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Util.LEDController;
+import frc.robot.Util.LimelightUtil;
 
 public class IntakeSubsystem extends SubsystemBase {
-  
-  private CANSparkMax intakeMotor; // Motor responsible for intake and output of game pieces
+  private TalonFX intakeMotor; // Motor responsible for intake and output of game pieces
   private CANSparkMax angleMotor; // Motor responsible for the angle of the arm
   private DutyCycleEncoder angleEncoder; // Encoder responsible for keeping the absolute position of the arm
 
@@ -36,20 +33,18 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private ProfiledPIDController armPositionController; // Closed Loop controller for arm position
 
-  public enum STATE { // Enum representing the 3 states of the intake motor
+  public enum INTAKE_STATE { // Enum representing the 4 states of the intake motor
     collectState,
     outputState,
-    restState
+    restState,
+    ampState
   }
 
   // Limelight values:
-  private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-  private NetworkTableEntry tx = table.getEntry("tx");
-  private NetworkTableEntry ty = table.getEntry("ty");
-  private NetworkTableEntry ta = table.getEntry("ta");
+  private LimelightUtil limelight;
 
   public IntakeSubsystem() {
-    this.intakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotorPort, MotorType.kBrushless);
+    this.intakeMotor = new TalonFX(IntakeConstants.kIntakeMotorPort);
     this.angleMotor = new CANSparkMax(IntakeConstants.kAngleMotorPort, MotorType.kBrushless);
 
     this.angleEncoder = new DutyCycleEncoder(IntakeConstants.kAngleEncoderPort);
@@ -62,11 +57,33 @@ public class IntakeSubsystem extends SubsystemBase {
     
     this.armPositionController = new ProfiledPIDController(IntakeConstants.kP, 0, 0,
      IntakeConstants.kConstraints);
+    
+    this.limelight = new LimelightUtil("limelight-collect");
 
     this.goalSetpoint = IntakeConstants.kClosedRotations;
     this.armPositionController.setGoal(this.goalSetpoint);
 
     this.angleMotor.setIdleMode(IdleMode.kBrake);
+    this.intakeMotor.setNeutralMode(NeutralModeValue.Brake);
+    this.angleMotor.setInverted(false);
+
+    this.armPositionController.setTolerance(0.007);
+  }
+
+  /**
+     * Getter for the Limelight utility used by the subsystem for vision processing
+     * @return Limelight utility object used by the subsystem for vision processing
+  */
+  public LimelightUtil getLimelight() {
+    return this.limelight;
+  }
+
+  /**
+     * Getter for the arm setpoint (goal)
+     * @return The setpoint of the arm in rotations (1 = 360*)
+  */
+  public boolean getArmAtSetpoint() {
+    return this.armPositionController.atSetpoint();
   }
 
   /**
@@ -83,15 +100,28 @@ public class IntakeSubsystem extends SubsystemBase {
    * @return The current position of the arm
   */
   public double getCurrentPosition() {
-    this.currentPosition = this.angleEncoder.getAbsolutePosition()-this.angleEncoder.getPositionOffset();
+    this.currentPosition = (this.angleEncoder.getAbsolutePosition()-this.angleEncoder.getPositionOffset());
+    this.currentPosition = normalizePosition(this.currentPosition);
     return this.currentPosition;
+  }
+
+  /**
+    * Normalizes a position value to be within the range [0, 1).
+    * This method takes a value, adds 1 to it, and then uses the modulo operation 
+    * to ensure the result is within the specified range. This is useful for wrapping 
+    * values around when they exceed the range of [0, 1).
+    * @param value The position value to be normalized.
+    * @return The normalized position value within the range [0, 1).
+  */
+  public double normalizePosition(double value) {
+    return (value+1)%1;
   }
 
   /**
    * Sets the intake motor's intake to given state
    * @param state The new state of the intake motor
   */
-  public void setMotorMode(STATE state) {
+  public void setMotorMode(INTAKE_STATE state) {
     switch (state) {
       case collectState:
         this.intakeMotor.set(IntakeConstants.kMotorIntakePower); //Intake
@@ -102,6 +132,8 @@ public class IntakeSubsystem extends SubsystemBase {
       case restState:
         this.intakeMotor.set(0);
         break;
+      case ampState:
+        this.intakeMotor.set(IntakeConstants.kAmpOutputPower);
     }
   }
 
@@ -110,32 +142,9 @@ public class IntakeSubsystem extends SubsystemBase {
    * @return True if piece is inside the intake system
   */
   public boolean hasPiece(){
-    return pieceDetector.getVoltage() > IntakeConstants.kPieceDetectorDetectionThreshold;
+    return pieceDetector.getVoltage() > IntakeConstants.kPieceDetectorDetectionThreshold && pieceDetector.getVoltage() <2.1;
   }
 
-  /**
-   * Finds the X value of the limelight from detected game piece
-   * @return X axis value from the game piece
-  */
-  public double getPieceX(){ 
-    return tx.getDouble(0.0);
-  }
-
-  /**
-   * Finds the Y value of the limelight from detected game piece
-   * @return Y axis value from the game piece
-  */
-  public double getPieceY(){ 
-    return ty.getDouble(0.0);
-  }
-
-  /**
-   * Finds the A value of the limelight from detected game piece
-   * @return The area the game piece takes in the limelight's frame
-  */
-  public double getPieceA(){ 
-    return ta.getDouble(0.0);
-  }
 
   /**
    * Checks if arm is closed
@@ -156,12 +165,12 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {   
     // Calculates the output for moving the arm 
-    double output = this.armPositionController.calculate(getCurrentPosition());
+    double output = -this.armPositionController.calculate(getCurrentPosition());
 
     // Creates limit for the output using limit switches
-    if (isOpen() && output < 0)
+    if (isOpen() && output > 0)
       output = 0;
-    if (isClosed() && output > 0)
+    if (isClosed() && output < 0)
       output = 0;
       
     // Doesn't let setpoints pass sensor limits
@@ -170,19 +179,32 @@ public class IntakeSubsystem extends SubsystemBase {
     if (this.goalSetpoint>IntakeConstants.kClosedRotations)
       this.goalSetpoint = IntakeConstants.kClosedRotations;
 
+    if (output > 0.825)
+      output = 0.825;
+    if (output < -0.825)
+      output = -0.825;
+
+    if (getCurrentPosition() == 0.25)
+      output = 0;
     // Applies output to motor
     this.angleMotor.set(output);
+
+    LEDController.setStorageState(hasPiece() ? LEDController.StorageStates.HOLDING_PIECE :  LEDController.StorageStates.EMPTY);
+
 
     SmartDashboard.putNumber("Intake Output", output);
     SmartDashboard.putNumber("Intake setpoint", this.goalSetpoint);
     SmartDashboard.putNumber("Intake Current", getCurrentPosition());
     SmartDashboard.putNumber("Intake Error", this.goalSetpoint-getCurrentPosition());
-  
-    SmartDashboard.putNumber("Intake LimelightX", tx.getDouble(0.0));
-    SmartDashboard.putNumber("Intake LimelightY", ty.getDouble(0.0));
-    SmartDashboard.putNumber("Intake LimelightArea", ta.getDouble(0.0));
 
     SmartDashboard.putBoolean("Intake Open", isOpen());
     SmartDashboard.putBoolean("Intake Closed", isClosed());
+
+    SmartDashboard.putBoolean("Has Piece", hasPiece());
+    SmartDashboard.putNumber("Detector Voltage",this.pieceDetector.getVoltage());
+
+    SmartDashboard.putBoolean("Camera has target", this.limelight.cameraHasTarget());
+
+    SmartDashboard.putBoolean("At Setpoint", getArmAtSetpoint());
   } 
 }
