@@ -50,7 +50,8 @@ public class AimAtAprilTagCmd extends PIDCommand {
     SmartDashboard.putBoolean("Wrong ID", wrongId);
     SmartDashboard.putNumber("ID",this.chassisSubsystem.getLimelight().getAprilTagID());
 
-    /** The command ends if any of the following conditions are met:
+    /** 
+    * The command ends if any of the following conditions are met:
     * - The back button is pressed
     * - The PID controller has reached the setpoint
     * - The detected April Tag ID is not the expected one
