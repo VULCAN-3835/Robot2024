@@ -16,11 +16,17 @@ public class AutoShootMoveCmd extends SequentialCommandGroup {
 
   /** Creates a new AutoShootMoveCmd. */
   public AutoShootMoveCmd(ShooterSubsystem shooter, IntakeSubsystem intake, ChassisSubsystem chassis) {
+    // Add commands to the command group in sequential order
     addCommands(
+      /** 1. Execute the shooting command to shoot the game piece */
       new ShootCmd(shooter, intake),
-      new InstantCommand(() -> chassis.drive(1,0,0, false)),
-      new WaitCommand(2),
-      new InstantCommand(() -> chassis.drive(0,0,0, false))
-      );
+
+      /** 2. Drive the chassis forward at a speed of 1 for 2 seconds */
+      new InstantCommand(() -> chassis.drive(1, 0, 0, false)), // Move forward at full speed
+      new WaitCommand(2), // Wait for 2 seconds to allow the robot to drive forward
+
+      /** 3. Stop the chassis after the wait */
+      new InstantCommand(() -> chassis.drive(0, 0, 0, false)) // Stop all movement
+    );
   }
 }

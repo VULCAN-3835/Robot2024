@@ -9,7 +9,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -34,7 +33,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private ProfiledPIDController armPositionController; // Closed Loop controller for arm position
 
-  public enum INTAKE_STATE { // Enum representing the 3 states of the intake motor
+  public enum INTAKE_STATE { // Enum representing the 4 states of the intake motor
     collectState,
     outputState,
     restState,

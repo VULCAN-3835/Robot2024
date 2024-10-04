@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands;
 
 import java.util.function.Supplier;
@@ -18,17 +14,25 @@ import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 public class FullFloorIntakeCmd extends SequentialCommandGroup {
 
   /** Creates a new FullFloorIntakeCmd. */
-  public  FullFloorIntakeCmd(ChassisSubsystem chassis, IntakeSubsystem intake, Supplier<Boolean> cancelButton) {
+  public FullFloorIntakeCmd(ChassisSubsystem chassis, IntakeSubsystem intake, Supplier<Boolean> cancelButton) {
     addCommands(
+      /** 1. Open the intake arm to the designated open position */
       new InstantCommand(() -> intake.setRotationPosition(IntakeConstants.kOpenRotations)),
-      new WaitUntilCommand(() -> intake.isOpen()),
-      new InstantCommand(() -> {
-        intake.setMotorMode(INTAKE_STATE.collectState);
-        LEDController.setActionState(LEDController.ActionStates.FLOOR_COLLECTING);
-      }),
-      new WaitUntilCommand(() -> intake.getLimelight().cameraHasTarget()),
-      new FloorIntakeCommand(chassis, intake, cancelButton)
 
+      /** 2. Wait until the intake arm is fully open */
+      new WaitUntilCommand(() -> intake.isOpen()),
+
+      /** 3. Set the intake motor to collect mode and update LED state to indicate collecting */
+      new InstantCommand(() -> {
+        intake.setMotorMode(INTAKE_STATE.collectState);  // Switch the intake subsystem to the collecting state
+        LEDController.setActionState(LEDController.ActionStates.FLOOR_COLLECTING);  // Change LEDs to indicate floor collecting
+      }),
+
+      /** 4. Wait until the Limelight camera detects a target */
+      new WaitUntilCommand(() -> intake.getLimelight().cameraHasTarget()),
+
+      /** 5. Execute the FloorIntakeCommand for further collection actions */
+      new FloorIntakeCommand(chassis, intake, cancelButton)  // Proceed with the FloorIntakeCommand to manage the collection process
     );
   }
 }

@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands.Autos;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -13,7 +9,9 @@ public class AutoShootCmd extends SequentialCommandGroup {
 
   /** Creates a new AutoShootCmd. */
   public AutoShootCmd(ShooterSubsystem shooter, IntakeSubsystem intake) {
+    // Add the ShootCmd to the sequence of commands for this autonomous command
     addCommands(
-      new ShootCmd(shooter, intake));
+      new ShootCmd(shooter, intake)  // Execute the ShootCmd, which manages the shooting process
+    );
   }
 }
