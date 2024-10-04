@@ -30,12 +30,15 @@ public class AimAtAprilTagCmd extends PIDCommand {
         output -> {
           chassisSubsystem.drive(0, 0, output, true);// Use the output here
         });
+
+    // Set flags, refrences and tolerance
     wrongId = false;
     this.chassisSubsystem = chassisSubsystem;
     wrongId = (double)id != this.chassisSubsystem.getLimelight().getAprilTagID();
     getController().setTolerance(this.rotTolerance);
     this.backSupplier = backButton;
     this.chassisSubsystem = chassisSubsystem;
+
     SmartDashboard.putNumber("Got ID", id);
 
     addRequirements(this.chassisSubsystem);
@@ -46,6 +49,12 @@ public class AimAtAprilTagCmd extends PIDCommand {
   public boolean isFinished() {
     SmartDashboard.putBoolean("Wrong ID", wrongId);
     SmartDashboard.putNumber("ID",this.chassisSubsystem.getLimelight().getAprilTagID());
+
+    /** The command ends if any of the following conditions are met:
+    * - The back button is pressed
+    * - The PID controller has reached the setpoint
+    * - The detected April Tag ID is not the expected one
+    */
     return backSupplier.get() || getController().atSetpoint() || wrongId;
   }
 }
