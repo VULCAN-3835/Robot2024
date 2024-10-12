@@ -99,7 +99,7 @@ public class IntakeSubsystem extends SubsystemBase {
    * Return's the current position of the arm 
    * @return The current position of the arm
   */
-  public double getCurrentPosition() {
+  private double getCurrentPosition() {
     this.currentPosition = (this.angleEncoder.getAbsolutePosition()-this.angleEncoder.getPositionOffset());
     this.currentPosition = normalizePosition(this.currentPosition);
     return this.currentPosition;

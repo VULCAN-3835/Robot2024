@@ -18,7 +18,7 @@ public class AimAtAprilTagCmd extends PIDCommand {
   private boolean wrongId = false;
 
   /** Creates a new AimAtAprilTagCmd. */
-  public AimAtAprilTagCmd(ChassisSubsystem chassisSubsystem, int id, Supplier<Boolean> backButton) {
+  public AimAtAprilTagCmd(ChassisSubsystem chassisSubsystem, int aprilTagId, Supplier<Boolean> backButton) {
     super(
         // The controller that the command will use
         new PIDController(0.04, 0, 0),
@@ -34,12 +34,12 @@ public class AimAtAprilTagCmd extends PIDCommand {
     // Set flags, refrences and tolerance
     wrongId = false;
     this.chassisSubsystem = chassisSubsystem;
-    wrongId = (double)id != this.chassisSubsystem.getLimelight().getAprilTagID();
+    wrongId = (double)aprilTagId != this.chassisSubsystem.getLimelight().getAprilTagID();
     getController().setTolerance(this.rotTolerance);
     this.backSupplier = backButton;
     this.chassisSubsystem = chassisSubsystem;
 
-    SmartDashboard.putNumber("Got ID", id);
+    SmartDashboard.putNumber("Got ID", aprilTagId);
 
     addRequirements(this.chassisSubsystem);
   }

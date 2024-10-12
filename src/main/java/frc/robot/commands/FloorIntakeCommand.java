@@ -34,6 +34,7 @@ public class FloorIntakeCommand extends Command {
     this.rotationPID = new PIDController(kRotationPidKp, kRotationPidKi, kRotationPidKd); // Initialize PID controller
     this.backSupplier = backSupplier;               // Initialize back supplier
     this.inTolerence = false;                       // Initialize tolerance flag
+    addRequirements(chassisSubsystem, intakeSubsystem); // Declare subsystem requirements for the command
   }
 
   // Called when the command is initially scheduled.
@@ -43,8 +44,6 @@ public class FloorIntakeCommand extends Command {
     this.rotationPID.setSetpoint(2); // Set desired setpoint for rotation based on camera input
 
     this.intakeSubsystem.setMotorMode(INTAKE_STATE.collectState); // Set intake to collecting state
-
-    addRequirements(chassisSubsystem, intakeSubsystem); // Declare subsystem requirements for the command
   }
 
   // Called every time the scheduler runs while the command is scheduled.

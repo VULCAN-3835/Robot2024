@@ -53,11 +53,9 @@ public class ShootCmd extends SequentialCommandGroup {
       /** 8. Wait for a short duration to allow the piece to eject */
       new WaitCommand(0.2),
       
-      /** 9. Set the intake motor back to resting state */
-      new InstantCommand(() -> this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState)),
-      
-      /** 10. Stop the shooter motor and reset LED state */
+      /** 9. Stop the shooter motor and reset LED state */
       new InstantCommand(() -> {
+        this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
         this.shooterSubsystem.stopMotor(); // Stop the shooter after shooting is complete
         LEDController.setActionState(ActionStates.DEFAULT); // Reset LEDs back to default state
     })
