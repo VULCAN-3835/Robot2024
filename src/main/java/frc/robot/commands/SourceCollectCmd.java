@@ -16,30 +16,22 @@ import frc.robot.Constants.ShooterConstants;
 public class SourceCollectCmd extends SequentialCommandGroup {
   /** Creates a new SourceIntake. */
   public SourceCollectCmd(IntakeSubsystem intake, ShooterSubsystem shooter) {
-    addCommands(
+    addCommands(//TODO: add LED controls
 
       //1. sets the power of the shooter and the intake to collect piece
-      new InstantCommand(() -> {shooter.setShooterSpeed(ShooterConstants.kCollectPower);
-        intake.setMotorMode(INTAKE_STATE.collectState);
+      new InstantCommand(() -> {
+        shooter.setShooterSpeed(ShooterConstants.kCollectPower);
+        intake.setMotorMode(INTAKE_STATE.outputState);
       }),
 
       //2. collects until it has piece detected
       new WaitUntilCommand( ()-> intake.hasPiece()),
-
-      //3. sets the intake to output
-      new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.outputState)),
       
       //4. output the note until the sensor doesn't sense it anymore
       new WaitUntilCommand(() -> !intake.hasPiece()),
 
       //5. collects the note 
-      new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.collectState)),
-
-      //6. collects the note until it senses again the piece
-      new WaitUntilCommand(() -> intake.hasPiece()),
-
-      //.7 
-      new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.restState))
+      new FloorCollectCmd(intake)
     );
   }
 }

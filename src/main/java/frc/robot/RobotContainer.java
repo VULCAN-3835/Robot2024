@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Util.LEDController;
+import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,12 +17,6 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.commands.AimShootCmd;
-import frc.robot.commands.CollectCmd;
-import frc.robot.commands.DefaultTeleopCommand;
-import frc.robot.commands.FullFloorIntakeCmd;
-import frc.robot.commands.NormalCollectCmd;
-import frc.robot.commands.ShootCmd;
 import frc.robot.commands.Autos.AutoShootCmd;
 import frc.robot.commands.Autos.AutoShootCollectForwardCmd;
 import frc.robot.commands.Autos.AutoShootCollectForwardShotCmd;
@@ -53,10 +48,7 @@ public class RobotContainer {
     // Autonomous chooser
     NamedCommands.registerCommand("ShootCmd", new ShootCmd(shooterSubsystem, intakeSubsystem));
     NamedCommands.registerCommand("AimShootCmd", new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> false));
-    NamedCommands.registerCommand("AutoCollect", new FullFloorIntakeCmd(chassisSubsystem, intakeSubsystem, () -> false));
-    NamedCommands.registerCommand("AmpShootCmd", new AmpShootCmd(intakeSubsystem));
-    NamedCommands.registerCommand("OpenIntake", new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kOpenRotations)));
-    NamedCommands.registerCommand("CloseIntake", new InstantCommand(() -> this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations)));
+    NamedCommands.registerCommand("AutoCollect", new AutoFloorCollectCmd(chassisSubsystem, intakeSubsystem, () -> false));
     NamedCommands.registerCommand("ActivateShooter", new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower)));
 
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -109,38 +101,28 @@ public class RobotContainer {
     // Applies zero heading method instant command to start button trigger
     cmdXboxController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
 
-    // RIGHT TRIGGER
+    // RIGHT TRIGGER - manual shooting
     cmdXboxController.rightTrigger().whileTrue(new ShootCmd(shooterSubsystem, intakeSubsystem));
     cmdXboxController.rightTrigger().toggleOnFalse(new InstantCommand(() -> {
       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
       this.shooterSubsystem.setShooterSpeed(0);
       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
-    // LEFT TRIGGER
-    cmdXboxController.leftTrigger().whileTrue(new NormalCollectCmd(this.intakeSubsystem));
+    // LEFT TRIGGER - manual intaking
+    cmdXboxController.leftTrigger().whileTrue(new FloorCollectCmd(this.intakeSubsystem));
     cmdXboxController.leftTrigger().toggleOnFalse(new InstantCommand(() -> {
       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-      this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations);
       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
 
-    // A TRIGGER
-    cmdXboxController.a().whileTrue(new FullFloorIntakeCmd(chassisSubsystem, intakeSubsystem, () -> cmdXboxController.back().getAsBoolean()));
+    // A TRIGGER - auto collecting
+    cmdXboxController.a().whileTrue(new AutoFloorCollectCmd(chassisSubsystem, intakeSubsystem, () -> cmdXboxController.back().getAsBoolean()));
     cmdXboxController.a().toggleOnFalse(new InstantCommand(() -> {
       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-      this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations);
       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
 
-    // B Trigger
-    cmdXboxController.b().whileTrue(new AmpShootCmd(intakeSubsystem));
-    cmdXboxController.b().toggleOnFalse(new InstantCommand(() -> {
-      this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-      this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations);
-      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
-    }));
-
-    // Y Trigger
+    // Y Trigger - aim and shoot autonomously
     cmdXboxController.y().whileTrue(new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> cmdXboxController.back().getAsBoolean()));
     cmdXboxController.y().toggleOnFalse(new InstantCommand(() -> {
       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
@@ -148,15 +130,15 @@ public class RobotContainer {
       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
 
-    // X Trigger
-    cmdXboxController.x().whileTrue(new CollectCmd(intakeSubsystem, shooterSubsystem));
+    // X Trigger - source collecting
+    cmdXboxController.x().whileTrue(new SourceCollectCmd(intakeSubsystem, shooterSubsystem));
     cmdXboxController.x().toggleOnFalse(new InstantCommand(() -> {
       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-      this.shooterSubsystem.setShooterSpeed(0);
+      this.shooterSubsystem.stopMotor();
       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
 
-    // POV UP Trigger
+    // POV UP Trigger - opening climber
     cmdXboxController.povUp().whileTrue(new InstantCommand(() -> {
       this.climberSubsystem.setMotorsPowers(ClimberConstants.kClimbUpPower);
       LEDController.setActionState(LEDController.ActionStates.OPENING_CLIMBER);
@@ -165,7 +147,7 @@ public class RobotContainer {
       this.climberSubsystem.setMotorsPowers(0);
       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
-
+    // POV DOWN Trigger - closing climber
     cmdXboxController.povDown().whileTrue(new InstantCommand(() -> {
       this.climberSubsystem.setMotorsPowers(ClimberConstants.kClimbDownPower);
       LEDController.setActionState(LEDController.ActionStates.OPENING_CLIMBER);

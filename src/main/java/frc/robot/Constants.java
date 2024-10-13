@@ -128,23 +128,16 @@ public final class Constants {
   public static class IntakeConstants{
     // Intake motor ports:
     public static final int kIntakeMotorPort = 40;
-    public static final int kAngleMotorPort = 41;
 
     // Intake analog ports:
     public static final int kPieceDetectorPort = 0;
 
-    // Intake digital ports:
-    public static final int kAngleEncoderPort = 0;
-    public static final int kOpenLimitSwitchPort = 1;
-    public static final int kClosedLimitSwitchPort = 2;
 
     // Limit constants:
     public static final double kPieceDetectorDetectionThreshold = 1.5;
-    public static final double kAngleEncoderOffset = 0.561475516536888;
-    
+
     // Intake motor speeds:
     public static final double kMotorOutputPower = -0.7;
-    public static final double kAmpOutputPower = -1;
     public static final double kMotorIntakePower = 0.75;
 
     // Angle motor positions:

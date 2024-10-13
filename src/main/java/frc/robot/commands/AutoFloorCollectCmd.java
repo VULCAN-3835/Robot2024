@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
@@ -14,7 +13,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 
-public class FloorIntakeCommand extends Command {
+public class AutoFloorCollectCmd extends Command {
   private final ChassisSubsystem chassisSubsystem;  // Reference to the robot's chassis subsystem for driving control
   private final IntakeSubsystem intakeSubsystem;    // Reference to the intake subsystem for piece collection
   private final PIDController rotationPID;          // PID controller for managing rotation based on camera input
@@ -27,7 +26,7 @@ public class FloorIntakeCommand extends Command {
   private final double kDefaultFwdDriveSpeed = 1.5; // Default forward driving speed when within tolerance
 
   /** Creates a new FloorIntakeCommand. */
-  public FloorIntakeCommand(ChassisSubsystem chassis, IntakeSubsystem intake, Supplier<Boolean> backSupplier) {
+  public AutoFloorCollectCmd(ChassisSubsystem chassis, IntakeSubsystem intake, Supplier<Boolean> backSupplier) {
     this.chassisSubsystem = chassis;               // Initialize chassis subsystem
     this.intakeSubsystem = intake;                 // Initialize intake subsystem
 
@@ -53,7 +52,7 @@ public class FloorIntakeCommand extends Command {
       inTolerence = true; // Update tolerance flag if at setpoint
     }
     // Calculate the rotational speed using the PID controller if the intake is open, otherwise set to 0
-    double rotSpeed = intakeSubsystem.isOpen() ? rotationPID.calculate(intakeSubsystem.getLimelight().getX()) : 0; 
+    double rotSpeed = rotationPID.calculate(intakeSubsystem.getLimelight().getX());
 
     // Set forward speed to the default if in tolerance, otherwise set to 0
     double fwdSpeed = inTolerence ? kDefaultFwdDriveSpeed : 0; 
@@ -66,7 +65,6 @@ public class FloorIntakeCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     chassisSubsystem.drive(0, 0, 0, false); // Stop the robot's movement
-    this.intakeSubsystem.setRotationPosition(IntakeConstants.kClosedRotations); // Retract the intake arm to the closed position
     intakeSubsystem.setMotorMode(IntakeSubsystem.INTAKE_STATE.restState); // Set the intake motor to the resting state
 
     // Reset flags
