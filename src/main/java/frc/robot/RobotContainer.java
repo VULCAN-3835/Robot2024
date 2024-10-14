@@ -1,7 +1,7 @@
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
+//import com.pathplanner.lib.auto.AutoBuilder;
+//import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -43,21 +43,21 @@ public class RobotContainer {
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Autonomous chooser
-    NamedCommands.registerCommand("ShootCmd", new ShootCmd(shooterSubsystem, intakeSubsystem));
-    NamedCommands.registerCommand("AimShootCmd", new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> false));
-    NamedCommands.registerCommand("AutoCollect", new AutoFloorCollectCmd(chassisSubsystem, intakeSubsystem, () -> false));
-    NamedCommands.registerCommand("ActivateShooter", new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower)));
+    // Autonomous chooser TODO: remove comments and use the auto chooser
+//    NamedCommands.registerCommand("ShootCmd", new ShootCmd(shooterSubsystem, intakeSubsystem));
+//    NamedCommands.registerCommand("AimShootCmd", new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> false));
+//    NamedCommands.registerCommand("AutoCollect", new AutoFloorCollectCmd(chassisSubsystem, intakeSubsystem, () -> false));
+//    NamedCommands.registerCommand("ActivateShooter", new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower)));
 
-    autoChooser = AutoBuilder.buildAutoChooser();
+//    autoChooser = AutoBuilder.buildAutoChooser();
 
-    autoChooser.setDefaultOption("Empty", null);
-    autoChooser.addOption("Shoot", new ShootCmd(this.shooterSubsystem, this.intakeSubsystem));
-    autoChooser.addOption("Shoot Move", new AutoShootMoveCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
-    autoChooser.addOption("Shoot Collect Forward", new AutoShootCollectForwardCmd(this.shooterSubsystem, this.intakeSubsystem,this.chassisSubsystem));
-    autoChooser.addOption("Shoot Collect Forward Shoot",new AutoShootCollectForwardShotCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
-
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+//    autoChooser.setDefaultOption("Empty", null);
+//    autoChooser.addOption("Shoot", new ShootCmd(this.shooterSubsystem, this.intakeSubsystem));
+//    autoChooser.addOption("Shoot Move", new AutoShootMoveCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
+//    autoChooser.addOption("Shoot Collect Forward", new AutoShootCollectForwardCmd(this.shooterSubsystem, this.intakeSubsystem,this.chassisSubsystem));
+//    autoChooser.addOption("Shoot Collect Forward Shoot",new AutoShootCollectForwardShotCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
+//
+//    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     configureBindings();
 
