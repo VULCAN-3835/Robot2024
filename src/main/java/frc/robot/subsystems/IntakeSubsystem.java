@@ -85,7 +85,7 @@ public class IntakeSubsystem extends SubsystemBase {
    * @return True if piece is inside the intake system
   */
   public boolean hasPiece(){
-    return pieceDetector.getVoltage() > IntakeConstants.kPieceDetectorDetectionThreshold && pieceDetector.getVoltage() <2.1;
+    return pieceDetector.getVoltage() > IntakeConstants.kPieceDetectorDetectionThreshold && pieceDetector.getVoltage() <3.5;
   }
 
   @Override

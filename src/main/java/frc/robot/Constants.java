@@ -86,7 +86,7 @@ public final class Constants {
     // Offsets for absolute encoders in rotations (i.e: 360 degrees = 1 rotation):
     public static final double kLeftFrontOffset = -0.029296875; 
     public static final double kRightFrontOffset = -0.4111328125;
-    public static final double kLeftBackOffset = 0.064453125;
+    public static final double kLeftBackOffset = 0.406494140625;
     public static final double kRightBackOffset = -0.228515625;
     // Which motors are inverted:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   public static final boolean frontLeftDriveInverted = true;
     public static final boolean kLeftFrontInverted = true; 
@@ -132,7 +132,7 @@ public final class Constants {
 
 
     // Limit constants:
-    public static final double kPieceDetectorDetectionThreshold = 1.5;
+    public static final double kPieceDetectorDetectionThreshold = 1;
 
     // Intake motor speeds:
     public static final double kMotorOutputPower = -0.7;

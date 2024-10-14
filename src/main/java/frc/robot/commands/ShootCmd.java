@@ -23,14 +23,6 @@ public class ShootCmd extends SequentialCommandGroup {
     addRequirements(this.shooterSubsystem, this.intakeSubsystem); // Declare subsystem requirements
 
     addCommands(
-      /** 1. Set the intake motor to collect state */
-      new InstantCommand(() -> this.intakeSubsystem.setMotorMode(INTAKE_STATE.collectState)),
-      
-      /** 2. Wait for a short duration to allow the intake to prepare */
-      new WaitCommand(0.1), 
-      
-      /** 3. Set the intake motor to resting state after preparing */
-      new InstantCommand(() -> this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState)),
       
       /** 4. Set the shooter speed to the defined shoot power and update the LED state */
       new InstantCommand(() -> {
@@ -46,7 +38,7 @@ public class ShootCmd extends SequentialCommandGroup {
       
       /** 7. Set the intake motor to output state to eject the game piece */
       new InstantCommand(() -> {
-        this.intakeSubsystem.setMotorMode(INTAKE_STATE.outputState); // Switch the intake to output mode
+        this.intakeSubsystem.setMotorMode(INTAKE_STATE.collectState); // Switch the intake to output mode
         LEDController.setActionState(ActionStates.SPEAKER_SHOOTING); // Keep LEDs indicating shooting
       }),
       

@@ -76,11 +76,17 @@ public class RobotContainer {
       () -> -xboxControllerDrive.getLeftX(),
       () -> -xboxControllerDrive.getRightX()));
 
-      configureXboxBinding(OperatorConstants.kXboxDrivePort);
+      
 
-      if (xboxControllerButton.isConnected() && xboxControllerDrive.isConnected()) {
+      if (xboxControllerButton.isConnected()) {
         configureXboxBinding(OperatorConstants.kXboxButtonPort);
+        System.out.println("2 xbox controllers");
       }
+      else{
+        configureXboxBinding(OperatorConstants.kXboxDrivePort);
+        System.out.println("only one controller");
+      }
+
     }
     else {
       this.chassisSubsystem.setDefaultCommand(
