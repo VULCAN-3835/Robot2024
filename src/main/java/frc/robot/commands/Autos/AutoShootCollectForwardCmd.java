@@ -22,28 +22,21 @@ public class AutoShootCollectForwardCmd extends SequentialCommandGroup {
       /** 1. Execute the shooting command to shoot the game piece */
       new ShootCmd(shooter, intake),
 
-      /** 2. Open the intake arm to the designated open position */
-      new InstantCommand(() -> intake.setRotationPosition(IntakeConstants.kOpenRotations)),
-
-      /** 3. Wait until the intake arm is fully open */
-      new WaitUntilCommand(() -> intake.isOpen()),
-
-      /** 4. Set the intake motor to collect mode */
+      /** 2. Set the intake motor to collect mode */
       new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.collectState)),
 
-      /** 5. Drive the chassis forward at full speed (1) */
+      /** 3. Drive the chassis forward at full speed (1) */
       new InstantCommand(() -> chassis.drive(1, 0, 0, false)),
 
-      /** 6. Wait for 2 seconds while moving forward */
+      /** 4. Wait for 2 seconds while moving forward */
       new WaitCommand(2),
 
-      /** 7. Stop the chassis after the wait */
+      /** 5. Stop the chassis after the wait */
       new InstantCommand(() -> chassis.drive(0, 0, 0, false)),
 
-      /** 8. Reset the intake state and close the intake arm */
+      /** 6. Reset the intake state*/
       new InstantCommand(() -> {
         intake.setMotorMode(INTAKE_STATE.restState);  // Switch the intake subsystem to the resting state
-        intake.setRotationPosition(IntakeConstants.kClosedRotations);  // Move the intake arm to the closed position
       })
     );
   }

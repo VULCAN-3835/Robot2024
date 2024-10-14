@@ -119,8 +119,6 @@ public final class Constants {
   public static class ShooterConstants {
     public static final int kShooterMotorPort = 50;
 
-    public static final int kPistonForwardChannelNumber = 1;
-    public static final int kPistonReverseChannelNumber = 2;
 
     public static final double kShootPower = -0.75;//Desired speed for the movement of the wheel in firing
     public static final double kCollectPower = 0.3;//Desired speed for the movement of the wheel in collection
@@ -142,7 +140,6 @@ public final class Constants {
 
     // Angle motor positions:
     public static final double kOpenRotations = 0.092;
-    public static final double kAmpRotations = 0.3575;
     public static final double kClosedRotations = 0.599653737491343;
 
     // Angle controller constants:
@@ -159,20 +156,16 @@ public final class Constants {
     public static final int kLeftSwitchPort = 3;
     public static final int kRightSwitchPort = 4;
 
-    public static final double kMaxMotorPower=0.7;
-    public static final double kMaxElevatorHeight = 45.524; // CM
 
     public static final double kClimbUpPower = 0.7;
     public static final double kClimbDownPower = -0.7;
 
-    public static final double kLengthForRotation = 12.56637061435917;// Diameter on Cm
     public static final double kMotorRatio = 83; // this is for multipling
 
     public static final double kElevatorMaxCruiseVelocity = 0;
     public static final double kElevatorAcceleration = 0;
 
-    public static final boolean kLeftInverted = false;
-    public static final boolean kRightInverted = false;
+
 
     public static Slot0Configs getElevatorSlot() {
       Slot0Configs configs = new Slot0Configs();
