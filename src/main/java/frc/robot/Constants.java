@@ -94,9 +94,9 @@ public final class Constants {
     public static final boolean kLeftBackInverted = true;
     public static final boolean kRightBackInverted = true;
 
-    public static final double kMaxDrivingVelocity = 4;
+    public static final double kMaxDrivingVelocity = 2;
     public static final double kTeleDriveMaxAccelerationUnitsPerSec = 5;
-    public static final double kTeleDriveMaxSpeedMetersPerSec = 4;
+    public static final double kTeleDriveMaxSpeedMetersPerSec = 2;
     public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = Math.PI*1.5;
 
     // Distance between centers of right and left wheels on robot meters
@@ -131,9 +131,6 @@ public final class Constants {
     public static final int kPieceDetectorPort = 0;
 
 
-    // Limit constants:
-    public static final double kPieceDetectorDetectionThreshold = 1;
-
     // Intake motor speeds:
     public static final double kMotorOutputPower = -0.7;
     public static final double kMotorIntakePower = 0.75;
@@ -153,8 +150,8 @@ public final class Constants {
   public static class ClimberConstants{
     public static final int kLeftMotorPort = 60;
     public static final int kRightMotorPort = 61;
-    public static final int kLeftSwitchPort = 3;
-    public static final int kRightSwitchPort = 4;
+    public static final int kLeftSwitchPort = 0;
+    public static final int kRightSwitchPort = 1;
 
 
     public static final double kClimbUpPower = 0.7;

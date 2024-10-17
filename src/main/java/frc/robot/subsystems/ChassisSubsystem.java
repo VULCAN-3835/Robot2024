@@ -223,6 +223,11 @@ public class ChassisSubsystem extends SubsystemBase {
      * @param fieldRelative  Is field relative or not
   */
   public void drive(double xVelocity, double yVelocity, double rot, boolean fieldRelative) {
+
+    SmartDashboard.putNumber("Target X Velocity", xVelocity);
+    SmartDashboard.putNumber("Target Y Velocity", yVelocity);
+    SmartDashboard.putNumber("Target rot Velocity", rot);
+
     var invert = 1;
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent() && alliance.get() == Alliance.Red && fieldRelative)
@@ -253,7 +258,7 @@ public class ChassisSubsystem extends SubsystemBase {
   /**
    * Runs the robot following trajectory
    *
-   * @param chassisSpeeds The desired chassisSpeeds object for module velocities
+   * @param speeds The desired chassisSpeeds object for module velocities
   */
   public void runVelc(ChassisSpeeds speeds) {
     ChassisSpeeds discSpeeds = ChassisSpeeds.discretize(speeds, 0.02);

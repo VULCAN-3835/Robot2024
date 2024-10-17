@@ -1,11 +1,14 @@
 package frc.robot;
 
-//import com.pathplanner.lib.auto.AutoBuilder;
-//import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Util.LEDController;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
@@ -43,22 +46,21 @@ public class RobotContainer {
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Autonomous chooser TODO: remove comments and use the auto chooser
-//    NamedCommands.registerCommand("ShootCmd", new ShootCmd(shooterSubsystem, intakeSubsystem));
-//    NamedCommands.registerCommand("AimShootCmd", new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> false));
-//    NamedCommands.registerCommand("AutoCollect", new AutoFloorCollectCmd(chassisSubsystem, intakeSubsystem, () -> false));
-//    NamedCommands.registerCommand("ActivateShooter", new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower)));
+    // Autonomous chooser
+    NamedCommands.registerCommand("ShootCmd", new ShootCmd(shooterSubsystem, intakeSubsystem));
+    NamedCommands.registerCommand("AimShootCmd", new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> false));
+    NamedCommands.registerCommand("AutoCollect", new AutoFloorCollectCmd(chassisSubsystem, intakeSubsystem, () -> false));
+    NamedCommands.registerCommand("ActivateShooter", new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower)));
 
-//    autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser = AutoBuilder.buildAutoChooser();
 
-//    autoChooser.setDefaultOption("Empty", null);
-//    autoChooser.addOption("Shoot", new ShootCmd(this.shooterSubsystem, this.intakeSubsystem));
-//    autoChooser.addOption("Shoot Move", new AutoShootMoveCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
-//    autoChooser.addOption("Shoot Collect Forward", new AutoShootCollectForwardCmd(this.shooterSubsystem, this.intakeSubsystem,this.chassisSubsystem));
-//    autoChooser.addOption("Shoot Collect Forward Shoot",new AutoShootCollectForwardShotCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
-//
-//    SmartDashboard.putData("Auto Chooser", autoChooser);
+    autoChooser.setDefaultOption("Empty", null);
+    autoChooser.addOption("Shoot", new ShootCmd(this.shooterSubsystem, this.intakeSubsystem));
+    autoChooser.addOption("Shoot Move", new AutoShootMoveCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
+    autoChooser.addOption("Shoot Collect Forward", new AutoShootCollectForwardCmd(this.shooterSubsystem, this.intakeSubsystem,this.chassisSubsystem));
+    autoChooser.addOption("Shoot Collect Forward Shoot",new AutoShootCollectForwardShotCmd(this.shooterSubsystem, this.intakeSubsystem, this.chassisSubsystem));
 
+    SmartDashboard.putData("Auto Chooser", autoChooser);
     configureBindings();
 
     LEDSubsystem.getInstance(); // just to build the singleton once
@@ -120,14 +122,14 @@ public class RobotContainer {
     }));
 
     // A TRIGGER - auto collecting
-    cmdXboxController.a().whileTrue(new AutoFloorCollectCmd(chassisSubsystem, intakeSubsystem, () -> cmdXboxController.back().getAsBoolean()));
+    cmdXboxController.a().whileTrue(new AutoFloorCollectCmd(chassisSubsystem, intakeSubsystem, () -> false));
     cmdXboxController.a().toggleOnFalse(new InstantCommand(() -> {
       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
 
     // Y Trigger - aim and shoot autonomously
-    cmdXboxController.y().whileTrue(new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> cmdXboxController.back().getAsBoolean()));
+    cmdXboxController.y().whileTrue(new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> false));
     cmdXboxController.y().toggleOnFalse(new InstantCommand(() -> {
       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
       this.shooterSubsystem.setShooterSpeed(0);
@@ -136,11 +138,15 @@ public class RobotContainer {
 
     // X Trigger - source collecting
     cmdXboxController.x().whileTrue(new SourceCollectCmd(intakeSubsystem, shooterSubsystem));
-    cmdXboxController.x().toggleOnFalse(new InstantCommand(() -> {
-      this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
-      this.shooterSubsystem.stopMotor();
-      LEDController.setActionState(LEDController.ActionStates.DEFAULT);
-    }));
+    cmdXboxController.x().toggleOnFalse(new SequentialCommandGroup(
+            new WaitCommand(1),
+            new InstantCommand(() -> {
+              this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
+              this.shooterSubsystem.stopMotor();
+              LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+            })
+
+    ));
 
     // POV UP Trigger - opening climber
     cmdXboxController.povUp().whileTrue(new InstantCommand(() -> {
@@ -151,6 +157,7 @@ public class RobotContainer {
       this.climberSubsystem.setMotorsPowers(0);
       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
+
     // POV DOWN Trigger - closing climber
     cmdXboxController.povDown().whileTrue(new InstantCommand(() -> {
       this.climberSubsystem.setMotorsPowers(ClimberConstants.kClimbDownPower);
@@ -160,6 +167,12 @@ public class RobotContainer {
       this.climberSubsystem.setMotorsPowers(0);
       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
+
+
+//    cmdXboxController.b().whileTrue(new InstantCommand(() -> {
+//      this.chassisSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward);
+//    }));
+
   }
 
   

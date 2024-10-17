@@ -57,6 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
     return this.m_velocity.getValue()*60;
   }
 
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("ShooterRPM", getShooterSpeedRPM());

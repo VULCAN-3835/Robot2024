@@ -34,7 +34,7 @@ public class ShootCmd extends SequentialCommandGroup {
       new WaitCommand(0.1), 
       
       /** 6. Wait until the shooter reaches the specified RPM threshold */
-      new WaitUntilCommand(() -> (Math.abs(shooterSubsystem.getShooterSpeedRPM()) >= 3800)),
+      new WaitUntilCommand(() -> (Math.abs(shooterSubsystem.getShooterSpeedRPM()) >= 3400)),
       
       /** 7. Set the intake motor to output state to eject the game piece */
       new InstantCommand(() -> {

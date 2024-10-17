@@ -20,12 +20,6 @@
                 "data": {
                   "pathName": "PositionMiddle"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "OpenIntake"
-                }
               }
             ]
           }
@@ -62,12 +56,6 @@
                 "type": "path",
                 "data": {
                   "pathName": "PositionLeft"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "OpenIntake"
                 }
               }
             ]

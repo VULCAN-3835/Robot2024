@@ -30,6 +30,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
   MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);  // Motion Magic voltage control configuration
 
+  private double motorPower;
+
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
     // Initialize TalonFX motors for both sides of the climber
@@ -67,6 +69,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
     // Initialize LED trigger flag
     ledTrigger = false;
+
+    motorPower = 0;
   }
 
   /** 
@@ -125,14 +129,16 @@ public class ClimberSubsystem extends SubsystemBase {
    * @param power The power in precentage to apply to motors
   */
   public void setMotorsPowers(double power) {
-    // Stop motor if limit switch is pressed and power is negative
-    this.climberMotorLeft.set(this.getLeftLimitSwitch() && power < 0 ? 0 : power);
-    this.climberMotorRight.set(this.getRightLimitSwitch() && power < 0 ? 0 : power);
-    SmartDashboard.putNumber("Elevator Power", power);  // Display power on SmartDashboard
+    this.motorPower = power;
+    SmartDashboard.putNumber("Wanted Elevator Power", power);  // Display power on SmartDashboard
   }
 
   @Override
   public void periodic() {
+    // Stop motor if limit switch is pressed and power is negative
+    this.climberMotorLeft.set(this.getLeftLimitSwitch() && motorPower < 0 ? 0 : motorPower);
+    this.climberMotorRight.set(this.getRightLimitSwitch() && motorPower < 0 ? 0 : motorPower);
+
     // Update SmartDashboard with the state of limit switches
     SmartDashboard.putBoolean("Left Limit Switch", this.getLeftLimitSwitch());
     SmartDashboard.putBoolean("Right Limit Switch", this.getRightLimitSwitch());
