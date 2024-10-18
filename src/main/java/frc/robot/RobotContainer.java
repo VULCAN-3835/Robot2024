@@ -33,7 +33,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ChassisSubsystem chassisSubsystem = new ChassisSubsystem();
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(intakeSubsystem);
   private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 
   private final XboxController xboxControllerDrive = new XboxController(OperatorConstants.kXboxDrivePort);
@@ -72,31 +72,18 @@ public class RobotContainer {
   }
 
   public void setUpControllers() {
-    if(xboxControllerDrive.isConnected()) {
-      this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
-      () -> -xboxControllerDrive.getLeftY(),
-      () -> -xboxControllerDrive.getLeftX(),
-      () -> -xboxControllerDrive.getRightX()));
 
-      
-
-      if (xboxControllerButton.isConnected()) {
-        configureXboxBinding(OperatorConstants.kXboxButtonPort);
-        System.out.println("2 xbox controllers");
-      }
-      else{
-        configureXboxBinding(OperatorConstants.kXboxDrivePort);
-        System.out.println("only one controller");
-      }
-
-    }
-    else {
-      this.chassisSubsystem.setDefaultCommand(
-      new DefaultTeleopCommand(this.chassisSubsystem,
-      () -> -leftJoystick.getY(),
-      () -> -leftJoystick.getX(),
-      () -> -rightJoystick.getX()));
+    this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
+            () -> -xboxControllerDrive.getLeftY(),
+            () -> -xboxControllerDrive.getLeftX(),
+            () -> -xboxControllerDrive.getRightX()));
+    if (xboxControllerButton.isConnected()) {
       configureXboxBinding(OperatorConstants.kXboxButtonPort);
+      System.out.println("2 xbox controllers");
+    }
+    else{
+      configureXboxBinding(OperatorConstants.kXboxDrivePort);
+      System.out.println("only one controller");
     }
   }
 

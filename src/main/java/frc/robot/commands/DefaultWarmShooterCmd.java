@@ -16,8 +16,9 @@ public class DefaultWarmShooterCmd extends Command {
     ShooterSubsystem shooterSubsystem;
     IntakeSubsystem intakeSubsystem;
   public DefaultWarmShooterCmd(ShooterSubsystem shooterSubsystem, IntakeSubsystem intakeSubsystem) {
-    
-    addRequirements(this.shooterSubsystem,this.intakeSubsystem);
+    this.shooterSubsystem = shooterSubsystem;
+    this.intakeSubsystem = intakeSubsystem;
+    addRequirements(this.shooterSubsystem);
   }
 
   // Called when the command is initially scheduled.

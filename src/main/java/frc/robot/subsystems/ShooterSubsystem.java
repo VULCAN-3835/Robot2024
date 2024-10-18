@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Util.LimelightUtil;
-
+import frc.robot.commands.DefaultWarmShooterCmd;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final TalonFX shooterMotor; // Motor responsible for the intake and shooting of game pieces
@@ -19,12 +19,13 @@ public class ShooterSubsystem extends SubsystemBase {
   private StatusSignal<Double> m_velocity; // Status signal for shooter motor's velocity
   private LimelightUtil limelightShooter;
 
-  public ShooterSubsystem() {
+  public ShooterSubsystem(IntakeSubsystem intakeSubsystem) {
     this.shooterMotor = new TalonFX(ShooterConstants.kShooterMotorPort);
 
     this.m_position = this.shooterMotor.getPosition();
     this.m_velocity = this.shooterMotor.getVelocity();
-    this.limelightShooter = new LimelightUtil("Shooting-Limelight");
+    this.limelightShooter = new LimelightUtil("limelight-front");
+    setDefaultCommand(new DefaultWarmShooterCmd(this, intakeSubsystem));
   }
 
   /**
