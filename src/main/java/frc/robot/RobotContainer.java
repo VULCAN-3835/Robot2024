@@ -22,6 +22,7 @@ import frc.robot.Constants.ClimberConstants;
 import frc.robot.commands.Autos.AutoShootCollectForwardCmd;
 import frc.robot.commands.Autos.AutoShootCollectForwardShotCmd;
 import frc.robot.commands.Autos.AutoShootMoveCmd;
+import org.opencv.core.Mat;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -74,9 +75,9 @@ public class RobotContainer {
   public void setUpControllers() {
 
     this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
-            () -> -xboxControllerDrive.getLeftY(),
-            () -> -xboxControllerDrive.getLeftX(),
-            () -> -xboxControllerDrive.getRightX()));
+            () -> -Math.pow(xboxControllerDrive.getLeftY(), 3) / Math.abs(xboxControllerDrive.getLeftY()),
+            () -> -Math.pow(xboxControllerDrive.getLeftX(), 3) / Math.abs(xboxControllerDrive.getLeftX()),
+            () -> -Math.pow(xboxControllerDrive.getRightX(), 3) / Math.abs(xboxControllerDrive.getRightX())));
     if (xboxControllerButton.isConnected()) {
       configureXboxBinding(OperatorConstants.kXboxButtonPort);
       System.out.println("2 xbox controllers");
@@ -126,7 +127,7 @@ public class RobotContainer {
     // X Trigger - source collecting
     cmdXboxController.x().whileTrue(new SourceCollectCmd(intakeSubsystem, shooterSubsystem));
     cmdXboxController.x().toggleOnFalse(new SequentialCommandGroup(
-            new WaitCommand(1),
+            new WaitCommand(0.1),
             new InstantCommand(() -> {
               this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
               this.shooterSubsystem.stopMotor();

@@ -22,7 +22,7 @@ import edu.wpi.first.math.util.Units;
 public final class
 Constants {
   public static class OperatorConstants {
-    public static final double kDeadband = 0.18; // Operator deadband
+    public static final double kDeadband = 0.1; // Operator deadband
     public static final int kXboxDrivePort = 0; // Xbox port
     public static final int kXboxButtonPort = 1; // Xbox port
     public static final int kLeftJoystickPort = 2; // Xbox port
@@ -95,9 +95,9 @@ Constants {
     public static final boolean kLeftBackInverted = true;
     public static final boolean kRightBackInverted = true;
 
-    public static final double kMaxDrivingVelocity = 3;
+    public static final double kMaxDrivingVelocity = 4.5;
     public static final double kTeleDriveMaxAccelerationUnitsPerSec = 5;
-    public static final double kTeleDriveMaxSpeedMetersPerSec = 3;
+    public static final double kTeleDriveMaxSpeedMetersPerSec = 4.5;
     public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = Math.PI*1.5;
 
     // Distance between centers of right and left wheels on robot meters
@@ -121,8 +121,9 @@ Constants {
     public static final int kShooterMotorPort = 50;
 
 
-    public static final double kShootPower = -0.75;//Desired speed for the movement of the wheel in firing
-    public static final double kCollectPower = 0.3;//Desired speed for the movement of the wheel in collection
+    public static final double kShootPower = -0.7;//Desired speed for the movement of the wheel in firing
+    public static final double kShootRPM = 2900;//Desired speed for the movement of the wheel in firing
+    public static final double kCollectPower = 0.4;//Desired speed for the movement of the wheel in collection
     public static final double kWarmMotorPower = -0.25; //Desired speed for the motor for warmup
   }
   public static class IntakeConstants{

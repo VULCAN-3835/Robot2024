@@ -16,6 +16,8 @@ import frc.robot.Constants.ShooterConstants;
 public class SourceCollectCmd extends SequentialCommandGroup {
   /** Creates a new SourceIntake. */
   public SourceCollectCmd(IntakeSubsystem intake, ShooterSubsystem shooter) {
+    addRequirements(shooter, intake);
+
     addCommands(//TODO: add LED controls
 
       //1. sets the power of the shooter and the intake to collect piece
@@ -31,7 +33,9 @@ public class SourceCollectCmd extends SequentialCommandGroup {
       new WaitUntilCommand(() -> !intake.hasPiece()),
 
       //5. collects the note 
-      new FloorCollectCmd(intake)
+      new FloorCollectCmd(intake),
+
+      new InstantCommand(() -> shooter.stopMotor())
     );
   }
 }

@@ -34,6 +34,9 @@ public class DefaultWarmShooterCmd extends Command {
     && intakeSubsystem.hasPiece()){
       shooterSubsystem.setShooterSpeed(Constants.ShooterConstants.kWarmMotorPower);
     }
+    else{
+      shooterSubsystem.stopMotor();
+    }
   }
 
   // Called once the command ends or is interrupted.
