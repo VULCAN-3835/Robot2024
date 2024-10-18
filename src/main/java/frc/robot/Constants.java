@@ -122,6 +122,7 @@ public final class Constants {
 
     public static final double kShootPower = -0.75;//Desired speed for the movement of the wheel in firing
     public static final double kCollectPower = 0.3;//Desired speed for the movement of the wheel in collection
+    public static final double kWarmMotorPower = 0.25; //Desired speed for the motor for warmup
   }
   public static class IntakeConstants{
     // Intake motor ports:
