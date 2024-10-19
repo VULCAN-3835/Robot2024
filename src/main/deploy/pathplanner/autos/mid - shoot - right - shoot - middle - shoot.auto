@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.244993259217289,
+      "y": 5.505754088431254
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootCmd"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "mid to right collect"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootCmd"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "mid to middle collect "
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootCmd"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "middle autos",
+  "choreoAuto": false
+}

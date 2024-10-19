@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2671762861357376,
-      "y": 5.527514849608872
+      "x": 0.6924444618120023,
+      "y": 6.610851683241828
     },
-    "rotation": 0
+    "rotation": 59.808377039042405
   },
   "command": {
     "type": "sequential",
@@ -20,7 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "left collect"
+            "pathName": "left to left collect"
           }
         },
         {
@@ -32,6 +32,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "left autos",
   "choreoAuto": false
 }

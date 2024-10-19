@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2437546130441748,
-      "y": 5.550936522700434
+      "x": 1.2647271448389068,
+      "y": 5.525487974052871
     },
     "rotation": 0
   },
@@ -20,7 +20,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "middle collect "
+            "pathName": "mid to left collect"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootCmd"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "mid to right collect"
           }
         },
         {
@@ -32,6 +44,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "middle autos",
   "choreoAuto": false
 }

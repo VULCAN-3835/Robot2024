@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.2437546130441748,
+      "y": 5.550936522700434
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootCmd"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "mid to middle collect "
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootCmd"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "middle autos",
+  "choreoAuto": false
+}

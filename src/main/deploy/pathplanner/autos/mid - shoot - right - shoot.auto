@@ -20,7 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "right collect"
+            "pathName": "mid to right collect"
           }
         },
         {
@@ -32,6 +32,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "middle autos",
   "choreoAuto": false
 }

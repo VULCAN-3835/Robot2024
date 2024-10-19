@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3023087957730821,
-        "y": 5.58606903233778
+        "x": 1.1617787572237042,
+        "y": 5.562647359246215
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3023087957730812,
-        "y": 5.58606903233778
+        "x": 2.5903011214262492,
+        "y": 5.58434266941694
       },
       "isLocked": false,
       "linkedName": null
@@ -17,43 +17,43 @@
     {
       "anchor": {
         "x": 2.883271729453586,
-        "y": 4.087081954477746
+        "y": 6.9679477447399965
       },
       "prevControl": {
-        "x": 0.6098909747829682,
-        "y": 4.087081954477746
+        "x": 0.9692909740919484,
+        "y": 6.981987993414419
       },
       "nextControl": {
-        "x": 2.9652475852740565,
-        "y": 4.087081954477746
+        "x": 3.803798184296632,
+        "y": 6.961195106135258
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.6067905459634015,
-        "y": 4.251033666118688
+        "x": 2.531946633080141,
+        "y": 6.464381773271393
       },
       "prevControl": {
-        "x": 3.1992761118952915,
-        "y": 4.284916337734261
+        "x": 2.8364283832704595,
+        "y": 6.569779302183426
       },
       "nextControl": {
-        "x": 1.0563812283116707,
-        "y": 4.239322829572906
+        "x": 2.002367250751977,
+        "y": 6.281065833234721
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.3023087957730821,
-        "y": 5.58606903233778
+        "x": 1.1617787572237042,
+        "y": 5.562647359246215
       },
       "prevControl": {
-        "x": 2.543657469625922,
-        "y": 5.656334051612468
+        "x": 2.578632880437111,
+        "y": 5.596010910406078
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,7 +62,25 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.8,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "FloorCollect"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 4.0,
@@ -75,7 +93,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "mid paths",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
