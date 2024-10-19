@@ -126,16 +126,30 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     public void classicWaveColor(double frequency, boolean backward, Color8Bit color, int length){
-        if (tick%((int)(TPS/frequency)) != 0){ // skips runs
+        // Skip execution if the current tick isn't aligned with the frequency interval
+        if (tick%((int)(TPS/frequency)) != 0){
             return;
         }
+
+        // Reset the color pattern
         staticColor(BLACK_COLOR);
-        int start = ((int)(tick/(TPS/frequency)))%length;
-        for (int i = start; i < ledBuffer.getLength(); i++) {
-            if ((i*2)/length==1){
-                continue;
+
+        // Compute starting position, considering wrap-around effect with negative shifts
+        int start = (((int)(tick/(TPS/frequency)))%(length*2))-length+1;
+
+        // Initialize variables for toggling the color
+        Color8Bit colorToPut = color;
+        int counter = length + Math.min(start, 0);
+
+        // Traverse the ledBuffer and fill based on the direction (forward or backward)
+        for (int i = Math.max(0, start); i < ledBuffer.getLength(); i++) {
+            if (counter == 0){
+                colorToPut = colorToPut == color?BLACK_COLOR:color;  // Toggle color
+                counter = length;  // Reset the counter
             }
-            ledBuffer.setLED(i, color);
+            // Set the ledBuffer value, adjusting for backward direction if needed
+            ledBuffer.setLED(backward?(ledBuffer.getLength()-1-i):i, colorToPut);
+            counter--;
         }
     }
 

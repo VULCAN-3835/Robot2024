@@ -65,11 +65,11 @@ public class LEDController {
             }
             case FLOOR_COLLECTING:
                 LEDSubsystem.getInstance().effect = () ->
-                        LEDSubsystem.getInstance().classicWaveColor(20, false, ORANGE, 10);
+                        LEDSubsystem.getInstance().classicWaveColor(25, false, ORANGE, 10);
                 break;
             case SOURCE_COLLECTING:
                 LEDSubsystem.getInstance().effect = () ->
-                        LEDSubsystem.getInstance().WaveColor(20, false, allianceColor);
+                        LEDSubsystem.getInstance().classicWaveColor(25, true, allianceColor, 10);
                 break;
             case AMP_AIMING:
                 LEDSubsystem.getInstance().effect = () ->
@@ -85,7 +85,7 @@ public class LEDController {
                 break;
             case SPEAKER_SHOOTING:
                 LEDSubsystem.getInstance().effect = () ->
-                        LEDSubsystem.getInstance().WaveColor(40, true, GREEN);
+                        LEDSubsystem.getInstance().classicWaveColor(50, false, GREEN, 10);
                 break;
             case OPENING_CLIMBER:
                 LEDSubsystem.getInstance().effect = () ->

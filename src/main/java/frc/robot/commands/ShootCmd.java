@@ -39,7 +39,6 @@ public class ShootCmd extends SequentialCommandGroup {
       /** 7. Set the intake motor to output state to eject the game piece */
       new InstantCommand(() -> {
         this.intakeSubsystem.setMotorMode(INTAKE_STATE.collectState); // Switch the intake to output mode
-        LEDController.setActionState(ActionStates.SPEAKER_SHOOTING); // Keep LEDs indicating shooting
       }),
       
       /** 8. Wait for a short duration to allow the piece to eject */
