@@ -7,6 +7,8 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Util.LEDController;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.INTAKE_STATE;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -24,6 +26,7 @@ public class SourceCollectCmd extends SequentialCommandGroup {
       new InstantCommand(() -> {
         shooter.setShooterSpeed(ShooterConstants.kCollectPower);
         intake.setMotorMode(INTAKE_STATE.outputState);
+        LEDController.setActionState(LEDController.ActionStates.SOURCE_COLLECTING);
       }),
 
       //2. collects until it has piece detected
@@ -35,7 +38,10 @@ public class SourceCollectCmd extends SequentialCommandGroup {
       //5. collects the note 
       new FloorCollectCmd(intake),
 
-      new InstantCommand(() -> shooter.stopMotor())
+      new InstantCommand(() -> {
+          LEDController.setActionState(LEDController.ActionStates.DEFAULT);
+          shooter.stopMotor();
+      })
     );
   }
 }

@@ -136,7 +136,7 @@ Constants {
 
     // Intake motor speeds:
     public static final double kMotorOutputPower = -0.7;
-    public static final double kMotorIntakePower = 0.75;
+    public static final double kMotorIntakePower = 0.9;
 
     // Angle motor positions:
     public static final double kOpenRotations = 0.092;

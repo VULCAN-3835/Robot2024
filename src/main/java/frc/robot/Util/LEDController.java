@@ -1,6 +1,7 @@
 package frc.robot.Util;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.subsystems.LEDSubsystem;
 
@@ -33,10 +34,12 @@ public class LEDController {
 
     public static void setStorageState(StorageStates state){
         LEDController.storageState = state;
+        SmartDashboard.putString("LED storage state", state.toString());
     }
 
     public static void setActionState(ActionStates state){
         actionState = state;
+        SmartDashboard.putString("LED action state", state.toString());
     }
 
     public static void updateLEDEffect() {
@@ -62,7 +65,7 @@ public class LEDController {
             }
             case FLOOR_COLLECTING:
                 LEDSubsystem.getInstance().effect = () ->
-                        LEDSubsystem.getInstance().WaveColor(20, true, ORANGE);
+                        LEDSubsystem.getInstance().classicWaveColor(20, false, ORANGE, 10);
                 break;
             case SOURCE_COLLECTING:
                 LEDSubsystem.getInstance().effect = () ->

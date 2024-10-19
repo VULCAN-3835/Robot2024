@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -122,6 +123,20 @@ public class LEDSubsystem extends SubsystemBase {
             }
         }
         
+    }
+
+    public void classicWaveColor(double frequency, boolean backward, Color8Bit color, int length){
+        if (tick%((int)(TPS/frequency)) != 0){ // skips runs
+            return;
+        }
+        staticColor(BLACK_COLOR);
+        int start = ((int)(tick/(TPS/frequency)))%length;
+        for (int i = start; i < ledBuffer.getLength(); i++) {
+            if ((i*2)/length==1){
+                continue;
+            }
+            ledBuffer.setLED(i, color);
+        }
     }
 
     private void errorEffect(){

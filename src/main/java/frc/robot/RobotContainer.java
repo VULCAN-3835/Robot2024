@@ -78,6 +78,10 @@ public class RobotContainer {
             () -> -Math.pow(xboxControllerDrive.getLeftY(), 3) / Math.abs(xboxControllerDrive.getLeftY()),
             () -> -Math.pow(xboxControllerDrive.getLeftX(), 3) / Math.abs(xboxControllerDrive.getLeftX()),
             () -> -Math.pow(xboxControllerDrive.getRightX(), 3) / Math.abs(xboxControllerDrive.getRightX())));
+
+            CommandXboxController driverCmdController = new CommandXboxController(OperatorConstants.kXboxDrivePort);
+            // Applies zero heading method instant command to start button trigger
+            driverCmdController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
     if (xboxControllerButton.isConnected()) {
       configureXboxBinding(OperatorConstants.kXboxButtonPort);
       System.out.println("2 xbox controllers");
@@ -93,7 +97,7 @@ public class RobotContainer {
     CommandXboxController cmdXboxController = new CommandXboxController(port);
     
     // Applies zero heading method instant command to start button trigger
-    cmdXboxController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
+    //cmdXboxController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
 
     // RIGHT TRIGGER - manual shooting
     cmdXboxController.rightTrigger().whileTrue(new ShootCmd(shooterSubsystem, intakeSubsystem));
