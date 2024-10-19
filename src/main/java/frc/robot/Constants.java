@@ -51,7 +51,7 @@ Constants {
     }
 
     public static SimpleMotorFeedforward leftFrontFF = new SimpleMotorFeedforward(0.21599, 2.2476, 0.040257);
-    public static SimpleMotorFeedforward leftBackFF = new SimpleMotorFeedforward(0.20676, 2.1653, 0.16537);
+    public static SimpleMotorFeedforward leftBackFF = new SimpleMotorFeedforward(0.20676, 2.1653, 0.16537); // previous constants - (0.20676, 2.1653, 0.16537)
     public static SimpleMotorFeedforward rightFrontFF = new SimpleMotorFeedforward(0.1788, 2.257, 0.036611);
     public static SimpleMotorFeedforward rightBackFF = new SimpleMotorFeedforward(0.11961, 2.3274, 0.13714);
 
@@ -85,10 +85,14 @@ Constants {
     public static final int kLeftBackEncID = 32; // CAN ID
     public static final int kRightBackEncID = 30; // CAN ID
     // Offsets for absolute encoders in rotations (i.e: 360 degrees = 1 rotation):
-    public static final double kLeftFrontOffset = -0.029296875; 
-    public static final double kRightFrontOffset = -0.4111328125;
-    public static final double kLeftBackOffset = 0.406494140625;
-    public static final double kRightBackOffset = -0.228515625;
+//    public static final double kLeftFrontOffset = -0.029296875;
+//    public static final double kRightFrontOffset = -0.4111328125;
+//    public static final double kLeftBackOffset = 0.406494140625;
+//    public static final double kRightBackOffset = -0.228515625;
+    public static final double kLeftFrontOffset = -0.025;
+    public static final double kRightFrontOffset = -0.41;
+    public static final double kLeftBackOffset = -0.6;
+    public static final double kRightBackOffset = -0.2151;
     // Which motors are inverted:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   public static final boolean frontLeftDriveInverted = true;
     public static final boolean kLeftFrontInverted = true; 
     public static final boolean kRightFrontInverted = true;

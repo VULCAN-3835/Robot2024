@@ -51,6 +51,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("ShootCmd", new ShootCmd(shooterSubsystem, intakeSubsystem));
     NamedCommands.registerCommand("AimShootCmd", new AimShootCmd(chassisSubsystem, intakeSubsystem, shooterSubsystem, () -> false));
     NamedCommands.registerCommand("AutoCollect", new AutoFloorCollectCmd(chassisSubsystem, intakeSubsystem, () -> false));
+    NamedCommands.registerCommand("FloorCollect", new FloorCollectCmd(intakeSubsystem));
     NamedCommands.registerCommand("ActivateShooter", new InstantCommand(() -> this.shooterSubsystem.setShooterSpeed(ShooterConstants.kShootPower)));
 
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -75,8 +76,8 @@ public class RobotContainer {
   public void setUpControllers() {
 
     this.chassisSubsystem.setDefaultCommand(new DefaultTeleopCommand(this.chassisSubsystem,
-            () -> -Math.pow(xboxControllerDrive.getLeftY(), 3) / Math.abs(xboxControllerDrive.getLeftY()),
-            () -> -Math.pow(xboxControllerDrive.getLeftX(), 3) / Math.abs(xboxControllerDrive.getLeftX()),
+            () -> Math.pow(xboxControllerDrive.getLeftY(), 3) / Math.abs(xboxControllerDrive.getLeftY()),
+            () -> Math.pow(xboxControllerDrive.getLeftX(), 3) / Math.abs(xboxControllerDrive.getLeftX()),
             () -> -Math.pow(xboxControllerDrive.getRightX(), 3) / Math.abs(xboxControllerDrive.getRightX())));
 
             CommandXboxController driverCmdController = new CommandXboxController(OperatorConstants.kXboxDrivePort);
@@ -113,7 +114,7 @@ public class RobotContainer {
       LEDController.setActionState(LEDController.ActionStates.DEFAULT);
     }));
 
-    // A TRIGGER - auto collecting
+//    // A TRIGGER - auto collecting
     cmdXboxController.a().whileTrue(new AutoFloorCollectCmd(chassisSubsystem, intakeSubsystem, () -> false));
     cmdXboxController.a().toggleOnFalse(new InstantCommand(() -> {
       this.intakeSubsystem.setMotorMode(INTAKE_STATE.restState);
@@ -161,9 +162,10 @@ public class RobotContainer {
     }));
 
 
-//    cmdXboxController.b().whileTrue(new InstantCommand(() -> {
-//      this.chassisSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward);
-//    }));
+//    cmdXboxController.b().whileTrue(this.chassisSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
+//    cmdXboxController.y().whileTrue(this.chassisSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+//    cmdXboxController.x().whileTrue(this.chassisSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+//    cmdXboxController.a().whileTrue(this.chassisSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
 
   }
 

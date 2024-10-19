@@ -1,8 +1,10 @@
 package frc.robot.commands.Autos;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.FloorCollectCmd;
 import frc.robot.commands.ShootCmd;
 import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -24,10 +26,10 @@ public class AutoShootCollectForwardCmd extends SequentialCommandGroup {
       new InstantCommand(() -> intake.setMotorMode(INTAKE_STATE.collectState)),
 
       /** 3. Drive the chassis forward at full speed (1) */
-      new InstantCommand(() -> chassis.drive(1, 0, 0, false)),
+      new InstantCommand(() -> chassis.drive(2, 0, 0, false)),
 
       /** 4. Wait for 2 seconds while moving forward */
-      new WaitCommand(2),
+      new ParallelRaceGroup(new WaitCommand(2.5), new FloorCollectCmd(intake)),
 
       /** 5. Stop the chassis after the wait */
       new InstantCommand(() -> chassis.drive(0, 0, 0, false)),

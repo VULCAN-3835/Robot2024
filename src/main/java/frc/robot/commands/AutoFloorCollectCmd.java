@@ -40,7 +40,7 @@ public class AutoFloorCollectCmd extends Command {
   @Override
   public void initialize() {
     this.rotationPID.setTolerance(2); // Set the tolerance for the PID controller
-    this.rotationPID.setSetpoint(2); // Set desired setpoint for rotation based on camera input
+    this.rotationPID.setSetpoint(0); // Set desired setpoint for rotation based on camera input
 
     this.intakeSubsystem.setMotorMode(INTAKE_STATE.collectState); // Set intake to collecting state
   }
