@@ -20,7 +20,7 @@ public class SourceCollectCmd extends SequentialCommandGroup {
   public SourceCollectCmd(IntakeSubsystem intake, ShooterSubsystem shooter) {
     addRequirements(shooter, intake);
 
-    addCommands(//TODO: add LED controls
+    addCommands(
 
       //1. sets the power of the shooter and the intake to collect piece
       new InstantCommand(() -> {
@@ -31,11 +31,11 @@ public class SourceCollectCmd extends SequentialCommandGroup {
 
       //2. collects until it has piece detected
       new WaitUntilCommand( ()-> intake.hasPiece()),
-      
+
       //4. output the note until the sensor doesn't sense it anymore
       new WaitUntilCommand(() -> !intake.hasPiece()),
 
-      //5. collects the note 
+      //5. collects the note
       new FloorCollectCmd(intake),
 
       new InstantCommand(() -> {
