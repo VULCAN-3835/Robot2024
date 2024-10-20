@@ -83,14 +83,9 @@ public class RobotContainer {
             CommandXboxController driverCmdController = new CommandXboxController(OperatorConstants.kXboxDrivePort);
             // Applies zero heading method instant command to start button trigger
             driverCmdController.start().onTrue(new InstantCommand(() -> this.chassisSubsystem.zeroHeading()));
-    if (!xboxControllerButton.isConnected()) {
-      configureXboxBinding(OperatorConstants.kXboxDrivePort);
-      System.out.println("only one controller");
-    }
-    else{
-      configureXboxBinding(OperatorConstants.kXboxButtonPort);
-      System.out.println("2 xbox controllers");
-    }
+
+            configureXboxBinding(OperatorConstants.kXboxButtonPort);
+
   }
 
   
