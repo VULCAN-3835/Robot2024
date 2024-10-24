@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7023114046228107,
+      "y": 6.581250854809402
+    },
+    "rotation": 59.95167735392437
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootCmd"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 10.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left to long"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "left autos",
+  "choreoAuto": false
+}
