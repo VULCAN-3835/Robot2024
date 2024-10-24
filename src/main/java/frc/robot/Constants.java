@@ -99,9 +99,9 @@ Constants {
     public static final boolean kLeftBackInverted = true;
     public static final boolean kRightBackInverted = true;
 
-    public static final double kMaxDrivingVelocity = 4.5;
+    public static final double kMaxDrivingVelocity = 3.5;
     public static final double kTeleDriveMaxAccelerationUnitsPerSec = 5;
-    public static final double kTeleDriveMaxSpeedMetersPerSec = 4.5;
+    public static final double kTeleDriveMaxSpeedMetersPerSec = 3.5;
     public static final double kTeleDriveMaxAngulerSpeedRadiansPerSec = Math.PI*1.5;
 
     // Distance between centers of right and left wheels on robot meters
@@ -135,7 +135,7 @@ Constants {
     public static final int kIntakeMotorPort = 40;
 
     // Intake analog ports:
-    public static final int kPieceDetectorPort = 0;
+    public static final int kPieceDetectorPort = 1;
 
 
     // Intake motor speeds:

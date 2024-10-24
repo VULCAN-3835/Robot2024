@@ -166,6 +166,7 @@ public class LEDSubsystem extends SubsystemBase {
     public void periodic() {
         try{
             effect.updateBuffer();
+            //throw new Exception("hello");
         }
         catch (Exception exception){
             errorEffect();
